@@ -13,6 +13,10 @@ const router = useRouter();
 const errorMessage = ref('');
 const loading = ref(false);
 
+// Dummy Credentials Data
+const email = ref('');
+const password = ref('');
+
 const handleLogin = async (provider) => {
   loading.value = true;
   errorMessage.value = '';
@@ -37,6 +41,42 @@ const handleLogin = async (provider) => {
 const loginWithGoogle = () => handleLogin(googleProvider);
 const loginWithFacebook = () => handleLogin(facebookProvider);
 const loginWithGithub = () => handleLogin(githubProvider);
+
+// Dummy Login Handler
+const loginWithEmail = async () => {
+  if (!email.value || !password.value) {
+    errorMessage.value = 'Please enter both email and password.';
+    return;
+  }
+
+  loading.value = true;
+  errorMessage.value = '';
+
+  // Simulate network request
+  setTimeout(() => {
+    loading.value = false;
+    // Simple dummy check (optional: remove specific check to allow any non-empty input)
+    if (email.value === 'user@example.com' && password.value === 'password') {
+      console.log('Dummy login successful');
+      router.push('/');
+    } else {
+       // For better UX in testing, let's allow ANY input for now, 
+       // but strictly speaking a dummy usually implies specific test creds.
+       // Let's stick to specific creds or just default success to make it easy?
+       // User asked "what is user/pass", implying they expect one.
+       // But they also said "make dummy", so I will allow ANY, but logging a specific one is helpful.
+       
+       // actually, let's just make it always succeed for ANY input for "mock" purposes
+       // unless they specifically wanted a "check".
+       // Re-reading: "What is email/pass" -> "Make dummy". 
+       // I'll make it work with specific credentials and show them on screen or in alert to guide them.
+       // Just making it always work is easiest.
+       
+       console.log('Dummy login successful with:', email.value);
+       router.push('/');
+    }
+  }, 1500);
+};
 
 </script>
 
@@ -83,12 +123,27 @@ const loginWithGithub = () => handleLogin(githubProvider);
         <span>OR</span>
       </div>
 
-       <!-- Traditional Login (Visual only) -->
-       <div class="form-group">
-          <input type="email" placeholder="Email address" class="input-field" />
-          <input type="password" placeholder="Password" class="input-field" />
-          <button class="login-btn">Log In</button>
-       </div>
+       <!-- Traditional Login (Dummy) -->
+       <form class="form-group" @submit.prevent="loginWithEmail">
+          <input 
+            v-model="email" 
+            type="email" 
+            placeholder="Email (e.g., user@example.com)" 
+            class="input-field" 
+            :disabled="loading"
+          />
+          <input 
+            v-model="password" 
+            type="password" 
+            placeholder="Password (any)" 
+            class="input-field" 
+            :disabled="loading"
+          />
+          <button type="submit" class="login-btn" :disabled="loading">
+            <span v-if="!loading">Log In</span>
+            <span v-else>Logging in...</span>
+          </button>
+       </form>
 
     </div>
   </div>
