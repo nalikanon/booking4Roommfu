@@ -42,7 +42,7 @@ const handleSelect = (room) => {
   <div class="dashboard-container">
     <div class="header-section">
       <h1>Select a Room Type</h1>
-      <p>Choose the type of room you would like to book today.</p>
+      <p>Choose the type of room you would like to book.</p>
     </div>
 
     <div class="grid-container">
