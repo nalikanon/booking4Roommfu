@@ -1,22 +1,14 @@
-<script setup>
-</script>
-
 <template>
-  <router-view v-slot="{ Component }">
-    <transition name="fade" mode="out-in">
-      <component :is="Component" />
-    </transition>
-  </router-view>
+  <router-view></router-view>
 </template>
 
-<style>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
+<script>
+export default {
+  name: 'App'
 }
+</script>
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
+<style lang="scss">
+  // Import Main styles for this application
+  @import 'assets/scss/style';
 </style>
