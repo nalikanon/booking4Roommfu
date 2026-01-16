@@ -156,30 +156,33 @@ const loginWithEmail = async () => {
     </div>
 
     <!-- View 2: Dashboard/Room Select -->
-    <div v-else class="dashboard-container">
+    <div v-if="isLoggedIn" class="dashboard-view-wrapper">
        <button class="logout-btn" @click="isLoggedIn = false">Logout</button>
-       <div class="header-section">
-        <div class="header-row">
-            <h1>Select a Room Type</h1>
-        </div>
-        <p>Choose the type of room you would like to book today.</p>
-      </div>
-
-      <div class="grid-container">
-        <div 
-          v-for="room in rooms" 
-          :key="room.id" 
-          class="room-card"
-          @click="handleSelect(room)"
-        >
-          <div class="icon-wrapper" :class="room.color">
-            <span class="emoji">{{ room.icon }}</span>
+       
+       <div class="dashboard-container">
+          <div class="header-section">
+            <div class="header-row">
+                <h1>Select a Room Type</h1>
+            </div>
+            <p>Choose the type of room you would like to book today.</p>
           </div>
-          <h3>{{ room.title }}</h3>
-          <p>{{ room.description }}</p>
-          <button class="select-btn">Select</button>
-        </div>
-      </div>
+
+          <div class="grid-container">
+            <div 
+              v-for="room in rooms" 
+              :key="room.id" 
+              class="room-card"
+              @click="handleSelect(room)"
+            >
+              <div class="icon-wrapper" :class="room.color">
+                <span class="emoji">{{ room.icon }}</span>
+              </div>
+              <h3>{{ room.title }}</h3>
+              <p>{{ room.description }}</p>
+              <button class="select-btn">Select</button>
+            </div>
+          </div>
+       </div>
     </div>
   </div>
 </template>
@@ -188,6 +191,13 @@ const loginWithEmail = async () => {
 /* Page & Common */
 .page-container {
   width: 100%;
+}
+
+/* Wrapper to hold fixed elements if needed, though button is fixed to viewport */
+.dashboard-view-wrapper {
+  /* No transform here to keep fixed button relative to viewport if it was inside, 
+     but we are keeping it inside this wrapper. 
+     If this wrapper has no transform, we are good. */
 }
 
 /* --- Login Styles --- */
@@ -404,8 +414,8 @@ h1 {
   border-radius: 30px;
   cursor: pointer;
   backdrop-filter: blur(10px);
-  transition: all 0.3s;
-  z-index: 50;
+  transition: background 0.3s, border-color 0.3s, color 0.3s, transform 0.3s;
+  z-index: 1000;
   font-weight: 500;
 }
 
