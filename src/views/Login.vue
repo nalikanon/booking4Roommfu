@@ -157,6 +157,7 @@ const loginWithEmail = async () => {
 
     <!-- View 2: Dashboard/Room Select -->
     <div v-else class="dashboard-container">
+       <button class="logout-btn" @click="isLoggedIn = false">Logout</button>
        <div class="header-section">
         <div class="header-row">
             <h1>Select a Room Type</h1>
@@ -390,6 +391,29 @@ h1 {
 }
 
 
+
+
+.logout-btn {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 10px 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s;
+  z-index: 50;
+  font-weight: 500;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+}
 
 .grid-container {
   display: grid;
