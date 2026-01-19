@@ -48,14 +48,6 @@ const rooms = [
   }
 ];
 
-const handleSelect = (room) => {
-  if (room.id === 1) {
-    router.push('/classroom-list');
-  } else {
-    alert(`You selected: ${room.title} (Feature coming soon)`);
-  }
-};
-
 const handleLogin = async (provider) => {
   loading.value = true;
   errorMessage.value = '';
