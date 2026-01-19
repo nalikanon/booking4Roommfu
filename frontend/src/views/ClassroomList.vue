@@ -138,6 +138,7 @@ h1 {
   font-size: 2rem;
   background: linear-gradient(to right, #fff, #a5b4fc);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
 }

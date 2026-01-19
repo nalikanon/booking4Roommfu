@@ -49,8 +49,11 @@ const rooms = [
 ];
 
 const handleSelect = (room) => {
-  alert(`You selected: ${room.title}`);
-  // Future implementation: navigate to booking detail
+  if (room.id === 1) {
+    router.push('/classroom-list');
+  } else {
+    alert(`You selected: ${room.title} (Feature coming soon)`);
+  }
 };
 
 const handleLogin = async (provider) => {
@@ -237,6 +240,7 @@ h1 {
   margin: 0 0 10px;
   background: linear-gradient(to right, #fff, #a5b4fc);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
