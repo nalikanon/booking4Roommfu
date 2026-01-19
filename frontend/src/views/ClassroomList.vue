@@ -1,8 +1,14 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
+const route = useRoute();
+const searchCriteria = ref({});
+
+onMounted(() => {
+  searchCriteria.value = route.query;
+});
 
 // Mock data for classrooms
 const classrooms = ref([
@@ -12,7 +18,8 @@ const classrooms = ref([
     name: "301",
     capacity: 50,
     status: "Available",
-    image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    image:
+      "https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 102,
@@ -20,7 +27,8 @@ const classrooms = ref([
     name: "201",
     capacity: 30,
     status: "Available",
-    image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    image:
+      "https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 103,
@@ -28,7 +36,8 @@ const classrooms = ref([
     name: "302",
     capacity: 45,
     status: "Available",
-    image: "https://images.unsplash.com/photo-1592305285741-6a05786a3d16?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    image:
+      "https://images.unsplash.com/photo-1592305285741-6a05786a3d16?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 104,
@@ -36,7 +45,8 @@ const classrooms = ref([
     name: "105",
     capacity: 120,
     status: "Available",
-    image: "https://images.unsplash.com/photo-1565514020176-db792f4b6d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    image:
+      "https://images.unsplash.com/photo-1565514020176-db792f4b6d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 105,
@@ -44,8 +54,9 @@ const classrooms = ref([
     name: "205",
     capacity: 35,
     status: "Available",
-    image: "https://images.unsplash.com/photo-1510531704581-5b2870972060?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-  }
+    image:
+      "https://images.unsplash.com/photo-1510531704581-5b2870972060?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+  },
 ]);
 
 const goBack = () => {
@@ -60,35 +71,57 @@ const bookRoom = (room) => {
 <template>
   <div class="page-container">
     <div class="header-bar">
-      <button @click="goBack" class="back-btn">
-        <span>←</span> Back
-      </button>
+      <button @click="goBack" class="back-btn"><span>←</span> Back</button>
       <h1>Available Classrooms</h1>
+    </div>
+
+    <div v-if="searchCriteria.roomdate" class="search-summary">
+      <div class="summary-item">
+        <span class="label">Date:</span>
+        <span class="value">{{ searchCriteria.roomdate }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="label">Time:</span>
+        <span class="value"
+          >{{ searchCriteria.timefrom }} - {{ searchCriteria.timeto }}</span
+        >
+      </div>
+      <div class="summary-item">
+        <span class="label">Min Capacity:</span>
+        <span class="value">{{ searchCriteria.roomcapacity }}</span>
+      </div>
     </div>
 
     <div class="rooms-list">
       <div v-for="room in classrooms" :key="room.id" class="room-card">
-        <div class="card-image" :style="{ backgroundImage: `url(${room.image})` }">
+        <div
+          class="card-image"
+          :style="{ backgroundImage: `url(${room.image})` }"
+        >
           <div class="badge status-badge">{{ room.status }}</div>
         </div>
-        
+
         <div class="card-content">
           <div class="room-header">
             <h2>Room {{ room.name }}</h2>
             <span class="location-badge">{{ room.location }}</span>
           </div>
-          
+
           <div class="room-details">
             <div class="detail-item">
               <span class="icon">👥</span>
-              <span>Capacity: <strong>{{ room.capacity }} People</strong></span>
+              <span
+                >Capacity: <strong>{{ room.capacity }} People</strong></span
+              >
             </div>
             <div class="detail-item">
               <span class="icon">📍</span>
-              <span>Building: <strong>{{ room.location }}</strong></span>
+              <span
+                >Building: <strong>{{ room.location }}</strong></span
+              >
             </div>
           </div>
-          
+
           <div class="card-actions">
             <button class="book-btn" @click="bookRoom(room)">Book Now</button>
           </div>
@@ -143,6 +176,45 @@ h1 {
   margin: 0;
 }
 
+.search-summary {
+  display: flex;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px 20px;
+  margin-bottom: 25px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-item .label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-item .value {
+  font-size: 0.95rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .rooms-list {
   display: flex;
   flex-direction: column;
@@ -186,7 +258,7 @@ h1 {
   font-size: 0.8rem;
   font-weight: 600;
   backdrop-filter: blur(4px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .card-content {
@@ -261,8 +333,14 @@ h1 {
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsiveness */
@@ -271,12 +349,12 @@ h1 {
     flex-direction: column;
     height: auto;
   }
-  
+
   .card-image {
     height: 160px;
     flex: none;
   }
-  
+
   .card-content {
     padding: 16px;
   }
