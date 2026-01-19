@@ -45,7 +45,9 @@ const filters = ref({
 });
 
 const handleSelect = (room) => {
+  console.log("Selected room:", room);
   if (room.id === 1) {
+    console.log("Opening popup for Classroom");
     isPopupVisible.value = true;
   } else {
     alert(`You selected: ${room.title} (Feature coming soon)`);
