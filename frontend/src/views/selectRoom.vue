@@ -1,5 +1,8 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const rooms = [
   {
@@ -33,8 +36,11 @@ const rooms = [
 ];
 
 const handleSelect = (room) => {
-  alert(`You selected: ${room.title}`);
-  // In a real app, router.push('/booking/' + room.id)
+  if (room.id === 1) {
+    router.push('/classroom-list');
+  } else {
+    alert(`You selected: ${room.title} (Feature coming soon)`);
+  }
 };
 </script>
 
