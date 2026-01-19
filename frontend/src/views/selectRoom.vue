@@ -37,12 +37,12 @@ const rooms = [
   },
 ];
 
-const handleSelect = async (room) => {
+const handleSelect = (room) => {
   console.log('Room clicked:', room);
   if (room.id === 1) {
     try {
       console.log('Attempting to open SweetAlert');
-      const result = await Swal.fire({
+      const result = Swal.fire({
         title: '<h2 style="color: #4f46e5; margin: 0;">Search Classrooms</h2>',
         html: `
           <div style="text-align: left; display: flex; flex-direction: column; gap: 15px;">
