@@ -141,7 +141,7 @@ const handleSelect = async (room) => {
         </div>
         <h3>{{ room.title }}</h3>
         <p>{{ room.description }}</p>
-        <button class="select-btn">Select</button>
+        <button class="select-btn" @click.stop="handleSelect(room)">Select</button>
       </div>
     </div>
   </div>
