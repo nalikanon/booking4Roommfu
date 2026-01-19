@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 
@@ -36,47 +37,69 @@ const rooms = [
   },
 ];
 
-const isPopupVisible = ref(false);
-const filters = ref({
-  roomdate: "",
-  timefrom: "",
-  timeto: "",
-  roomcapacity: 40,
-});
-
-const handleSelect = (room) => {
-  console.log("Selected room:", room);
+const handleSelect = async (room) => {
   if (room.id === 1) {
-    console.log("Opening popup for Classroom");
-    isPopupVisible.value = true;
+    const { value: formValues } = await Swal.fire({
+      title: '<h2 style="color: #4f46e5; margin: 0;">Search Classrooms</h2>',
+      html: `
+        <div style="text-align: left; display: flex; flex-direction: column; gap: 15px;">
+          <div>
+            <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Select Date</label>
+            <input id="swal-date" class="swal2-input" type="date" style="margin: 0; width: 100%; box-sizing: border-box;">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+              <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Time From</label>
+              <input id="swal-timefrom" class="swal2-input" type="time" style="margin: 0; width: 100%; box-sizing: border-box;">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Time To</label>
+              <input id="swal-timeto" class="swal2-input" type="time" style="margin: 0; width: 100%; box-sizing: border-box;">
+            </div>
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Capacity (People)</label>
+            <input id="swal-capacity" class="swal2-input" type="number" min="1" value="40" style="margin: 0; width: 100%; box-sizing: border-box;">
+          </div>
+        </div>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Search Available Rooms',
+      confirmButtonColor: '#4f46e5',
+      cancelButtonColor: '#d33',
+      customClass: {
+        popup: 'glass-popup'
+      },
+      preConfirm: () => {
+        const date = document.getElementById('swal-date').value;
+        const timefrom = document.getElementById('swal-timefrom').value;
+        const timeto = document.getElementById('swal-timeto').value;
+        const capacity = document.getElementById('swal-capacity').value;
+
+        if (!date || !timefrom || !timeto) {
+          Swal.showValidationMessage('Please fill in all fields');
+          return false;
+        }
+
+        return {
+          roomdate: date,
+          timefrom: timefrom,
+          timeto: timeto,
+          roomcapacity: capacity
+        };
+      }
+    });
+
+    if (formValues) {
+      router.push({
+        path: "/classroom-list",
+        query: formValues,
+      });
+    }
   } else {
     alert(`You selected: ${room.title} (Feature coming soon)`);
   }
-};
-
-const closePopup = () => {
-  isPopupVisible.value = false;
-};
-
-const handleSearch = () => {
-  if (
-    !filters.value.roomdate ||
-    !filters.value.timefrom ||
-    !filters.value.timeto
-  ) {
-    alert("Please fill in all filter fields");
-    return;
-  }
-
-  router.push({
-    path: "/classroom-list",
-    query: {
-      roomdate: filters.value.roomdate,
-      timefrom: filters.value.timefrom,
-      timeto: filters.value.timeto,
-      roomcapacity: filters.value.roomcapacity,
-    },
-  });
 };
 </script>
 
@@ -102,62 +125,6 @@ const handleSearch = () => {
         <button class="select-btn">Select</button>
       </div>
     </div>
-
-    <!-- Booking Filter Popup -->
-    <Transition name="fade">
-      <div v-if="isPopupVisible" class="popup-overlay" @click.self="closePopup">
-        <div class="popup-content">
-          <div class="popup-header">
-            <h2>Search Classrooms</h2>
-            <button class="close-btn" @click="closePopup">&times;</button>
-          </div>
-
-          <div class="filter-form">
-            <div class="form-group">
-              <label>Select Date</label>
-              <input
-                type="date"
-                v-model="filters.roomdate"
-                class="form-input"
-              />
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label>Time From</label>
-                <input
-                  type="time"
-                  v-model="filters.timefrom"
-                  class="form-input"
-                />
-              </div>
-              <div class="form-group">
-                <label>Time To</label>
-                <input
-                  type="time"
-                  v-model="filters.timeto"
-                  class="form-input"
-                />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Capacity (People)</label>
-              <input
-                type="number"
-                v-model="filters.roomcapacity"
-                class="form-input"
-                min="1"
-              />
-            </div>
-
-            <button class="search-btn" @click="handleSearch">
-              Search Available Rooms
-            </button>
-          </div>
-        </div>
-      </div>
-    </Transition>
   </div>
 </template>
 
@@ -300,147 +267,5 @@ p {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Popup Styles */
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.popup-content {
-  background: rgba(30, 41, 59, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  padding: 40px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  animation: popupSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes popupSlide {
-  from {
-    transform: scale(0.9) translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
-}
-
-.popup-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-}
-
-.popup-header h2 {
-  font-size: 1.8rem;
-  margin: 0;
-  background: linear-gradient(to right, #fff, #a5b4fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: #94a3b8;
-  font-size: 2rem;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.close-btn:hover {
-  color: white;
-}
-
-.filter-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: left;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-.form-group label {
-  color: #94a3b8;
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin-left: 4px;
-}
-
-.form-input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 12px 16px;
-  color: white;
-  font-size: 1rem;
-  outline: none;
-  transition: all 0.3s ease;
-}
-
-.form-input:focus {
-  border-color: #6366f1;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-}
-
-.search-btn {
-  margin-top: 10px;
-  padding: 14px;
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
-  color: white;
-  border: none;
-  border-radius: 14px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
-}
-
-.search-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.5);
-}
-
-.search-btn:active {
-  transform: translateY(0);
-}
-
-/* Transitions */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>
