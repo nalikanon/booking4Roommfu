@@ -37,12 +37,23 @@ const rooms = [
   },
 ];
 
-const handleSelect = (room) => {
+const handleSelect = async (room) => {
   console.log('Room clicked:', room);
   if (room.id === 1) {
+    let Swal;
+    try {
+      // Dynamic import to handle potential missing module if server not restarted
+      const module = await import('sweetalert2');
+      Swal = module.default;
+    } catch (error) {
+      console.error("Failed to load SweetAlert2:", error);
+      alert("System Update: Please restart your terminal/dev server (npm run dev) to load the new popup library.");
+      return;
+    }
+
     try {
       console.log('Attempting to open SweetAlert');
-      const result = Swal.fire({
+      const result = await Swal.fire({
         title: '<h2 style="color: #4f46e5; margin: 0;">Search Classrooms</h2>',
         html: `
           <div style="text-align: left; display: flex; flex-direction: column; gap: 15px;">
