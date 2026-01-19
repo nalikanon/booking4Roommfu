@@ -1,16 +1,24 @@
 <script setup>
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 
-
 const router = useRouter();
+
+// State for Modal
+const showModal = ref(false);
+const selectedRoom = ref(null);
+const searchParams = reactive({
+  date: "",
+  timeFrom: "",
+  timeTo: "",
+  capacity: 40,
+});
 
 const rooms = [
   {
     id: 1,
     title: "Classroom",
-    description:
-      "Standard classrooms equipped with projectors and whiteboards.",
+    description: "Standard classrooms equipped with projectors and whiteboards.",
     icon: "📚",
     color: "from-blue-400 to-blue-600",
   },
@@ -37,88 +45,35 @@ const rooms = [
   },
 ];
 
-const handleSelect = async (room) => {
-  console.log('Room clicked:', room);
+const handleSelect = (room) => {
   if (room.id === 1) {
-    let Swal;
-    try {
-      // Dynamic import to handle potential missing module if server not restarted
-      const module = await import('sweetalert2');
-      Swal = module.default;
-    } catch (error) {
-      console.error("Failed to load SweetAlert2:", error);
-      alert("System Update: Please restart your terminal/dev server (npm run dev) to load the new popup library.");
-      return;
-    }
-
-    try {
-      console.log('Attempting to open SweetAlert');
-      const result = await Swal.fire({
-        title: '<h2 style="color: #4f46e5; margin: 0;">Search Classrooms</h2>',
-        html: `
-          <div style="text-align: left; display: flex; flex-direction: column; gap: 15px;">
-            <div>
-              <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Select Date</label>
-              <input id="swal-date" class="swal2-input" type="date" style="margin: 0; width: 100%; box-sizing: border-box;">
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-              <div>
-                <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Time From</label>
-                <input id="swal-timefrom" class="swal2-input" type="time" style="margin: 0; width: 100%; box-sizing: border-box;">
-              </div>
-              <div>
-                <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Time To</label>
-                <input id="swal-timeto" class="swal2-input" type="time" style="margin: 0; width: 100%; box-sizing: border-box;">
-              </div>
-            </div>
-            <div>
-              <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Capacity (People)</label>
-              <input id="swal-capacity" class="swal2-input" type="number" min="1" value="40" style="margin: 0; width: 100%; box-sizing: border-box;">
-            </div>
-          </div>
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: 'Search Available Rooms',
-        confirmButtonColor: '#4f46e5',
-        cancelButtonColor: '#d33',
-        customClass: {
-          popup: 'glass-popup'
-        },
-        preConfirm: () => {
-          const date = document.getElementById('swal-date').value;
-          const timefrom = document.getElementById('swal-timefrom').value;
-          const timeto = document.getElementById('swal-timeto').value;
-          const capacity = document.getElementById('swal-capacity').value;
-
-          if (!date || !timefrom || !timeto) {
-            Swal.showValidationMessage('Please fill in all fields');
-            return false;
-          }
-
-          return {
-            roomdate: date,
-            timefrom: timefrom,
-            timeto: timeto,
-            roomcapacity: capacity
-          };
-        }
-      });
-
-      if (result.value) {
-        console.log('Navigating with values:', result.value);
-        router.push({
-          path: "/classroom-list",
-          query: result.value,
-        });
-      }
-    } catch (error) {
-      console.error('SweetAlert error:', error);
-      alert('Error opening popup: ' + error.message);
-    }
+    selectedRoom.value = room;
+    showModal.value = true;
   } else {
     alert(`You selected: ${room.title} (Feature coming soon)`);
   }
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
+
+const submitSearch = () => {
+  if (!searchParams.date || !searchParams.timeFrom || !searchParams.timeTo) {
+    alert("Please fill in all fields");
+    return;
+  }
+
+  router.push({
+    path: "/classroom-list",
+    query: {
+      roomdate: searchParams.date,
+      timefrom: searchParams.timeFrom,
+      timeto: searchParams.timeTo,
+      roomcapacity: searchParams.capacity,
+    },
+  });
+  closeModal();
 };
 </script>
 
@@ -144,15 +99,62 @@ const handleSelect = async (room) => {
         <button class="select-btn" @click.stop="handleSelect(room)">Select</button>
       </div>
     </div>
+
+    <!-- Custom Modal -->
+    <transition name="modal-fade">
+      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+        <div class="modal-content glass-card">
+          <div class="modal-header">
+            <h2>Search Classrooms</h2>
+            <button class="close-btn" @click="closeModal">&times;</button>
+          </div>
+          
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Select Date</label>
+              <input type="date" v-model="searchParams.date" class="input-field" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Time From</label>
+                <input type="time" v-model="searchParams.timeFrom" class="input-field" />
+              </div>
+              <div class="form-group">
+                <label>Time To</label>
+                <input type="time" v-model="searchParams.timeTo" class="input-field" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Capacity (People)</label>
+              <input 
+                type="number" 
+                v-model="searchParams.capacity" 
+                min="1" 
+                class="input-field"
+              />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-cancel" @click="closeModal">Cancel</button>
+            <button class="btn btn-primary" @click="submitSearch">Search Available Rooms</button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <style scoped>
 .dashboard-container {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 40px 20px;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .header-section {
@@ -178,8 +180,6 @@ const handleSelect = async (room) => {
   grid-template-columns: repeat(2, 1fr);
   gap: 30px;
   perspective: 1000px;
-  max-width: 900px;
-  margin: 0 auto;
 }
 
 @media (max-width: 768px) {
@@ -226,10 +226,6 @@ const handleSelect = async (room) => {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Custom gradient classes for icons (simulated with CSS variables or direct styles for simplicity in scoped) */
-/* Actually, let's keep it simple with inline styles or specific classes if we wanted Tailwind-like, 
-   but since we are using vanilla CSS, I'll use specific classes below. */
-
 .from-blue-400.to-blue-600 {
   background: linear-gradient(135deg, #60a5fa, #2563eb);
 }
@@ -275,6 +271,173 @@ p {
 .room-card:hover .select-btn {
   background: white;
   color: var(--primary);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #1e1e24; /* Fallback */
+  background: rgba(30, 30, 40, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 30px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  color: #a5b4fc;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+label {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  color-scheme: dark;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #6366f1;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.modal-footer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+}
+
+/* Transitions */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-active .modal-content {
+  animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-fade-leave-active .modal-content {
+  animation: modalSlideIn 0.3s reverse;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes slideDown {
