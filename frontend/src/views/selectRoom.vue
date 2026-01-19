@@ -38,64 +38,72 @@ const rooms = [
 ];
 
 const handleSelect = async (room) => {
+  console.log('Room clicked:', room);
   if (room.id === 1) {
-    const { value: formValues } = await Swal.fire({
-      title: '<h2 style="color: #4f46e5; margin: 0;">Search Classrooms</h2>',
-      html: `
-        <div style="text-align: left; display: flex; flex-direction: column; gap: 15px;">
-          <div>
-            <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Select Date</label>
-            <input id="swal-date" class="swal2-input" type="date" style="margin: 0; width: 100%; box-sizing: border-box;">
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+    try {
+      console.log('Attempting to open SweetAlert');
+      const result = await Swal.fire({
+        title: '<h2 style="color: #4f46e5; margin: 0;">Search Classrooms</h2>',
+        html: `
+          <div style="text-align: left; display: flex; flex-direction: column; gap: 15px;">
             <div>
-              <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Time From</label>
-              <input id="swal-timefrom" class="swal2-input" type="time" style="margin: 0; width: 100%; box-sizing: border-box;">
+              <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Select Date</label>
+              <input id="swal-date" class="swal2-input" type="date" style="margin: 0; width: 100%; box-sizing: border-box;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div>
+                <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Time From</label>
+                <input id="swal-timefrom" class="swal2-input" type="time" style="margin: 0; width: 100%; box-sizing: border-box;">
+              </div>
+              <div>
+                <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Time To</label>
+                <input id="swal-timeto" class="swal2-input" type="time" style="margin: 0; width: 100%; box-sizing: border-box;">
+              </div>
             </div>
             <div>
-              <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Time To</label>
-              <input id="swal-timeto" class="swal2-input" type="time" style="margin: 0; width: 100%; box-sizing: border-box;">
+              <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Capacity (People)</label>
+              <input id="swal-capacity" class="swal2-input" type="number" min="1" value="40" style="margin: 0; width: 100%; box-sizing: border-box;">
             </div>
           </div>
-          <div>
-            <label style="display: block; margin-bottom: 5px; color: #64748b; font-weight: 500;">Capacity (People)</label>
-            <input id="swal-capacity" class="swal2-input" type="number" min="1" value="40" style="margin: 0; width: 100%; box-sizing: border-box;">
-          </div>
-        </div>
-      `,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Search Available Rooms',
-      confirmButtonColor: '#4f46e5',
-      cancelButtonColor: '#d33',
-      customClass: {
-        popup: 'glass-popup'
-      },
-      preConfirm: () => {
-        const date = document.getElementById('swal-date').value;
-        const timefrom = document.getElementById('swal-timefrom').value;
-        const timeto = document.getElementById('swal-timeto').value;
-        const capacity = document.getElementById('swal-capacity').value;
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Search Available Rooms',
+        confirmButtonColor: '#4f46e5',
+        cancelButtonColor: '#d33',
+        customClass: {
+          popup: 'glass-popup'
+        },
+        preConfirm: () => {
+          const date = document.getElementById('swal-date').value;
+          const timefrom = document.getElementById('swal-timefrom').value;
+          const timeto = document.getElementById('swal-timeto').value;
+          const capacity = document.getElementById('swal-capacity').value;
 
-        if (!date || !timefrom || !timeto) {
-          Swal.showValidationMessage('Please fill in all fields');
-          return false;
+          if (!date || !timefrom || !timeto) {
+            Swal.showValidationMessage('Please fill in all fields');
+            return false;
+          }
+
+          return {
+            roomdate: date,
+            timefrom: timefrom,
+            timeto: timeto,
+            roomcapacity: capacity
+          };
         }
-
-        return {
-          roomdate: date,
-          timefrom: timefrom,
-          timeto: timeto,
-          roomcapacity: capacity
-        };
-      }
-    });
-
-    if (formValues) {
-      router.push({
-        path: "/classroom-list",
-        query: formValues,
       });
+
+      if (result.value) {
+        console.log('Navigating with values:', result.value);
+        router.push({
+          path: "/classroom-list",
+          query: result.value,
+        });
+      }
+    } catch (error) {
+      console.error('SweetAlert error:', error);
+      alert('Error opening popup: ' + error.message);
     }
   } else {
     alert(`You selected: ${room.title} (Feature coming soon)`);
