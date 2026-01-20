@@ -198,8 +198,45 @@ const goBack = () => {
   router.go(-1);
 };
 
+// --- Booking Modal Logic ---
+const showBookingModal = ref(false);
+const showSuccessModal = ref(false); // New success state
+const selectedRoom = ref(null);
+
+// Mock User Data
+const currentUser = {
+  name: "John Doe",
+  department: "Computer Science",
+  faculty: "Information Technology"
+};
+
 const bookRoom = (room) => {
-  alert(`Booking initiated for Room ${room.name} at ${room.location}`);
+  selectedRoom.value = room;
+  showBookingModal.value = true;
+};
+
+const closeBookingModal = () => {
+  showBookingModal.value = false;
+  setTimeout(() => {
+    selectedRoom.value = null;
+    showSuccessModal.value = false;
+  }, 300); // Wait for animation
+};
+
+const confirmBooking = () => {
+  // Here we would normally make an API call
+  // For now, simulate success
+  showBookingModal.value = false;
+  
+  // Show success message or simple alert for now, or a second modal step
+  // Let's use a nice success modal state instead of a browser alert
+  setTimeout(() => {
+     showSuccessModal.value = true;
+  }, 300);
+};
+
+const closeSuccessModal = () => {
+  showSuccessModal.value = false;
 };
 </script>
 
@@ -309,6 +346,67 @@ const bookRoom = (room) => {
         </div>
       </div>
     </div>
+
+
+    <!-- Booking Modal Overlay -->
+    <transition name="modal-fade">
+      <div v-if="showBookingModal || showSuccessModal" class="modal-overlay" @click.self="closeBookingModal">
+        
+        <!-- Confirmation Modal -->
+        <div v-if="showBookingModal && selectedRoom" class="modal-content glass-card" key="booking">
+          <div class="modal-header">
+            <h3>Confirm Booking</h3>
+            <button class="close-btn" @click="closeBookingModal">×</button>
+          </div>
+          
+          <div class="modal-body">
+            <div class="user-info-section">
+              <div class="info-row">
+                <span class="label">Name:</span>
+                <span class="value">{{ currentUser.name }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">Department:</span>
+                <span class="value">{{ currentUser.department }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">Faculty:</span>
+                <span class="value">{{ currentUser.faculty }}</span>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="room-info-section">
+               <h4>Booking Details</h4>
+               <p class="room-name">Room {{ selectedRoom.name }}</p>
+               <p class="room-location">{{ selectedRoom.location }}</p>
+               <p class="room-capacity">Cap: {{ selectedRoom.capacity }} | Status: {{ selectedRoom.status }}</p>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button class="cancel-btn" @click="closeBookingModal">Cancel</button>
+            <button class="confirm-btn" @click="confirmBooking">Confirm Booking</button>
+          </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div v-if="showSuccessModal" class="modal-content glass-card success-modal" key="success">
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#4ade80" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M22 4L12 14.01l-3-3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>Booking Confirmed!</h3>
+          <p>You have successfully booked the room.</p>
+          <button class="confirm-btn" @click="closeSuccessModal">Done</button>
+        </div>
+
+      </div>
+    </transition>
+
   </div>
 </template>
 
@@ -694,5 +792,186 @@ h1 {
 .fade-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 420px;
+  background: #1e1e24; /* Fallback */
+  background: linear-gradient(145deg, rgba(30, 30, 36, 0.9), rgba(40, 40, 48, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  background: linear-gradient(to right, #fff, #a5b4fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+.modal-body {
+  margin-bottom: 25px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.info-row .label {
+  color: #94a3b8;
+}
+
+.info-row .value {
+  color: #fff;
+  font-weight: 500;
+  text-align: right;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 20px 0;
+}
+
+.room-info-section h4 {
+  margin: 0 0 10px 0;
+  color: #a5b4fc;
+  font-size: 1rem;
+}
+
+.room-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.room-location, .room-capacity {
+  color: #94a3b8;
+  margin: 4px 0 0 0;
+  font-size: 0.9rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+}
+
+.cancel-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-btn:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.4);
+}
+
+.confirm-btn {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  border: none;
+  color: white;
+  padding: 10px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  transition: all 0.2s;
+}
+
+.confirm-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.5);
+}
+
+/* Success Modal Specifics */
+.success-modal {
+  text-align: center;
+  padding: 40px;
+}
+
+.success-icon {
+  margin-bottom: 20px;
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Modal Transition */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .modal-content,
+.modal-fade-leave-to .modal-content {
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+}
+
+.modal-content {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 </style>
