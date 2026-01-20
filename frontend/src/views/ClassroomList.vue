@@ -175,6 +175,14 @@ const filteredClassrooms = computed(() => {
     result = result.filter(room => room.location === selectedBuilding.value);
   }
 
+  // Filter by Capacity
+  if (searchCriteria.value.roomcapacity) {
+     const minCap = parseInt(searchCriteria.value.roomcapacity);
+     if (!isNaN(minCap)) {
+       result = result.filter(room => room.capacity >= minCap);
+     }
+  }
+
   // Filter by Search Query
   if (searchQuery.value) {
     const query = searchQuery.value.trim().toLowerCase();
@@ -247,20 +255,39 @@ const closeSuccessModal = () => {
       <h1>Available {{ roomTypeDisplay }}</h1>
     </div>
 
-    <div v-if="searchCriteria.roomdate" class="search-summary">
+    <div class="search-summary">
       <div class="summary-item">
         <span class="label">Date:</span>
-        <span class="value">{{ formattedRoomDate }}</span>
+        <input 
+          type="date" 
+          v-model="searchCriteria.roomdate" 
+          class="filter-input"
+        />
       </div>
       <div class="summary-item">
         <span class="label">Time:</span>
-        <span class="value"
-          >{{ searchCriteria.timefrom }} - {{ searchCriteria.timeto }}</span
-        >
+        <div class="time-inputs">
+           <input 
+            type="time" 
+            v-model="searchCriteria.timefrom" 
+            class="filter-input"
+          />
+          <span class="separator">-</span>
+           <input 
+            type="time" 
+            v-model="searchCriteria.timeto" 
+            class="filter-input"
+          />
+        </div>
       </div>
       <div class="summary-item">
         <span class="label">Min Capacity:</span>
-        <span class="value">{{ searchCriteria.roomcapacity }}</span>
+        <input 
+          type="number" 
+          v-model="searchCriteria.roomcapacity" 
+          class="filter-input capacity-input"
+          min="1"
+        />
       </div>
       
       <div class="right-actions">
@@ -465,6 +492,43 @@ h1 {
   padding: 15px 20px;
   margin-bottom: 25px;
   animation: fadeIn 0.8s ease-out;
+}
+
+.filter-input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.filter-input:focus {
+  border-color: #a5b4fc;
+}
+
+/* Fix for date/time icon colors in dark mode (browser dependent, but helpful) */
+.filter-input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+.capacity-input {
+  width: 70px;
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.separator {
+  color: #94a3b8;
 }
 
 .right-actions {
