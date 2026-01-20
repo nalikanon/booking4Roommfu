@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -11,13 +11,16 @@ const searchParams = reactive({
   date: "",
   startHour: "09",
   startMinute: "00",
+  startPeriod: "AM",
   endHour: "12",
   endMinute: "00",
+  endPeriod: "PM",
   capacity: 40,
 });
 
-const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
+const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, "0"));
 const minutes = ["00", "15", "30", "45"];
+const periods = ["AM", "PM"];
 
 const rooms = [
   {
@@ -52,6 +55,7 @@ const rooms = [
 
 const handleSelect = (room) => {
   selectedRoom.value = room;
+  updateTimeDefaults();
   showModal.value = true;
 };
 
@@ -67,6 +71,94 @@ const openDatePicker = (event) => {
   }
 };
 
+const formattedDate = computed(() => {
+  if (!searchParams.date) return "";
+  const [year, month, day] = searchParams.date.split('-');
+  return `${day}/${month}/${year}`;
+});
+
+const minDate = computed(() => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+});
+
+
+const convertTo24Hour = (hour, minute, period) => {
+  let h = parseInt(hour, 10);
+  if (period === 'PM' && h !== 12) h += 12;
+  if (period === 'AM' && h === 12) h = 0;
+  return `${h.toString().padStart(2, '0')}:${minute}`;
+};
+
+// Automatically set time to next available slot if today
+const updateTimeDefaults = () => {
+  const now = new Date();
+  
+  // Default date to today if empty or set it always to ensure freshness?
+  // Let's keep existing date if user set it, unless it's empty.
+  // Actually, for "convenience", defaulting to today is good.
+  if (!searchParams.date) {
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    searchParams.date = `${y}-${m}-${d}`;
+  }
+
+  // Check if selected date is today
+  const [sy, sm, sd] = searchParams.date.split('-').map(Number);
+  const selDate = new Date(sy, sm - 1, sd);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  if (selDate.getTime() === today.getTime()) {
+    const currentNow = new Date();
+    let h = currentNow.getHours();
+    let m = currentNow.getMinutes();
+
+    // Round up to next 15 minute slot
+    // If 10:05 -> 10:15
+    // If 10:15 -> 10:30 (to avoid "just passed" ambiguous states, let's allow current slot if very fresh? 
+    // No, strictly next is safer for "passed time" request)
+    let nextM = (Math.floor(m / 15) + 1) * 15;
+    
+    if (nextM === 60) {
+      h++;
+      nextM = 0;
+    }
+
+    // Handle late night overflow (next day?) 
+    // For simplicity, just cap at 23:45 or roll over. 
+    // If h >= 24, we technically should move to tomorrow, but let's just clamp for this simplified view.
+    if (h > 23) {
+       h = 23;
+       nextM = 45; 
+    }
+
+    const period = h >= 12 ? 'PM' : 'AM';
+    let displayH = h % 12;
+    if (displayH === 0) displayH = 12;
+
+    searchParams.startHour = String(displayH).padStart(2, '0');
+    searchParams.startMinute = String(nextM).padStart(2, '0');
+    searchParams.startPeriod = period;
+
+    // Default End Time: Start + 1 hour
+    let endH = h + 1;
+    // Cap end time
+    if (endH > 23) endH = 23;
+    
+    const endPeriod = endH >= 12 ? 'PM' : 'AM';
+    let displayEndH = endH % 12;
+    if (displayEndH === 0) displayEndH = 12;
+
+    searchParams.endHour = String(displayEndH).padStart(2, '0');
+    searchParams.endMinute = String(nextM).padStart(2, '0');
+    searchParams.endPeriod = endPeriod;
+  }
+};
 
 const submitSearch = () => {
   if (!searchParams.date) {
@@ -74,12 +166,35 @@ const submitSearch = () => {
     return;
   }
 
-  const timeFrom = `${searchParams.startHour}:${searchParams.startMinute}`;
-  const timeTo = `${searchParams.endHour}:${searchParams.endMinute}`;
+  const timeFrom = convertTo24Hour(searchParams.startHour, searchParams.startMinute, searchParams.startPeriod);
+  const timeTo = convertTo24Hour(searchParams.endHour, searchParams.endMinute, searchParams.endPeriod);
 
   if (timeFrom >= timeTo) {
-    alert("End time must be after start time");
+    alert("End time must be after start time on the same day");
     return;
+  }
+
+  // Validate past date/time
+  const now = new Date();
+  const [sy, sm, sd] = searchParams.date.split('-').map(Number);
+  const selectedDateObj = new Date(sy, sm - 1, sd); // Local midnight
+  const todayZero = new Date();
+  todayZero.setHours(0, 0, 0, 0);
+
+  if (selectedDateObj < todayZero) {
+     alert("Cannot select a past date.");
+     return;
+  }
+
+  if (selectedDateObj.getTime() === todayZero.getTime()) {
+      const [h, m] = timeFrom.split(':').map(Number);
+      const selectedDateTime = new Date();
+      selectedDateTime.setHours(h, m, 0, 0);
+      
+      if (selectedDateTime < now) {
+          alert("Cannot select a past time.");
+          return;
+      }
   }
 
   router.push({
@@ -93,6 +208,71 @@ const submitSearch = () => {
     },
   });
   closeModal();
+};
+
+// Helper logic for disabling past times
+const isToday = computed(() => {
+  if (!searchParams.date) return false;
+  const today = new Date();
+  const selDate = new Date(searchParams.date);
+  return (
+    selDate.getDate() === today.getDate() &&
+    selDate.getMonth() === today.getMonth() &&
+    selDate.getFullYear() === today.getFullYear()
+  );
+});
+
+const isPeriodDisabled = (p) => {
+  if (!isToday.value) return false;
+  const now = new Date();
+  const currentHour = now.getHours(); // 0-23
+  
+  if (p === 'AM') {
+    // Disable AM if it is effectively past noon (12:00 PM onwards)
+    // Actually, if it's 10AM, AM is still valid. If it's 12:00 PM (noon), AM is gone.
+    return currentHour >= 12; 
+  }
+  return false; // PM is almost always valid unless it's 11:59PM, but rare to block whole chunk
+};
+
+const isHourDisabled = (h) => {
+  if (!isToday.value) return false;
+  const now = new Date();
+  const currentHour24 = now.getHours();
+  
+  // Convert checked hour to 24h format for comparison
+  let checkH = parseInt(h, 10);
+  const p = searchParams.startPeriod; // Dependence on currently selected period
+  
+  if (p === 'AM') {
+    if (checkH === 12) checkH = 0; // 12 AM is 0
+  } else {
+    if (checkH !== 12) checkH += 12; // 1 PM is 13
+  }
+  
+  return checkH < currentHour24; 
+};
+
+const isMinuteDisabled = (m) => {
+  if (!isToday.value) return false;
+  const now = new Date();
+  const currentHour24 = now.getHours();
+  const currentMinute = now.getMinutes();
+
+  let checkH = parseInt(searchParams.startHour, 10);
+  const p = searchParams.startPeriod;
+  
+  if (p === 'AM') {
+    if (checkH === 12) checkH = 0;
+  } else {
+    if (checkH !== 12) checkH += 12;
+  }
+  
+  if (checkH > currentHour24) return false; // Future hour, all minutes ok
+  if (checkH < currentHour24) return true;  // Past hour (already disabled), but if selected...
+  
+  // If current hour, check minute
+  return parseInt(m, 10) < currentMinute;
 };
 </script>
 
@@ -131,12 +311,22 @@ const submitSearch = () => {
           <div class="modal-body">
             <div class="form-group">
               <label>Select Date</label>
-              <input 
-                type="date" 
-                v-model="searchParams.date" 
-                class="input-field date-input" 
-                @click="openDatePicker"
-              />
+              <div class="date-input-container">
+                <input 
+                  type="text" 
+                  :value="formattedDate" 
+                  class="input-field display-date"
+                  placeholder="dd/mm/yyyy" 
+                  readonly
+                />
+                <input 
+                  type="date" 
+                  v-model="searchParams.date" 
+                  class="input-field date-trigger" 
+                  @click="openDatePicker"
+                  :min="minDate"
+                />
+              </div>
             </div>
 
             <div class="form-row">
@@ -144,11 +334,35 @@ const submitSearch = () => {
                 <label>Time From</label>
                 <div class="time-inputs">
                   <select v-model="searchParams.startHour" class="input-field time-select">
-                    <option v-for="h in hours" :key="h" :value="h">{{ h }}</option>
+                    <option 
+                      v-for="h in hours" 
+                      :key="h" 
+                      :value="h"
+                      :disabled="isHourDisabled(h)"
+                    >
+                      {{ h }}
+                    </option>
                   </select>
                   <span class="colon">:</span>
                   <select v-model="searchParams.startMinute" class="input-field time-select">
-                    <option v-for="m in minutes" :key="m" :value="m">{{ m }}</option>
+                    <option 
+                      v-for="m in minutes" 
+                      :key="m" 
+                      :value="m"
+                      :disabled="isMinuteDisabled(m)"
+                    >
+                      {{ m }}
+                    </option>
+                  </select>
+                   <select v-model="searchParams.startPeriod" class="input-field time-select period-select">
+                    <option 
+                      v-for="p in periods" 
+                      :key="p" 
+                      :value="p"
+                      :disabled="isPeriodDisabled(p)"
+                    >
+                      {{ p }}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -161,6 +375,9 @@ const submitSearch = () => {
                   <span class="colon">:</span>
                   <select v-model="searchParams.endMinute" class="input-field time-select">
                     <option v-for="m in minutes" :key="m" :value="m">{{ m }}</option>
+                  </select>
+                  <select v-model="searchParams.endPeriod" class="input-field time-select period-select">
+                    <option v-for="p in periods" :key="p" :value="p">{{ p }}</option>
                   </select>
                 </div>
               </div>
@@ -422,6 +639,26 @@ label {
 }
 
 
+.date-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.date-trigger {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.display-date {
+  background: rgba(255, 255, 255, 0.05); /* Match standard input style */
+}
+
 .modal-footer {
   margin-top: 30px;
   display: flex;
@@ -519,6 +756,11 @@ label {
   font-weight: bold;
   color: white;
   font-size: 1.2rem;
+}
+
+.time-select option:disabled {
+  color: rgba(255, 255, 255, 0.3);
+  background-color: #2a2a2f;
 }
 
 .time-select option {

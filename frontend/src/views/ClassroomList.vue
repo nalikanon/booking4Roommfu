@@ -142,6 +142,58 @@ const roomTypeDisplay = computed(() => {
   return type + 's';
 });
 
+const formattedRoomDate = computed(() => {
+  if (!searchCriteria.value.roomdate) return "";
+  const [year, month, day] = searchCriteria.value.roomdate.split('-');
+  return `${day}/${month}/${year}`;
+
+});
+
+const searchQuery = ref("");
+const showFilter = ref(false);
+const selectedBuilding = ref("");
+
+const availableBuildings = computed(() => {
+  const buildings = new Set(classrooms.value.map(r => r.location));
+  return Array.from(buildings).sort();
+});
+
+const toggleFilter = () => {
+  showFilter.value = !showFilter.value;
+};
+
+const selectBuilding = (building) => {
+  selectedBuilding.value = building;
+  showFilter.value = false;
+};
+
+const filteredClassrooms = computed(() => {
+  let result = classrooms.value;
+
+  // Filter by Building
+  if (selectedBuilding.value) {
+    result = result.filter(room => room.location === selectedBuilding.value);
+  }
+
+  // Filter by Search Query
+  if (searchQuery.value) {
+    const query = searchQuery.value.trim().toLowerCase();
+    if (query) {
+       result = result.filter(room => {
+        const displayName = `Room ${room.name}`;
+        const nameMatch = 
+          (room.name && room.name.toString().toLowerCase().includes(query)) ||
+          (displayName.toLowerCase().includes(query));
+          
+        const locationMatch = room.location && room.location.toString().toLowerCase().includes(query);
+        return nameMatch || locationMatch;
+      });
+    }
+  }
+  
+  return result;
+});
+
 const goBack = () => {
   router.go(-1);
 };
@@ -161,7 +213,7 @@ const bookRoom = (room) => {
     <div v-if="searchCriteria.roomdate" class="search-summary">
       <div class="summary-item">
         <span class="label">Date:</span>
-        <span class="value">{{ searchCriteria.roomdate }}</span>
+        <span class="value">{{ formattedRoomDate }}</span>
       </div>
       <div class="summary-item">
         <span class="label">Time:</span>
@@ -173,10 +225,56 @@ const bookRoom = (room) => {
         <span class="label">Min Capacity:</span>
         <span class="value">{{ searchCriteria.roomcapacity }}</span>
       </div>
+      
+      <div class="right-actions">
+        <div class="filter-wrapper">
+          <button 
+            class="filter-btn" 
+            title="Filter by Building" 
+            @click.stop="toggleFilter"
+            :class="{ active: showFilter || selectedBuilding }"
+          >
+            <svg viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
+              <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z"/>
+            </svg>
+            <div v-if="selectedBuilding" class="filter-badge"></div>
+          </button>
+          
+          <transition name="fade">
+            <div v-if="showFilter" class="filter-dropdown glass-card">
+              <div 
+                class="filter-option" 
+                :class="{ selected: selectedBuilding === '' }"
+                @click="selectBuilding('')"
+              >
+                All Buildings
+              </div>
+              <div 
+                v-for="b in availableBuildings" 
+                :key="b"
+                class="filter-option"
+                :class="{ selected: selectedBuilding === b }"
+                @click="selectBuilding(b)"
+              >
+                {{ b }}
+              </div>
+            </div>
+          </transition>
+        </div>
+        <div class="search-box">
+          <input 
+            type="text" 
+            v-model="searchQuery" 
+            placeholder="Search room name..." 
+            class="room-search-input"
+          />
+          <span class="search-icon">🔍</span>
+        </div>
+      </div>
     </div>
 
     <div class="rooms-list">
-      <div v-for="room in classrooms" :key="room.id" class="room-card">
+      <div v-for="room in filteredClassrooms" :key="room.id" class="room-card">
         <div
           class="card-image"
           :style="{ backgroundImage: `url(${room.image})` }"
@@ -216,7 +314,7 @@ const bookRoom = (room) => {
 
 <style scoped>
 .page-container {
-  max-width: 800px;
+  max-width: 95%;
   margin: 0 auto;
   padding: 20px;
   min-height: 100vh;
@@ -262,12 +360,75 @@ h1 {
 .search-summary {
   display: flex;
   gap: 20px;
+  align-items: center; /* Center items vertically */
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 15px 20px;
   margin-bottom: 25px;
   animation: fadeIn 0.8s ease-out;
+}
+
+.right-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.filter-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: scale(1.1);
+}
+
+.search-box {
+  position: relative;
+}
+
+.room-search-input {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 16px 8px 36px;
+  border-radius: 20px;
+  color: white;
+  width: 200px;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.room-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.room-search-input:focus {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: #a5b4fc;
+  width: 240px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  pointer-events: none;
+  opacity: 0.7;
 }
 
 .summary-item {
@@ -299,49 +460,38 @@ h1 {
 }
 
 .rooms-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 20px;
   animation: slideUp 0.6s ease-out;
 }
 
 .room-card {
   display: flex;
+  flex-direction: column; /* Change to vertical layout */
   background: var(--glass-bg, rgba(255, 255, 255, 0.05));
   border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
   border-radius: 16px;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
-  height: 180px;
+  height: 100%; /* Fill grid cell */
 }
 
 .room-card:hover {
-  transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.08); /* Slightly lighter on hover */
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.2);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .card-image {
-  flex: 0 0 240px;
+  width: 100%;
+  height: 160px; /* Fixed height for image on top */
   background-size: cover;
   background-position: center;
   position: relative;
-}
-
-.status-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: rgba(34, 197, 94, 0.9);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  flex: none; /* Don't shrink */
 }
 
 .card-content {
@@ -350,6 +500,59 @@ h1 {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 15px;
+}
+
+/* Response for smaller screens */
+@media (max-width: 1600px) {
+  .rooms-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1300px) {
+  .rooms-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .rooms-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .rooms-list {
+    grid-template-columns: 1fr;
+  }
+
+  .search-summary {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .right-actions {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    margin-left: 0;
+    gap: 10px;
+  }
+
+  .search-box {
+    flex: 1;
+    width: auto;
+  }
+
+  .room-search-input {
+    width: 100%;
+  }
+
+  .room-search-input:focus {
+    width: 100%;
+  }
 }
 
 .room-header {
@@ -426,20 +629,70 @@ h1 {
   }
 }
 
-/* Responsiveness */
-@media (max-width: 600px) {
-  .room-card {
-    flex-direction: column;
-    height: auto;
-  }
+/* Old responsiveness block removed */
+.filter-wrapper {
+  position: relative;
+}
 
-  .card-image {
-    height: 160px;
-    flex: none;
-  }
+.filter-btn.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
 
-  .card-content {
-    padding: 16px;
-  }
+.filter-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: #4f46e5;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.filter-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 10px;
+  width: 180px;
+  background: #1e1e24;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px;
+  z-index: 100;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.filter-option {
+  padding: 10px 16px;
+  color: #a5b4fc;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.filter-option:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.filter-option.selected {
+  background: rgba(99, 102, 241, 0.2);
+  color: white;
+  font-weight: 500;
+}
+
+/* Fade transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>

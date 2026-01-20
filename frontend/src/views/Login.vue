@@ -66,7 +66,7 @@ const loginWithEmail = async () => {
     <div class="login-wrapper">
       <div class="glass-card login-card">
         <div class="header">
-          <h1>Welcome Back</h1>
+          <h1>Welcome</h1>
           <p class="subtitle">Sign in to continue to Booking4Room</p>
         </div>
 
