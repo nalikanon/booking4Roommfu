@@ -9,10 +9,15 @@ const showModal = ref(false);
 const selectedRoom = ref(null);
 const searchParams = reactive({
   date: "",
-  timeFrom: "",
-  timeTo: "",
+  startHour: "09",
+  startMinute: "00",
+  endHour: "12",
+  endMinute: "00",
   capacity: 40,
 });
+
+const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
+const minutes = ["00", "15", "30", "45"];
 
 const rooms = [
   {
@@ -46,21 +51,34 @@ const rooms = [
 ];
 
 const handleSelect = (room) => {
-  if (room.id === 1) {
-    selectedRoom.value = room;
-    showModal.value = true;
-  } else {
-    alert(`You selected: ${room.title} (Feature coming soon)`);
-  }
+  selectedRoom.value = room;
+  showModal.value = true;
 };
 
 const closeModal = () => {
   showModal.value = false;
 };
 
+const openDatePicker = (event) => {
+  try {
+    event.target.showPicker();
+  } catch (error) {
+    // Fallback for browsers not supporting showPicker
+  }
+};
+
+
 const submitSearch = () => {
-  if (!searchParams.date || !searchParams.timeFrom || !searchParams.timeTo) {
-    alert("Please fill in all fields");
+  if (!searchParams.date) {
+    alert("Please select a date");
+    return;
+  }
+
+  const timeFrom = `${searchParams.startHour}:${searchParams.startMinute}`;
+  const timeTo = `${searchParams.endHour}:${searchParams.endMinute}`;
+
+  if (timeFrom >= timeTo) {
+    alert("End time must be after start time");
     return;
   }
 
@@ -68,9 +86,10 @@ const submitSearch = () => {
     path: "/classroom-list",
     query: {
       roomdate: searchParams.date,
-      timefrom: searchParams.timeFrom,
-      timeto: searchParams.timeTo,
+      timefrom: timeFrom,
+      timeto: timeTo,
       roomcapacity: searchParams.capacity,
+      roomtype: selectedRoom.value.title,
     },
   });
   closeModal();
@@ -105,24 +124,45 @@ const submitSearch = () => {
       <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
         <div class="modal-content glass-card">
           <div class="modal-header">
-            <h2>Search Classrooms</h2>
+            <h2>Search {{ selectedRoom ? selectedRoom.title : 'Classroom' }}</h2>
             <button class="close-btn" @click="closeModal">&times;</button>
           </div>
           
           <div class="modal-body">
             <div class="form-group">
               <label>Select Date</label>
-              <input type="date" v-model="searchParams.date" class="input-field" />
+              <input 
+                type="date" 
+                v-model="searchParams.date" 
+                class="input-field date-input" 
+                @click="openDatePicker"
+              />
             </div>
 
             <div class="form-row">
               <div class="form-group">
                 <label>Time From</label>
-                <input type="time" v-model="searchParams.timeFrom" class="input-field" />
+                <div class="time-inputs">
+                  <select v-model="searchParams.startHour" class="input-field time-select">
+                    <option v-for="h in hours" :key="h" :value="h">{{ h }}</option>
+                  </select>
+                  <span class="colon">:</span>
+                  <select v-model="searchParams.startMinute" class="input-field time-select">
+                    <option v-for="m in minutes" :key="m" :value="m">{{ m }}</option>
+                  </select>
+                </div>
               </div>
               <div class="form-group">
                 <label>Time To</label>
-                <input type="time" v-model="searchParams.timeTo" class="input-field" />
+                <div class="time-inputs">
+                  <select v-model="searchParams.endHour" class="input-field time-select">
+                    <option v-for="h in hours" :key="h" :value="h">{{ h }}</option>
+                  </select>
+                  <span class="colon">:</span>
+                  <select v-model="searchParams.endMinute" class="input-field time-select">
+                    <option v-for="m in minutes" :key="m" :value="m">{{ m }}</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -372,6 +412,16 @@ label {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
+.date-input {
+  cursor: pointer;
+  position: relative;
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+
 .modal-footer {
   margin-top: 30px;
   display: flex;
@@ -449,5 +499,30 @@ label {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.time-select {
+  padding: 12px 10px;
+  text-align: center;
+  appearance: none;
+  cursor: pointer;
+  flex: 1;
+}
+
+.colon {
+  font-weight: bold;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.time-select option {
+  background-color: #1e1e24;
+  color: white;
 }
 </style>

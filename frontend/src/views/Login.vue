@@ -12,8 +12,8 @@ const errorMessage = ref('');
 const loading = ref(false);
 
 // Dummy Credentials Data
-const email = ref('');
-const password = ref('');
+const email = ref('b@gmail.com');
+const password = ref('vioppl');
 
 const handleLogin = async (provider) => {
   loading.value = true;
