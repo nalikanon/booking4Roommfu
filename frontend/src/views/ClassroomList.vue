@@ -65,9 +65,16 @@ const debounce = (fn, delay) => {
 const debouncedFetch = debounce(fetchRooms, 800);
 
 // Initial Fetch
-
 onMounted(async () => {
-  searchCriteria.value = { ...route.query }; // Clone the query object
+  const query = { ...route.query };
+  // Remove roomtype if present, as requested by user
+  if (query.roomtype) {
+    delete query.roomtype;
+    // Update URL to remove it immediately without trigger (replace)
+    router.replace({ query }); 
+  }
+  
+  searchCriteria.value = query;
   await fetchRooms();
 });
 
@@ -80,12 +87,7 @@ watch(searchCriteria, (newVal) => {
 
 
 
-const roomTypeDisplay = computed(() => {
-  const type = searchCriteria.value.roomtype || "Classroom";
-  if (type === 'Laboratory') return 'Laboratories';
-  if (type.endsWith('y')) return type.slice(0, -1) + 'ies'; 
-  return type + 's';
-});
+
 
 const formattedRoomDate = computed(() => {
   if (!searchCriteria.value.roomdate) return "";

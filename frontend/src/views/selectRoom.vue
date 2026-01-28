@@ -204,7 +204,6 @@ const submitSearch = () => {
       timefrom: timeFrom,
       timeto: timeTo,
       roomcapacity: searchParams.capacity,
-      roomtype: selectedRoom.value.title,
     },
   });
   closeModal();
