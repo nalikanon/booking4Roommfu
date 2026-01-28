@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { api } from "../services/api";
 
 const router = useRouter();
 const route = useRoute();
@@ -11,129 +12,52 @@ onMounted(() => {
 });
 
 // Mock data for classrooms
-// Mock data for different room types
-const allRoomsData = {
-  "Classroom": [
-    {
-      id: 101,
-      location: "D1",
-      name: "301",
-      capacity: 50,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      id: 102,
-      location: "E2",
-      name: "201",
-      capacity: 30,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      id: 103,
-      location: "D1",
-      name: "302",
-      capacity: 45,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1592305285741-6a05786a3d16?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      id: 104,
-      location: "C3",
-      name: "105",
-      capacity: 120,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1565514020176-db792f4b6d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      id: 105,
-      location: "E2",
-      name: "205",
-      capacity: 35,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1510531704581-5b2870972060?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    },
-  ],
-  "Laboratory": [
-    {
-      id: 201,
-      location: "S1",
-      name: "Lab-Chem-01",
-      capacity: 20,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      id: 202,
-      location: "S1",
-      name: "Lab-Bio-02",
-      capacity: 25,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1579154204601-01588f351e67?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      id: 203,
-      location: "IT2",
-      name: "Computer-Lab-A",
-      capacity: 40,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    }
-  ],
-  "Equipment Room": [
-    {
-      id: 301,
-      location: "Media Center",
-      name: "Camera Store",
-      capacity: 5,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      id: 302,
-      location: "Sports Complex",
-      name: "Gym Equipment",
-      capacity: 10,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    }
-  ],
-  "Meeting Room": [
-    {
-      id: 401,
-      location: "Admin Bldg",
-      name: "Conference A",
-      capacity: 12,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      id: 402,
-      location: "Admin Bldg",
-      name: "Board Room",
-      capacity: 20,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    },
-     {
-      id: 403,
-      location: "Library",
-      name: "Study Room 1",
-      capacity: 6,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1464039397837-d760a5c4ceae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    }
-  ]
-};
-
 const classrooms = ref([]);
 
-onMounted(() => {
+onMounted(async () => {
   searchCriteria.value = route.query;
-  const roomType = searchCriteria.value.roomtype || "Classroom";
-  classrooms.value = allRoomsData[roomType] || allRoomsData["Classroom"];
+  
+  // Call API
+  const roomsResponse = await api.getEmptyRooms({
+    ...searchCriteria.value
+  });
+  
+  if (roomsResponse && roomsResponse.data && Array.isArray(roomsResponse.data)) {
+    const apiRooms = roomsResponse.data;
+    
+    // Helper for random image
+    const getRandomImage = (id) => {
+        const images = [
+            "https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            "https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            "https://images.unsplash.com/photo-1592305285741-6a05786a3d16?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            "https://images.unsplash.com/photo-1565514020176-db792f4b6d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            "https://images.unsplash.com/photo-1510531704581-5b2870972060?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+        ];
+        return images[id % images.length];
+    };
+
+    classrooms.value = apiRooms.map(r => ({
+      id: r.ROOMID,
+      name: r.ROOMNAME, // "C1 312"
+      location: r.BUILDINGNAME || r.BUILDINGCODE || 'Unknown', // "อาคารเรียนรวม 1"
+      capacity: r.CAPACITY,
+      status: 'Available', // API doesn't send status, assume available if in list
+      description: r.ROOMTYPECODEDESC,
+      image: getRandomImage(r.ROOMID)
+    }));
+  } else {
+    // Fallback or error handling
+    console.warn('API returned unexpected format:', roomsResponse);
+    // If user returns raw array (legacy support just in case, though current mock is structured)
+    if (Array.isArray(roomsResponse)) {
+         // ... old mapping if ever needed, but likely not
+    }
+  }
 });
+
+
 
 const roomTypeDisplay = computed(() => {
   const type = searchCriteria.value.roomtype || "Classroom";
