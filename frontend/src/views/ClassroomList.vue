@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { api } from "../services/api";
 
@@ -7,20 +7,19 @@ const router = useRouter();
 const route = useRoute();
 const searchCriteria = ref({});
 
-onMounted(() => {
-  searchCriteria.value = route.query;
-});
 
 // Mock data for classrooms
 const classrooms = ref([]);
 
-onMounted(async () => {
-  searchCriteria.value = route.query;
-  
-  // Call API
-  const roomsResponse = await api.getEmptyRooms({
-    ...searchCriteria.value
-  });
+// API Fetch Function
+const fetchRooms = async () => {
+    // Only fetch if we have some criteria, or just fetch all
+    // console.log('Fetching rooms with criteria:', searchCriteria.value);
+
+    // Call API
+    const roomsResponse = await api.getEmptyRooms({
+        ...searchCriteria.value
+    });
   
   if (roomsResponse && roomsResponse.data && Array.isArray(roomsResponse.data)) {
     const apiRooms = roomsResponse.data;
@@ -50,12 +49,34 @@ onMounted(async () => {
   } else {
     // Fallback or error handling
     console.warn('API returned unexpected format:', roomsResponse);
-    // If user returns raw array (legacy support just in case, though current mock is structured)
-    if (Array.isArray(roomsResponse)) {
-         // ... old mapping if ever needed, but likely not
-    }
+    classrooms.value = []; // Clear current list on error/invalid
   }
+};
+
+// Debounce helper
+const debounce = (fn, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), delay);
+  };
+};
+
+const debouncedFetch = debounce(fetchRooms, 800);
+
+// Initial Fetch
+
+onMounted(async () => {
+  searchCriteria.value = { ...route.query }; // Clone the query object
+  await fetchRooms();
 });
+
+// Watch for changes in searchCriteria
+watch(searchCriteria, (newVal) => {
+    // Update URL query params without reloading
+    router.replace({ query: { ...newVal } });
+    debouncedFetch();
+}, { deep: true });
 
 
 
@@ -176,7 +197,7 @@ const closeSuccessModal = () => {
   <div class="page-container">
     <div class="header-bar">
       <button @click="goBack" class="back-btn"><span>←</span> Back</button>
-      <h1>Available {{ roomTypeDisplay }}</h1>
+      <h1>Available Rooms</h1>
     </div>
 
     <div class="search-summary">
