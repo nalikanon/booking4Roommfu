@@ -1,43 +1,54 @@
-
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import axios from 'axios';
 
 const app = express();
 const PORT = 3000;
 
+// TODO: Replace with Real API URL (e.g., https://api.mfu.ac.th)
+// TODO: Replace with Real API URL (e.g., https://api.mfu.ac.th)
+// NOTE: We strip any trailing slash to avoid double-slashes when appending paths
+const API_HOST = "https://apitest.mfu.ac.th/apiroombooking".replace(/\/$/, ""); 
+
 app.use(cors());
 app.use(bodyParser.json());
 
-// Authentication Endpoint
-app.post('/authen/APIAppLogin', (req, res) => {
-  const { username, password } = req.body;
-  
-  console.log('Login Request:', { username, password });
-
-  if (username === "Um9vbUJvb2tpbmc=" && password === "RDBoWjZfNnpydEN3") {
-    res.json({
-      token: "mock-jwt-token-xyz-123",
-      message: "Login Successful"
+// Authentication Endpoint Proxy
+app.post('/authen/APIAppLogin', async (req, res) => {
+  try {
+    const response = await axios.post(`${API_HOST}/authen/APIAppLogin`, req.body, {
+      headers: { 'Content-Type': 'application/json' }
     });
-  } else {
-    res.status(401).json({ message: "Invalid credentials" });
+    console.log('Login Success:', response.data);
+    res.json(response.data);
+  } catch (error) {
+    console.error('Login Error:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
   }
 });
 
-// Room Search Endpoint
-app.get('/roombooking/roombooking/roomscheduleempty', (req, res) => {
-  const authHeader = req.headers.authorization;
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: "Unauthorized: Missing token" });
+// Room Search Endpoint Proxy
+app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
+  try {
+    const { authorization } = req.headers;
+    const response = await axios.get(`${API_HOST}/roombooking/roombooking/roomscheduleempty`, {
+      params: req.query,
+      headers: { 
+        'Authorization': authorization,
+        'Content-Type': 'application/json',
+        'Language': 'TH' 
+      }
+    });
+    console.log('Room Search Success:', response.data?.length || 'No data');
+    res.json(response.data);
+  } catch (error) {
+    console.error('Room Search Error:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
   }
-
-  // console.log('Room Search Params:', req.query);
-  // Always return the mock response data as requested
-  res.json(mockResponseData);
 });
 
 app.listen(PORT, () => {
-  console.log(`Mock Backend Server running on http://localhost:${PORT}`);
+  console.log(`Backend Proxy Server running on http://localhost:${PORT}`);
+  console.log(`Proxying requests to: ${API_HOST}`);
 });

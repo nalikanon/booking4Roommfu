@@ -68,7 +68,8 @@ export const api = {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
+          'Authorization': `Bearer ${authToken}`,
+          'Language': 'TH'
         }
       });
 
@@ -79,10 +80,14 @@ export const api = {
       if (response.ok) {
         return data;
       } else {
-        // If 401, maybe retry auth?
-        if (response.status === 401) {
-            console.warn('Token expired, retrying auth...');
+        // Handle Token Errors (401 or specific "Not enough segments" error)
+        const isTokenError = response.status === 401 || (data && data.msg === 'Not enough segments');
+        
+        if (isTokenError) {
+            console.warn('Invalid or expired token, retrying auth...');
             authToken = null;
+            localStorage.removeItem('app_token'); // Clear stored token
+            
             const reAuth = await this.authenticate();
             if (reAuth) {
                 return this.getEmptyRooms(criteria);
