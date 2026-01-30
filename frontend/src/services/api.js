@@ -125,5 +125,53 @@ export const api = {
       console.error('API Error:', error);
       return [];
     }
+  },
+
+  async bookRoom(bookingData) {
+    // Ensure we have a token
+    if (!authToken) {
+      const success = await this.authenticate();
+      if (!success) return { success: false, message: 'Authentication failed' };
+    }
+
+    console.log('------------------------------------------');
+    console.log('API Request: [POST] /roombooking/roombooking/roombookingins');
+    console.log('Payload:', bookingData);
+
+    try {
+      const url = `${BASE_URL}/roombooking/roombooking/roombookingins`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify(bookingData)
+      });
+
+      const data = await response.json();
+      console.log('API Response Status:', response.status);
+      console.log('API Response Body:', data);
+
+      if (response.ok) {
+        return { success: true, data };
+      } else {
+        // Handle Token Errors
+        if (response.status === 401) {
+          console.warn('Invalid or expired token, retrying auth...');
+          authToken = null;
+          localStorage.removeItem('app_token'); 
+          
+          const reAuth = await this.authenticate();
+          if (reAuth) {
+            return this.bookRoom(bookingData);
+          }
+        }
+        return { success: false, message: data.message || 'Booking failed' };
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      return { success: false, message: error.message };
+    }
   }
 };

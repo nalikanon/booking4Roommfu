@@ -165,8 +165,21 @@ const currentUser = {
   faculty: "Information Technology"
 };
 
+const bookingForm = ref({
+  bookingFor: "Make Up Class 1006041",
+  officerId: "30971",
+  departmentId: "60",
+  tel: "6400",
+  qty: "40",
+  softwareNeeded: "No"
+});
+
+const isBooking = ref(false);
+
 const bookRoom = (room) => {
   selectedRoom.value = room;
+  // Reset form or keep defaults? Let's keep defaults for now but ensure qty matches room if needed
+  // bookingForm.value.qty = room.capacity; // Optional: auto-fill capacity
   showBookingModal.value = true;
 };
 
@@ -175,19 +188,50 @@ const closeBookingModal = () => {
   setTimeout(() => {
     selectedRoom.value = null;
     showSuccessModal.value = false;
+    isBooking.value = false;
   }, 300); // Wait for animation
 };
 
-const confirmBooking = () => {
-  // Here we would normally make an API call
-  // For now, simulate success
-  showBookingModal.value = false;
-  
-  // Show success message or simple alert for now, or a second modal step
-  // Let's use a nice success modal state instead of a browser alert
-  setTimeout(() => {
-     showSuccessModal.value = true;
-  }, 300);
+const confirmBooking = async () => {
+  if (!selectedRoom.value) return;
+
+  isBooking.value = true;
+
+  // Format Date: YYYY-MM-DD -> MM/DD/YYYY
+  const [year, month, day] = searchCriteria.value.roomdate.split('-');
+  const formattedDate = `${month}/${day}/${year}`;
+
+  // Format Time: HH:mm -> HHMM
+  const formatTime = (t) => t ? t.replace(':', '') : '';
+
+  const payload = {
+    roomid: selectedRoom.value.id,
+    bookingdate: formattedDate,
+    usetypecode: "L", // Default to Lecture
+    timefrom: formatTime(searchCriteria.value.timefrom),
+    timeto: formatTime(searchCriteria.value.timeto),
+    bookingfor: bookingForm.value.bookingFor,
+    officerid: bookingForm.value.officerId,
+    tel: bookingForm.value.tel,
+    qty: bookingForm.value.qty,
+    softwareneeded: bookingForm.value.softwareNeeded,
+    departmentid: bookingForm.value.departmentId
+  };
+
+  console.log("Submitting Booking:", payload);
+
+  const result = await api.bookRoom(payload);
+
+  isBooking.value = false;
+
+  if (result.success) {
+    showBookingModal.value = false;
+    setTimeout(() => {
+      showSuccessModal.value = true;
+    }, 300);
+  } else {
+    alert(`Booking Failed: ${result.message}`);
+  }
 };
 
 const closeSuccessModal = () => {
@@ -335,17 +379,34 @@ const closeSuccessModal = () => {
           
           <div class="modal-body">
             <div class="user-info-section">
-              <div class="info-row">
-                <span class="label">Name:</span>
-                <span class="value">{{ currentUser.name }}</span>
-              </div>
-              <div class="info-row">
-                <span class="label">Department:</span>
-                <span class="value">{{ currentUser.department }}</span>
-              </div>
-              <div class="info-row">
-                <span class="label">Faculty:</span>
-                <span class="value">{{ currentUser.faculty }}</span>
+              <div class="form-grid">
+                 <div class="form-group">
+                    <label>Booking For (Subject)</label>
+                    <input v-model="bookingForm.bookingFor" type="text" class="modal-input" placeholder="e.g. Lecture Class" />
+                 </div>
+                  <div class="form-group">
+                    <label>Tel</label>
+                    <input v-model="bookingForm.tel" type="text" class="modal-input" placeholder="Ext or Mobile" />
+                 </div>
+                 <div class="form-group">
+                    <label>Officer ID</label>
+                    <input v-model="bookingForm.officerId" type="text" class="modal-input" />
+                 </div>
+                 <div class="form-group">
+                    <label>Dept ID</label>
+                    <input v-model="bookingForm.departmentId" type="text" class="modal-input" />
+                 </div>
+                 <div class="form-group">
+                    <label>Quantity</label>
+                    <input v-model="bookingForm.qty" type="number" class="modal-input" />
+                 </div>
+                 <div class="form-group">
+                    <label>Software Needed</label>
+                    <select v-model="bookingForm.softwareNeeded" class="modal-input">
+                      <option value="No">No</option>
+                      <option value="Yes">Yes</option>
+                    </select>
+                 </div>
               </div>
             </div>
 
@@ -360,8 +421,10 @@ const closeSuccessModal = () => {
           </div>
 
           <div class="modal-actions">
-            <button class="cancel-btn" @click="closeBookingModal">Cancel</button>
-            <button class="confirm-btn" @click="confirmBooking">Confirm Booking</button>
+            <button class="cancel-btn" @click="closeBookingModal" :disabled="isBooking">Cancel</button>
+            <button class="confirm-btn" @click="confirmBooking" :disabled="isBooking">
+              {{ isBooking ? 'Booking...' : 'Confirm Booking' }}
+            </button>
           </div>
         </div>
 
@@ -791,6 +854,46 @@ h1 {
   background: rgba(99, 102, 241, 0.2);
   color: white;
   font-weight: 500;
+}
+
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.modal-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.modal-input:focus {
+  border-color: #6366f1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Response for modal form mobile */
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Fade transition */

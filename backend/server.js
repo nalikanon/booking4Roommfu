@@ -6,8 +6,6 @@ import axios from 'axios';
 const app = express();
 const PORT = 3000;
 
-// TODO: Replace with Real API URL (e.g., https://api.mfu.ac.th)
-// TODO: Replace with Real API URL (e.g., https://api.mfu.ac.th)
 // NOTE: We strip any trailing slash to avoid double-slashes when appending paths
 const API_HOST = "https://apitest.mfu.ac.th/apiroombooking".replace(/\/$/, "");
 
@@ -64,6 +62,45 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
   } catch (error) {
     console.error('Room Search Error Status:', error.response?.status);
     console.error('Room Search Error Data:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
+  }
+});
+
+// Room Booking Endpoint Proxy
+app.post('/roombooking/roombooking/roombookingins', async (req, res) => {
+  try {
+    const { authorization } = req.headers;
+    const bookingData = req.body;
+
+    console.log('\n\n==================================================');
+    console.log('🔔 [BACKEND] RECEIVED BOOKING REQUEST (POST /roombooking/roombooking/roombookingins)');
+    console.log('==================================================');
+    console.log('📦 Payload:', JSON.stringify(bookingData, null, 2));
+    
+    // Check if token exists
+    if (!authorization) {
+        console.warn('⚠️  Warning: No Authorization Header provided!');
+    } else {
+        console.log('🔑 Authorization Token Provided');
+    }
+
+    const response = await axios.post(`${API_HOST}/roombooking/roombooking/roombookingins`, bookingData, {
+      headers: {
+        'Authorization': authorization,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('✅ [BACKEND] BOOKING API RESPONSE SUCCESS:');
+    console.log(JSON.stringify(response.data, null, 2));
+    console.log('==================================================\n');
+    
+    res.json(response.data);
+  } catch (error) {
+    console.error('\n❌ [BACKEND] BOOKING API ERROR:');
+    console.error('Status:', error.response?.status);
+    console.error('Data:', JSON.stringify(error.response?.data || error.message, null, 2));
+    console.error('==================================================\n');
     res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
   }
 });
