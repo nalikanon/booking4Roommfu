@@ -1,0 +1,13 @@
+{
+  "code": 20000,
+  "data": [
+    {
+      "BYTECODE": "L",
+      "ROOMUSETYPE": "การเรียนการสอน",
+      "ROOMUSETYPEDESC": "L : การเรียนการสอน"
+    }
+  ],
+  "message": "สำเร็จ",
+  "messagefordev": null,
+  "total": 1
+}

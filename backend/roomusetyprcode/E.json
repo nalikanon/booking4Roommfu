@@ -1,0 +1,13 @@
+{
+  "code": 20000,
+  "data": [
+    {
+      "BYTECODE": "E",
+      "ROOMUSETYPE": "สอบนอกตาราง",
+      "ROOMUSETYPEDESC": "E : สอบนอกตาราง"
+    }
+  ],
+  "message": "สำเร็จ",
+  "messagefordev": null,
+  "total": 1
+}

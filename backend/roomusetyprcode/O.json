@@ -1,0 +1,13 @@
+{
+  "code": 20000,
+  "data": [
+    {
+      "BYTECODE": "O",
+      "ROOMUSETYPE": "อื่นๆ",
+      "ROOMUSETYPEDESC": "O : อื่นๆ"
+    }
+  ],
+  "message": "สำเร็จ",
+  "messagefordev": null,
+  "total": 1
+}

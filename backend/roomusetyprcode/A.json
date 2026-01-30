@@ -1,0 +1,13 @@
+{
+  "code": 20000,
+  "data": [
+    {
+      "BYTECODE": "A",
+      "ROOMUSETYPE": "กิจกรรมนักศึกษา",
+      "ROOMUSETYPEDESC": "A : กิจกรรมนักศึกษา"
+    }
+  ],
+  "message": "สำเร็จ",
+  "messagefordev": null,
+  "total": 1
+}
