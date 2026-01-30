@@ -3,19 +3,87 @@ import { ref, onMounted, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { api } from "../services/api";
 
+// --- Setup & Routing ---
 const router = useRouter();
 const route = useRoute();
+
+// --- State: Search & Filters ---
 const searchCriteria = ref({});
+const searchQuery = ref("");
+const showFilter = ref(false);
+const selectedBuilding = ref("");
 
-
-// Mock data for classrooms
+// --- State: Data ---
 const classrooms = ref([]);
+const currentUser = { // Mock Data (Potentially unused)
+  name: "John Doe",
+  department: "Computer Science",
+  faculty: "Information Technology"
+};
 
-// API Fetch Function
+// --- State: Booking Modal ---
+const showBookingModal = ref(false);
+const showSuccessModal = ref(false);
+const selectedRoom = ref(null);
+const isBooking = ref(false);
+const bookingForm = ref({
+  bookingFor: "Make Up Class 1006041",
+  officerId: "30971",
+  departmentId: "60",
+  tel: "6400",
+  qty: "40",
+  softwareNeeded: "No"
+});
+
+// --- Computed Properties ---
+const formattedRoomDate = computed(() => {
+  if (!searchCriteria.value.roomdate) return "";
+  const [year, month, day] = searchCriteria.value.roomdate.split('-');
+  return `${day}/${month}/${year}`;
+});
+
+const availableBuildings = computed(() => {
+  const buildings = new Set(classrooms.value.map(r => r.location));
+  return Array.from(buildings).sort();
+});
+
+const filteredClassrooms = computed(() => {
+  let result = classrooms.value;
+
+  // Filter by Building
+  if (selectedBuilding.value) {
+    result = result.filter(room => room.location === selectedBuilding.value);
+  }
+
+  // Filter by Capacity
+  if (searchCriteria.value.roomcapacity) {
+     const minCap = parseInt(searchCriteria.value.roomcapacity);
+     if (!isNaN(minCap)) {
+       result = result.filter(room => room.capacity >= minCap);
+     }
+  }
+
+  // Filter by Search Query
+  if (searchQuery.value) {
+    const query = searchQuery.value.trim().toLowerCase();
+    if (query) {
+       result = result.filter(room => {
+        const displayName = `Room ${room.name}`;
+        const nameMatch = 
+          (room.name && room.name.toString().toLowerCase().includes(query)) ||
+          (displayName.toLowerCase().includes(query));
+          
+        const locationMatch = room.location && room.location.toString().toLowerCase().includes(query);
+        return nameMatch || locationMatch;
+      });
+    }
+  }
+  
+  return result;
+});
+
+// --- Methods: API & Data ---
 const fetchRooms = async () => {
-    // Only fetch if we have some criteria, or just fetch all
-    // console.log('Fetching rooms with criteria:', searchCriteria.value);
-
     // Call API
     const roomsResponse = await api.getEmptyRooms({
         ...searchCriteria.value
@@ -53,7 +121,6 @@ const fetchRooms = async () => {
   }
 };
 
-// Debounce helper
 const debounce = (fn, delay) => {
   let timeoutId;
   return (...args) => {
@@ -64,47 +131,7 @@ const debounce = (fn, delay) => {
 
 const debouncedFetch = debounce(fetchRooms, 800);
 
-// Initial Fetch
-onMounted(async () => {
-  const query = { ...route.query };
-  // Remove roomtype if present, as requested by user
-  if (query.roomtype) {
-    delete query.roomtype;
-    // Update URL to remove it immediately without trigger (replace)
-    router.replace({ query }); 
-  }
-  
-  searchCriteria.value = query;
-  await fetchRooms();
-});
-
-// Watch for changes in searchCriteria
-watch(searchCriteria, (newVal) => {
-    // Update URL query params without reloading
-    router.replace({ query: { ...newVal } });
-    debouncedFetch();
-}, { deep: true });
-
-
-
-
-
-const formattedRoomDate = computed(() => {
-  if (!searchCriteria.value.roomdate) return "";
-  const [year, month, day] = searchCriteria.value.roomdate.split('-');
-  return `${day}/${month}/${year}`;
-
-});
-
-const searchQuery = ref("");
-const showFilter = ref(false);
-const selectedBuilding = ref("");
-
-const availableBuildings = computed(() => {
-  const buildings = new Set(classrooms.value.map(r => r.location));
-  return Array.from(buildings).sort();
-});
-
+// --- Methods: UI Interaction ---
 const toggleFilter = () => {
   showFilter.value = !showFilter.value;
 };
@@ -114,72 +141,13 @@ const selectBuilding = (building) => {
   showFilter.value = false;
 };
 
-const filteredClassrooms = computed(() => {
-  let result = classrooms.value;
-
-  // Filter by Building
-  if (selectedBuilding.value) {
-    result = result.filter(room => room.location === selectedBuilding.value);
-  }
-
-  // Filter by Capacity
-  if (searchCriteria.value.roomcapacity) {
-     const minCap = parseInt(searchCriteria.value.roomcapacity);
-     if (!isNaN(minCap)) {
-       result = result.filter(room => room.capacity >= minCap);
-     }
-  }
-
-  // Filter by Search Query
-  if (searchQuery.value) {
-    const query = searchQuery.value.trim().toLowerCase();
-    if (query) {
-       result = result.filter(room => {
-        const displayName = `Room ${room.name}`;
-        const nameMatch = 
-          (room.name && room.name.toString().toLowerCase().includes(query)) ||
-          (displayName.toLowerCase().includes(query));
-          
-        const locationMatch = room.location && room.location.toString().toLowerCase().includes(query);
-        return nameMatch || locationMatch;
-      });
-    }
-  }
-  
-  return result;
-});
-
 const goBack = () => {
   router.go(-1);
 };
 
-// --- Booking Modal Logic ---
-const showBookingModal = ref(false);
-const showSuccessModal = ref(false); // New success state
-const selectedRoom = ref(null);
-
-// Mock User Data
-const currentUser = {
-  name: "John Doe",
-  department: "Computer Science",
-  faculty: "Information Technology"
-};
-
-const bookingForm = ref({
-  bookingFor: "Make Up Class 1006041",
-  officerId: "30971",
-  departmentId: "60",
-  tel: "6400",
-  qty: "40",
-  softwareNeeded: "No"
-});
-
-const isBooking = ref(false);
-
+// --- Methods: Booking Actions ---
 const bookRoom = (room) => {
   selectedRoom.value = room;
-  // Reset form or keep defaults? Let's keep defaults for now but ensure qty matches room if needed
-  // bookingForm.value.qty = room.capacity; // Optional: auto-fill capacity
   showBookingModal.value = true;
 };
 
@@ -237,6 +205,26 @@ const confirmBooking = async () => {
 const closeSuccessModal = () => {
   showSuccessModal.value = false;
 };
+
+// --- Lifecycle & Watchers ---
+onMounted(async () => {
+  const query = { ...route.query };
+  // Remove roomtype if present, as requested by user
+  if (query.roomtype) {
+    delete query.roomtype;
+    // Update URL to remove it immediately without trigger (replace)
+    router.replace({ query }); 
+  }
+  
+  searchCriteria.value = query;
+  await fetchRooms();
+});
+
+watch(searchCriteria, (newVal) => {
+    // Update URL query params without reloading
+    router.replace({ query: { ...newVal } });
+    debouncedFetch();
+}, { deep: true });
 </script>
 
 <template>
@@ -473,6 +461,7 @@ const closeSuccessModal = () => {
 </template>
 
 <style scoped>
+/* --- Page Layout --- */
 .page-container {
   max-width: 95%;
   margin: 0 auto;
@@ -480,6 +469,7 @@ const closeSuccessModal = () => {
   min-height: 100vh;
 }
 
+/* --- Header & Navigation --- */
 .header-bar {
   display: flex;
   align-items: center;
@@ -517,6 +507,7 @@ h1 {
   margin: 0;
 }
 
+/* --- Search Summary Bar --- */
 .search-summary {
   display: flex;
   gap: 20px;
@@ -656,6 +647,7 @@ h1 {
   }
 }
 
+/* --- Room Grid & Cards --- */
 .rooms-list {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -1068,6 +1060,7 @@ h1 {
 }
 
 /* Modal Styles */
+/* --- Modal System --- */
 .modal-overlay {
   position: fixed;
   top: 0;
