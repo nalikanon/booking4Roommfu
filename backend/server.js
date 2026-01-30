@@ -69,7 +69,7 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
 // Room Booking Endpoint Proxy
 app.post('/roombooking/roombooking/roombookingins', async (req, res) => {
   try {
-    const { authorization } = req.headers;
+    const { authorization, language } = req.headers;
     const bookingData = req.body;
 
     console.log('\n\n==================================================');
@@ -87,7 +87,8 @@ app.post('/roombooking/roombooking/roombookingins', async (req, res) => {
     const response = await axios.post(`${API_HOST}/roombooking/roombooking/roombookingins`, bookingData, {
       headers: {
         'Authorization': authorization,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Language': language || 'th'
       }
     });
 
