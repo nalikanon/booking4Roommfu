@@ -380,43 +380,68 @@ const closeSuccessModal = () => {
           <div class="modal-body">
             <div class="user-info-section">
               <div class="form-grid">
-                 <div class="form-group">
-                    <label>Booking For (Subject)</label>
-                    <input v-model="bookingForm.bookingFor" type="text" class="modal-input" placeholder="e.g. Lecture Class" />
-                 </div>
-                  <div class="form-group">
+                  <div class="form-group full-width">
+                     <label>Booking For (Subject)</label>
+                     <div class="input-wrapper">
+                       <span class="input-icon">📝</span>
+                       <input v-model="bookingForm.bookingFor" type="text" class="modal-input with-icon" placeholder="e.g. Lecture Class 101" />
+                     </div>
+                  </div>
+                  <div class="form-group full-width">
                     <label>Tel</label>
-                    <input v-model="bookingForm.tel" type="text" class="modal-input" placeholder="Ext or Mobile" />
+                    <div class="input-wrapper">
+                      <span class="input-icon">📞</span>
+                      <input v-model="bookingForm.tel" type="text" class="modal-input with-icon" placeholder="Ext / Mobile" />
+                    </div>
                  </div>
-                 <div class="form-group">
-                    <label>Officer ID</label>
-                    <input v-model="bookingForm.officerId" type="text" class="modal-input" />
-                 </div>
-                 <div class="form-group">
-                    <label>Dept ID</label>
-                    <input v-model="bookingForm.departmentId" type="text" class="modal-input" />
-                 </div>
-                 <div class="form-group">
-                    <label>Quantity</label>
-                    <input v-model="bookingForm.qty" type="number" class="modal-input" />
-                 </div>
-                 <div class="form-group">
+                 <!-- Hardcoded hidden fields: Officer ID, Dept ID, Quantity -->
+                 <div class="form-group full-width">
                     <label>Software Needed</label>
-                    <select v-model="bookingForm.softwareNeeded" class="modal-input">
-                      <option value="No">No</option>
-                      <option value="Yes">Yes</option>
-                    </select>
+                    <div class="toggle-container">
+                      <button 
+                        class="toggle-btn" 
+                        :class="{ active: bookingForm.softwareNeeded === 'No' }"
+                        @click="bookingForm.softwareNeeded = 'No'"
+                      >
+                        No Software
+                      </button>
+                      <button 
+                        class="toggle-btn" 
+                        :class="{ active: bookingForm.softwareNeeded === 'Yes' }"
+                        @click="bookingForm.softwareNeeded = 'Yes'"
+                      >
+                        Yes, Needed
+                      </button>
+                    </div>
                  </div>
               </div>
             </div>
 
-            <div class="divider"></div>
-
-            <div class="room-info-section">
-               <h4>Booking Details</h4>
-               <p class="room-name">Room {{ selectedRoom.name }}</p>
-               <p class="room-location">{{ selectedRoom.location }}</p>
-               <p class="room-capacity">Cap: {{ selectedRoom.capacity }} | Status: {{ selectedRoom.status }}</p>
+            <div class="ticket-info">
+               <div class="ticket-header">
+                 <span class="ticket-label">BOOKING DETAILS</span>
+                 <div class="ticket-status">{{ selectedRoom.status }}</div>
+               </div>
+               <div class="ticket-body">
+                 <div class="ticket-main-info">
+                    <div class="room-big-name">{{ selectedRoom.name }}</div>
+                    <div class="room-sub-loc">{{ selectedRoom.location }}</div>
+                 </div>
+                 <div class="ticket-meta">
+                    <div class="meta-item">
+                      <span class="meta-label">Date</span>
+                      <span class="meta-val">{{ formattedRoomDate }}</span>
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-label">Time</span>
+                      <span class="meta-val">{{ searchCriteria.timefrom }} - {{ searchCriteria.timeto }}</span>
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-label">Cap</span>
+                      <span class="meta-val">{{ selectedRoom.capacity }}</span>
+                    </div>
+                 </div>
+               </div>
             </div>
           </div>
 
@@ -866,7 +891,11 @@ h1 {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
 }
 
 .form-group label {
@@ -875,18 +904,148 @@ h1 {
 }
 
 .modal-input {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
   outline: none;
   font-size: 0.95rem;
+  transition: all 0.2s ease;
+  width: 100%; /* Ensure full width */
+  box-sizing: border-box; /* Include padding in width */
 }
 
 .modal-input:focus {
   border-color: #6366f1;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Input Icons */
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.modal-input.with-icon {
+  padding-left: 40px;
+}
+
+/* Toggle Switch */
+.toggle-container {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toggle-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.toggle-btn.active {
+  background: #6366f1;
+  color: white;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+}
+
+/* Ticket Style Info */
+.ticket-info {
+  margin-top: 25px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.ticket-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.ticket-status {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.ticket-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-big-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+}
+
+.room-sub-loc {
+  font-size: 0.9rem;
+  color: #a5b4fc;
+  margin-top: 2px;
+}
+
+.ticket-meta {
+  display: flex;
+  gap: 15px;
+  text-align: right;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.meta-label {
+  font-size: 0.7rem;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.meta-val {
+  font-size: 0.9rem;
+  color: #fff;
+  font-weight: 500;
 }
 
 /* Response for modal form mobile */
@@ -926,13 +1085,12 @@ h1 {
 
 .modal-content {
   width: 100%;
-  max-width: 420px;
-  background: #1e1e24; /* Fallback */
-  background: linear-gradient(145deg, rgba(30, 30, 36, 0.9), rgba(40, 40, 48, 0.95));
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  max-width: 500px; /* Increased width */
+  background: linear-gradient(145deg, rgba(30, 30, 36, 0.95), rgba(40, 40, 48, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 35px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -990,29 +1148,7 @@ h1 {
   text-align: right;
 }
 
-.divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.1);
-  margin: 20px 0;
-}
-
-.room-info-section h4 {
-  margin: 0 0 10px 0;
-  color: #a5b4fc;
-  font-size: 1rem;
-}
-
-.room-name {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin: 0;
-}
-
-.room-location, .room-capacity {
-  color: #94a3b8;
-  margin: 4px 0 0 0;
-  font-size: 0.9rem;
-}
+/* Removed old room-info-section styles */
 
 .modal-actions {
   display: flex;
