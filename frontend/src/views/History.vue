@@ -1,6 +1,7 @@
 <script setup>
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { api } from "../services/api";
 
 const router = useRouter();
 
@@ -8,25 +9,83 @@ const goBack = () => {
   router.go(-1);
 };
 
-// Mock history data
-const historyItems = ref([
-  {
-    id: 1,
-    roomName: "Room D1 301",
-    location: "อาคารโรงอาหารและกิจกรรม",
-    date: "02/03/2026",
-    time: "09:00 - 11:00",
-    status: "Approved"
-  },
-  {
-    id: 2,
-    roomName: "Room C5 301",
-    location: "อาคาร พลตำรวจเอก เผ่า สารสิน",
-    date: "01/28/2026",
-    time: "13:00 - 15:00",
-    status: "Completed"
+const historyItems = ref([]);
+const isLoading = ref(true);
+const error = ref(null);
+
+const fetchHistory = async () => {
+  isLoading.value = true;
+  error.value = null;
+  try {
+    const response = await api.getBookingHistory();
+    // API returns { data: [...], code: 200, ... }
+    const historyData = response.data || response; 
+    
+    if (Array.isArray(historyData)) {
+        historyItems.value = historyData.map(item => ({
+            id: item.BOOKINGID,
+            roomName: item.ROOMNAME, 
+            date: item.ROOMBOOKINGDATE,
+            time: `${formatTime(item.TIMEFROM)} - ${formatTime(item.TIMETO)}`,
+            status: item.ROOMBOOKINGSTATUSNAMEENG, 
+            statusClass: getStatusClass(item.ROOMBOOKINGSTATUSNAMEENG),
+            // Use random image since API doesn't provide one
+            image: getRandomImage(item.BOOKINGID)
+        }));
+    } else {
+        historyItems.value = [];
+    }
+  } catch (err) {
+    console.error("Failed to fetch history:", err);
+    error.value = "Failed to load booking history.";
+  } finally {
+    isLoading.value = false;
   }
-]);
+};
+
+const getStatusClass = (status) => {
+    if (!status) return 'unknown';
+    const s = status.toLowerCase();
+    if (s.includes('not approved')) return 'cancelled'; // Map to red style
+    if (s.includes('approve')) return 'approved';
+    if (s.includes('pending')) return 'pending';
+    if (s.includes('cancel')) return 'cancelled';
+    return 'unknown';
+};
+
+const formatTime = (timeStr) => {
+    if (!timeStr) return "";
+    // Insert colon if missing (e.g., 0900 -> 09:00)
+    if (timeStr.length === 4 && !timeStr.includes(':')) {
+        return `${timeStr.slice(0, 2)}:${timeStr.slice(2)}`;
+    }
+    return timeStr;
+}
+
+const getRandomImage = (id) => {
+    // Generate a pseudo-random index based on the ID string
+    let hash = 0;
+    if (id) {
+       for (let i = 0; i < id.length; i++) {
+           hash = id.charCodeAt(i) + ((hash << 5) - hash);
+       }
+    }
+    const index = Math.abs(hash);
+    
+    const images = [
+        "https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1592305285741-6a05786a3d16?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1565514020176-db792f4b6d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1510531704581-5b2870972060?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    ];
+    return images[index % images.length];
+};
+
+onMounted(() => {
+    fetchHistory();
+});
 </script>
 
 <template>
@@ -37,27 +96,45 @@ const historyItems = ref([
     </div>
 
     <div class="history-list">
-      <div v-for="item in historyItems" :key="item.id" class="history-card glass-card">
-        <div class="card-content">
-          <div class="card-header">
-            <h2>{{ item.roomName }}</h2>
-            <span class="status-badge" :class="item.status.toLowerCase()">{{ item.status }}</span>
-          </div>
-          <div class="card-body">
-            <div class="detail-row">
-              <span class="icon">📍</span>
-              <span>{{ item.location }}</span>
+      <div v-if="isLoading" class="loading-state">
+        <div class="spinner"></div>
+        <span>Loading history...</span>
+      </div>
+      
+      <div v-else-if="error" class="error-state">
+        <span class="error-icon">⚠️</span> {{ error }}
+      </div>
+
+      <div v-else-if="historyItems.length === 0" class="empty-state">
+        <span class="empty-icon">📂</span> No booking history found.
+      </div>
+
+      <div v-else class="rooms-grid">
+         <div v-for="item in historyItems" :key="item.id" class="room-card glass-card">
+            <div
+              class="card-image"
+              :style="{ backgroundImage: `url(${item.image})` }"
+            >
+              <div class="badge status-badge" :class="item.statusClass">{{ item.status }}</div>
             </div>
-            <div class="detail-row">
-              <span class="icon">📅</span>
-              <span>{{ item.date }}</span>
+
+            <div class="card-content">
+              <div class="room-header">
+                <h2>Room {{ item.roomName }}</h2>
+              </div>
+
+              <div class="room-details">
+                 <div class="detail-item full-width">
+                   <span class="icon">📅</span>
+                   <span><strong>{{ item.date }}</strong></span>
+                 </div>
+                 <div class="detail-item">
+                   <span class="icon">⏰</span>
+                   <span>{{ item.time }}</span>
+                 </div>
+              </div>
             </div>
-            <div class="detail-row">
-              <span class="icon">⏰</span>
-              <span>{{ item.time }}</span>
-            </div>
-          </div>
-        </div>
+         </div>
       </div>
     </div>
   </div>
@@ -107,68 +184,133 @@ h1 {
   margin: 0;
 }
 
-.history-list {
+/* --- History Grid -- */
+/* Match structure of rooms-list from ClassroomList.vue */
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  animation: slideUp 0.6s ease-out;
+}
+
+.room-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  height: 100%;
+}
+
+.room-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card-image {
+  width: 100%;
+  height: 160px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  flex: none;
+}
+
+.badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+}
+/* Re-use status colors logic */
+.status-badge.approved { background: rgba(74, 222, 128, 0.9); color: #064e3b; }
+.status-badge.pending { background: rgba(250, 204, 21, 0.9); color: #713f12; }
+.status-badge.cancelled { background: rgba(248, 113, 113, 0.9); color: #7f1d1d; }
+.status-badge.unknown { background: rgba(148, 163, 184, 0.9); }
+
+.card-content {
+  flex: 1;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  padding: 20px;
-  transition: transform 0.2s;
+.room-header {
+  margin-bottom: 5px;
 }
 
-.glass-card:hover {
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.08);
+.room-header h2 {
+  font-size: 1.4rem;
+  color: #fff;
+  margin: 0 0 5px 0;
 }
 
-.card-header {
+.date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.1);
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.room-details {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.card-header h2 {
-  margin: 0;
-  font-size: 1.25rem;
-  color: white;
-}
-
-.card-body {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-}
-
-.detail-row {
-  display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 10px;
   color: #94a3b8;
+  font-size: 0.95rem;
 }
 
-.status-badge {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 500;
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 }
 
-.status-badge.approved {
-  background: rgba(74, 222, 128, 0.2);
-  color: #4ade80;
-  border: 1px solid rgba(74, 222, 128, 0.3);
+.detail-item .icon {
+    opacity: 0.8;
 }
 
-.status-badge.completed {
-  background: rgba(96, 165, 250, 0.2);
-  color: #60a5fa;
-  border: 1px solid rgba(96, 165, 250, 0.3);
+/* Responsiveness */
+@media (max-width: 1600px) { .rooms-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 1300px) { .rooms-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 900px) { .rooms-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .rooms-grid { grid-template-columns: 1fr; } }
+
+
+/* Loading/Empty States */
+.loading-state, .error-state, .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 60px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 24px;
 }
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #818cf8;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>

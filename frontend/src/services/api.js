@@ -173,5 +173,54 @@ export const api = {
       console.error('API Error:', error);
       return { success: false, message: error.message };
     }
+  },
+  
+  async getBookingHistory(officerId = "57360003") {
+    // Ensure we have a token
+    if (!authToken) {
+      const success = await this.authenticate();
+      if (!success) return [];
+    }
+
+    console.log('------------------------------------------');
+    console.log('API Request: [GET] /roombooking/roombooking/roombookinghistory');
+
+    try {
+      const url = `${BASE_URL}/roombooking/roombooking/roombookinghistory`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`,
+            'officerid': officerId,
+            'Language': 'th'
+        }
+      });
+
+      const data = await response.json();
+      console.log('API Response Status:', response.status);
+      console.log('API Response Body:', data);
+
+      if (response.ok) {
+        return data;
+      } else {
+         // Handle Token Errors
+         if (response.status === 401) {
+          console.warn('Invalid or expired token, retrying auth...');
+          authToken = null;
+          localStorage.removeItem('app_token'); 
+          
+          const reAuth = await this.authenticate();
+          if (reAuth) {
+            return this.getBookingHistory(officerId);
+          }
+        }
+        return [];
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      return [];
+    }
   }
 };

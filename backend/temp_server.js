@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import axios from 'axios';
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 
 // NOTE: We strip any trailing slash to avoid double-slashes when appending paths
 const API_HOST = "https://apitest.mfu.ac.th/apiroombooking".replace(/\/$/, "");
