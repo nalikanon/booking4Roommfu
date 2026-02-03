@@ -145,6 +145,10 @@ const goBack = () => {
   router.go(-1);
 };
 
+const goToHistory = () => {
+  router.push('/history');
+};
+
 // --- Methods: Booking Actions ---
 const bookRoom = (room) => {
   selectedRoom.value = room;
@@ -230,8 +234,15 @@ watch(searchCriteria, (newVal) => {
 <template>
   <div class="page-container">
     <div class="header-bar">
-      <button @click="goBack" class="back-btn"><span>←</span> Back</button>
-      <h1>Available Rooms</h1>
+      <div class="left-group">
+        <button @click="goBack" class="back-btn"><span>←</span> Back</button>
+        <h1>Available Rooms</h1>
+      </div>
+      <button @click="goToHistory" class="history-btn" title="History">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+        </svg>
+      </button>
     </div>
 
     <div class="search-summary">
@@ -473,8 +484,35 @@ watch(searchCriteria, (newVal) => {
 .header-bar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 30px;
   position: relative;
+}
+
+.left-group {
+  display: flex;
+  align-items: center;
+}
+
+.history-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.history-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+  color: #a5b4fc;
 }
 
 .back-btn {
