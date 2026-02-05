@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { api } from "../services/api";
+import LogoutButton from "../components/LogoutButton.vue";
 
 // --- Setup & Routing ---
 const router = useRouter();
@@ -238,11 +239,14 @@ watch(searchCriteria, (newVal) => {
         <button @click="goBack" class="back-btn"><span>←</span> Back</button>
         <h1>Available Rooms</h1>
       </div>
-      <button @click="goToHistory" class="history-btn" title="History">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
-        </svg>
-      </button>
+      <div class="right-group">
+        <button @click="goToHistory" class="history-btn" title="History">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+          </svg>
+        </button>
+        <LogoutButton />
+      </div>
     </div>
 
     <div class="search-summary">
@@ -492,6 +496,12 @@ watch(searchCriteria, (newVal) => {
 .left-group {
   display: flex;
   align-items: center;
+}
+
+.right-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .history-btn {

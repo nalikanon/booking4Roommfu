@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, computed } from "vue";
 import { useRouter } from "vue-router";
+import LogoutButton from "../components/LogoutButton.vue";
 
 const router = useRouter();
 
@@ -277,6 +278,9 @@ const isMinuteDisabled = (m) => {
 
 <template>
   <div class="dashboard-container">
+    <div class="top-nav">
+       <LogoutButton />
+    </div>
     <div class="header-section">
       <h1>Select a Room Type</h1>
       <p>Choose the type of room you would like to book.</p>
@@ -413,6 +417,13 @@ const isMinuteDisabled = (m) => {
   z-index: 1;
 }
 
+.top-nav {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
 .header-section {
   margin-bottom: 50px;
   animation: slideDown 0.8s ease-out;
@@ -422,6 +433,7 @@ const isMinuteDisabled = (m) => {
   font-size: 3rem;
   margin-bottom: 10px;
   background: linear-gradient(to right, #fff, #a5b4fc);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

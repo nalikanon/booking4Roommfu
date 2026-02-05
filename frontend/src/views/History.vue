@@ -2,6 +2,7 @@
 import { useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
 import { api } from "../services/api";
+import LogoutButton from "../components/LogoutButton.vue";
 
 const router = useRouter();
 
@@ -91,8 +92,11 @@ onMounted(() => {
 <template>
   <div class="page-container">
     <div class="header-bar">
-      <button @click="goBack" class="back-btn"><span>←</span> Back</button>
-      <h1>Booking History</h1>
+      <div class="left-group">
+        <button @click="goBack" class="back-btn"><span>←</span> Back</button>
+        <h1>Booking History</h1>
+      </div>
+      <LogoutButton />
     </div>
 
     <div class="history-list">
@@ -151,7 +155,13 @@ onMounted(() => {
 .header-bar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 30px;
+}
+
+.left-group {
+  display: flex;
+  align-items: center;
 }
 
 .back-btn {
