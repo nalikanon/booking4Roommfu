@@ -13,18 +13,6 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Authentication Endpoint Proxy
-app.post('/authen/APIAppLogin', async (req, res) => {
-  try {
-    const response = await axios.post(`${API_HOST}/authen/APIAppLogin`, req.body, {
-      headers: { 'Content-Type': 'application/json' }
-    });
-    console.log('Login Success:', response.data);
-    res.json(response.data);
-  } catch (error) {
-    console.error('Login Error:', error.response?.data || error.message);
-    res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
-  }
-});
 
 // OAuth2 Token Exchange
 const OAUTH_TOKEN_URL = process.env.OAUTH_TOKEN_URL || 'https://authsso.mfu.ac.th/adfs/oauth2/token';

@@ -4,56 +4,18 @@ import { ref } from 'vue';
 
 const BASE_URL = '/api'; // We will configure proxy in vite.config.js
 
-let authToken = localStorage.getItem('app_token') || null;
+// Token is set during OAuth callback
+let authToken = localStorage.getItem('access_token') || null;
 
 export const api = {
-  async authenticate() {
-    console.log('------------------------------------------');
-    console.log('API Request: [POST] /authen/APIAppLogin');
-    console.log('Payload:', { username: "Um9vbUJvb2tpbmc=", password: "***" });
+  // authenticate() function removed as we use OAuth now
 
-    try {
-      const response = await fetch(`${BASE_URL}/authen/APIAppLogin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          "username": "Um9vbUJvb2tpbmc=",
-          "password": "RDBoWjZfNnpydEN3"
-        })
-      });
-
-      const data = await response.json();
-      console.log('API Response Status:', response.status);
-      console.log('API Response Body:', data);
-
-      if (response.ok) {
-        // Assuming the token is in 'token' or similar. 
-        // If the user hasn't specified the response structure, we'll try to guess or just store the whole thing if needed.
-        // Common pattern: data.access_token or data.token
-        authToken = data.token || data.access_token || data;
-        // If data itself is the token or complex object, we might need adjustment.
-        // For now, let's assume `data.token` or just use `data` if it looks like a string.
-        if (typeof data === 'string') authToken = data;
-
-        localStorage.setItem('app_token', authToken);
-        return true;
-      } else {
-        console.error('Authentication Failed');
-        return false;
-      }
-    } catch (error) {
-      console.error('API Error:', error);
-      return false;
-    }
-  },
 
   async getEmptyRooms(criteria = {}) {
     // Ensure we have a token
     if (!authToken) {
-      const success = await this.authenticate();
-      if (!success) return [];
+       console.warn('No token found');
+       return [];
     }
 
     console.log('------------------------------------------');
@@ -106,18 +68,11 @@ export const api = {
       if (response.ok) {
         return data;
       } else {
-        // Handle Token Errors (401 or specific "Not enough segments" error)
-        const isTokenError = response.status === 401 || (data && data.msg === 'Not enough segments');
-
-        if (isTokenError) {
-          console.warn('Invalid or expired token, retrying auth...');
-          authToken = null;
-          localStorage.removeItem('app_token'); // Clear stored token
-
-          const reAuth = await this.authenticate();
-          if (reAuth) {
-            return this.getEmptyRooms(criteria);
-          }
+        // Handle Token Errors (401)
+        if (response.status === 401) {
+           console.warn('Invalid or expired token. Redirecting to login...');
+           localStorage.removeItem('access_token');
+           window.location.href = '/'; // Redirect to login
         }
         return [];
       }
@@ -130,8 +85,7 @@ export const api = {
   async bookRoom(bookingData) {
     // Ensure we have a token
     if (!authToken) {
-      const success = await this.authenticate();
-      if (!success) return { success: false, message: 'Authentication failed' };
+      return { success: false, message: 'Authentication required' };
     }
 
     console.log('------------------------------------------');
@@ -156,16 +110,9 @@ export const api = {
       if (response.ok) {
         return { success: true, data };
       } else {
-        // Handle Token Errors
         if (response.status === 401) {
-          console.warn('Invalid or expired token, retrying auth...');
-          authToken = null;
-          localStorage.removeItem('app_token'); 
-          
-          const reAuth = await this.authenticate();
-          if (reAuth) {
-            return this.bookRoom(bookingData);
-          }
+           localStorage.removeItem('access_token');
+           window.location.href = '/';
         }
         return { success: false, message: data.message || 'Booking failed' };
       }
@@ -176,10 +123,8 @@ export const api = {
   },
   
   async getBookingHistory(officerId = "57360003") {
-    // Ensure we have a token
-    if (!authToken) {
-      const success = await this.authenticate();
-      if (!success) return [];
+    if (!authToken) { // OAuth token check
+       return [];
     }
 
     console.log('------------------------------------------');
@@ -205,16 +150,9 @@ export const api = {
       if (response.ok) {
         return data;
       } else {
-         // Handle Token Errors
          if (response.status === 401) {
-          console.warn('Invalid or expired token, retrying auth...');
-          authToken = null;
-          localStorage.removeItem('app_token'); 
-          
-          const reAuth = await this.authenticate();
-          if (reAuth) {
-            return this.getBookingHistory(officerId);
-          }
+           localStorage.removeItem('access_token');
+           window.location.href = '/';
         }
         return [];
       }
