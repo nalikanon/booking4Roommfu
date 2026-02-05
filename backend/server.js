@@ -26,6 +26,45 @@ app.post('/authen/APIAppLogin', async (req, res) => {
   }
 });
 
+// OAuth2 Token Exchange
+const OAUTH_TOKEN_URL = 'https://authsso.mfu.ac.th/adfs/oauth2/token';
+const CLIENT_ID = 'c4f25000-ccac-4320-8ccf-2c4cb742f04c';
+const CLIENT_SECRET = 'eM3IqlafXcISqaWpyGV_KfWJm8_HFmyKGZF9hOwr';
+const REDIRECT_URI = 'https://roombooking.mfu.ac.th/auth/callback';
+
+app.post('/authen/exchange', async (req, res) => {
+    try {
+        const { code } = req.body;
+        
+        if (!code) {
+            return res.status(400).json({ message: 'Authorization code is required' });
+        }
+
+        const params = new URLSearchParams();
+        params.append('grant_type', 'authorization_code');
+        params.append('client_id', CLIENT_ID);
+        params.append('client_secret', CLIENT_SECRET);
+        params.append('code', code);
+        params.append('redirect_uri', REDIRECT_URI);
+
+        console.log('Exchanging code for token...');
+        
+        const response = await axios.post(OAUTH_TOKEN_URL, params, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+
+        console.log('Token Exchange Success');
+        // Return the full response from MFU SSO (access_token, id_token, etc.)
+        res.json(response.data);
+
+    } catch (error) {
+        console.error('Token Exchange Error:', error.response?.data || error.message);
+        res.status(error.response?.status || 500).json(error.response?.data || { message: "Token Exchange Failed" });
+    }
+});
+
 // Room Search Endpoint Proxy
 app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
   try {
