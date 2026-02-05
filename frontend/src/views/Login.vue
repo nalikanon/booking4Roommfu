@@ -3,10 +3,10 @@ import { ref } from 'vue';
 
 const loading = ref(false);
 
-const MFU_AUTH_URL = 'https://authsso.mfu.ac.th/adfs/oauth2/authorize';
-const CLIENT_ID = 'c4f25000-ccac-4320-8ccf-2c4cb742f04c';
-const REDIRECT_URI = 'https://roombooking.mfu.ac.th/auth/callback';
-const SCOPE = 'openid profile email';
+const MFU_AUTH_URL = import.meta.env.VITE_MFU_AUTH_URL || 'https://authsso.mfu.ac.th/adfs/oauth2/authorize';
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID || 'c4f25000-ccac-4320-8ccf-2c4cb742f04c';
+const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI || 'https://roombooking.mfu.ac.th/auth/callback';
+const SCOPE = import.meta.env.VITE_SCOPE || 'openid profile email';
 
 const handleMfuLogin = () => {
   loading.value = true;

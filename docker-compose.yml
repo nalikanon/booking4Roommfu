@@ -6,10 +6,17 @@ services:
     container_name: booking_backend
     ports:
       - "3000:3000"
+    env_file: .env
     restart: always
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_MFU_AUTH_URL: ${VITE_MFU_AUTH_URL}
+        VITE_CLIENT_ID: ${VITE_CLIENT_ID}
+        VITE_REDIRECT_URI: ${VITE_REDIRECT_URI}
+        VITE_SCOPE: ${VITE_SCOPE}
     container_name: booking_frontend
     ports:
       - "80:80"
