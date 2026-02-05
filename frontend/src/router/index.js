@@ -3,6 +3,7 @@ import Login from '../views/Login.vue'
 
 const routes = [
     { path: '/', component: Login },
+    { path: '/auth/callback', component: () => import('../views/AuthCallback.vue') },
     { path: '/select-room', component: () => import('../views/selectRoom.vue') },
     { path: '/classroom-list', component: () => import('../views/ClassroomList.vue') },
     { path: '/history', component: () => import('../views/History.vue') }
