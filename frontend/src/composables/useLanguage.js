@@ -43,6 +43,27 @@ const translations = {
     done: "Done",
     allBuildings: "All Buildings",
 
+    // --- Select Room Page ---
+    selectRoomTitle: "Select a Room Type",
+    selectRoomSubtitle: "Choose the type of room you would like to book.",
+    select: "Select",
+    searchRoomTitle: "Search",
+    selectDate: "Select Date",
+    timeFrom: "Time From",
+    timeTo: "Time To",
+    searchBtn: "Search Available Rooms",
+    cancelBtn: "Cancel",
+    
+    // Room Types
+    classroomTitle: "Classroom",
+    classroomDesc: "Standard classrooms equipped with projectors and whiteboards.",
+    labTitle: "Laboratory",
+    labDesc: "Computer labs and science labs with specialized equipment.",
+    equipTitle: "Equipment Room",
+    equipDesc: "Room for storing and checking out various equipment.",
+    meetTitle: "Meeting Room",
+    meetDesc: "Professional meeting spaces with conference facilities.",
+
     // --- History Page ---
     historyTitle: "Booking History",
     loadingHistory: "Loading history...",
@@ -88,6 +109,27 @@ const translations = {
     successMsg: "ทำการจองห้องเรียบร้อยแล้ว",
     done: "ตกลง",
     allBuildings: "ทุกอาคาร",
+
+    // --- Select Room Page ---
+    selectRoomTitle: "เลือกประเภทห้อง",
+    selectRoomSubtitle: "เลือกประเภทห้องที่คุณต้องการจอง",
+    select: "เลือก",
+    searchRoomTitle: "ค้นหาห้อง",
+    selectDate: "เลือกวันที่",
+    timeFrom: "เวลาเริ่ม",
+    timeTo: "เวลาสิ้นสุด",
+    searchBtn: "ค้นหาห้องว่าง",
+    cancelBtn: "ยกเลิก",
+
+    // Room Types
+    classroomTitle: "ห้องเรียน",
+    classroomDesc: "ห้องเรียนวิชาการทั่วไป พร้อมโปรเจคเตอร์และกระดานไวท์บอร์ด",
+    labTitle: "ห้องปฏิบัติการ",
+    labDesc: "ห้องคอมพิวเตอร์และห้องทดลองวิทยาศาสตร์ พร้อมอุปกรณ์เฉพาะทาง",
+    equipTitle: "ห้องอุปกรณ์",
+    equipDesc: "ห้องสำหรับเก็บและเบิกจ่ายอุปกรณ์ต่างๆ",
+    meetTitle: "ห้องประชุม",
+    meetDesc: "ห้องประชุมมาตรฐานระดับมืออาชีพ พร้อมสิ่งอำนวยความสะดวกครบครัน",
 
     // --- History Page ---
     historyTitle: "ประวัติการจอง",

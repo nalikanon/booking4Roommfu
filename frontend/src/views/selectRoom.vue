@@ -2,7 +2,10 @@
 import { ref, reactive, computed } from "vue";
 import { useRouter } from "vue-router";
 import LogoutButton from "../components/LogoutButton.vue";
+import LanguageSwitcher from "../components/LanguageSwitcher.vue";
+import { useLanguage } from "../composables/useLanguage";
 
+const { t } = useLanguage();
 const router = useRouter();
 
 // State for Modal
@@ -23,36 +26,36 @@ const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2
 const minutes = ["00", "15", "30", "45"];
 const periods = ["AM", "PM"];
 
-const rooms = [
+const rooms = computed(() => [
   {
     id: 1,
-    title: "Classroom",
-    description: "Standard classrooms equipped with projectors and whiteboards.",
+    title: t.value.classroomTitle,
+    description: t.value.classroomDesc,
     icon: "📚",
     color: "from-blue-400 to-blue-600",
   },
   {
     id: 2,
-    title: "Laboratory",
-    description: "Computer labs and science labs with specialized equipment.",
+    title: t.value.labTitle,
+    description: t.value.labDesc,
     icon: "🔬",
     color: "from-green-400 to-green-600",
   },
   {
     id: 3,
-    title: "Equipment Room",
-    description: "Room for storing and checking out various equipment.",
+    title: t.value.equipTitle,
+    description: t.value.equipDesc,
     icon: "🔧",
     color: "from-orange-400 to-orange-600",
   },
   {
     id: 4,
-    title: "Meeting Room",
-    description: "Professional meeting spaces with conference facilities.",
+    title: t.value.meetTitle,
+    description: t.value.meetDesc,
     icon: "💼",
     color: "from-purple-400 to-purple-600",
   },
-];
+]);
 
 const handleSelect = (room) => {
   selectedRoom.value = room;
@@ -279,11 +282,14 @@ const isMinuteDisabled = (m) => {
 <template>
   <div class="dashboard-container">
     <div class="top-nav">
-       <LogoutButton />
+       <div class="nav-group">
+          <LanguageSwitcher />
+          <LogoutButton />
+       </div>
     </div>
     <div class="header-section">
-      <h1>Select a Room Type</h1>
-      <p>Choose the type of room you would like to book.</p>
+      <h1>{{ t.selectRoomTitle }}</h1>
+      <p>{{ t.selectRoomSubtitle }}</p>
     </div>
 
     <div class="grid-container">
@@ -298,7 +304,7 @@ const isMinuteDisabled = (m) => {
         </div>
         <h3>{{ room.title }}</h3>
         <p>{{ room.description }}</p>
-        <button class="select-btn" @click.stop="handleSelect(room)">Select</button>
+        <button class="select-btn" @click.stop="handleSelect(room)">{{ t.select }}</button>
       </div>
     </div>
 
@@ -307,13 +313,13 @@ const isMinuteDisabled = (m) => {
       <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
         <div class="modal-content glass-card">
           <div class="modal-header">
-            <h2>Search {{ selectedRoom ? selectedRoom.title : 'Classroom' }}</h2>
+            <h2>{{ t.searchRoomTitle }} - {{ selectedRoom ? selectedRoom.title : '' }}</h2>
             <button class="close-btn" @click="closeModal">&times;</button>
           </div>
           
           <div class="modal-body">
             <div class="form-group">
-              <label>Select Date</label>
+              <label>{{ t.selectDate }}</label>
               <div class="date-input-container">
                 <input 
                   type="text" 
@@ -334,7 +340,7 @@ const isMinuteDisabled = (m) => {
 
             <div class="form-row">
               <div class="form-group">
-                <label>Time From</label>
+                <label>{{ t.timeFrom }}</label>
                 <div class="time-inputs">
                   <select v-model="searchParams.startHour" class="input-field time-select">
                     <option 
@@ -370,7 +376,7 @@ const isMinuteDisabled = (m) => {
                 </div>
               </div>
               <div class="form-group">
-                <label>Time To</label>
+                <label>{{ t.timeTo }}</label>
                 <div class="time-inputs">
                   <select v-model="searchParams.endHour" class="input-field time-select">
                     <option v-for="h in hours" :key="h" :value="h">{{ h }}</option>
@@ -387,7 +393,7 @@ const isMinuteDisabled = (m) => {
             </div>
 
             <div class="form-group">
-              <label>Capacity (People)</label>
+              <label>{{ t.minCapacity }}</label>
               <input 
                 type="number" 
                 v-model="searchParams.capacity" 
@@ -398,8 +404,8 @@ const isMinuteDisabled = (m) => {
           </div>
 
           <div class="modal-footer">
-            <button class="btn btn-cancel" @click="closeModal">Cancel</button>
-            <button class="btn btn-primary" @click="submitSearch">Search Available Rooms</button>
+            <button class="btn btn-cancel" @click="closeModal">{{ t.cancelBtn }}</button>
+            <button class="btn btn-primary" @click="submitSearch">{{ t.searchBtn }}</button>
           </div>
         </div>
       </div>
@@ -422,6 +428,12 @@ const isMinuteDisabled = (m) => {
   top: 20px;
   right: 20px;
   z-index: 10;
+}
+
+.nav-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .header-section {
