@@ -44,6 +44,7 @@ app.post('/authen/exchange', async (req, res) => {
         });
 
         console.log('Token Exchange Success');
+        console.log('📦 [DEBUG] Login Response Data:', JSON.stringify(response.data, null, 2));
         // Return the full response from MFU SSO (access_token, id_token, etc.)
         res.json(response.data);
 
