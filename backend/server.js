@@ -81,6 +81,8 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
       language
     } = req.headers;
 
+    const sanitizedAuth = authorization ? authorization.trim() : null;
+
     console.log('\n🔍 [PROXY] Room Search Request');
     console.log(`🔗 [PROXY] Upstream URL: ${API_HOST}/roombooking/roombooking/roomscheduleempty`);
     console.log('📋 Forwarding Headers:', {
