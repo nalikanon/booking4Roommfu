@@ -69,7 +69,14 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
 
     console.log('\n🔍 [PROXY] Room Search Request');
     console.log(`🔗 [PROXY] Upstream URL: ${API_HOST}/roombooking/roombooking/roomscheduleempty`);
-    console.log('📋 Forwarding Headers:', {
+    console.log('� Auth Header Present:', !!authorization);
+    if (authorization) {
+        console.log('🔑 Auth Header Prefix:', authorization.substring(0, 15) + '...');
+    } else {
+        console.warn('⚠️ NO AUTHORIZATION HEADER RECEIVED');
+    }
+
+    console.log('�📋 Forwarding Headers:', {
         'roomdate': roomdate,
         'timefrom': timefrom,
         'timeto': timeto,
