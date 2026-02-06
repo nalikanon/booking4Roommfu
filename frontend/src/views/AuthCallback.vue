@@ -25,6 +25,29 @@ onMounted(async () => {
     const response = await axios.post('/api/authen/exchange', { code });
 
     if (response.data && response.data.access_token) {
+      // Decode Token to check for Role/Email
+      const accessToken = response.data.access_token;
+      let email = '';
+      
+      try {
+        const parts = accessToken.split('.');
+        if (parts.length === 3) {
+           const payload = JSON.parse(atob(parts[1]));
+           email = payload.email || payload.upn || '';
+        }
+      } catch (e) {
+        console.warn('Failed to decode token for role check', e);
+      }
+
+      // Check if Staff (@mfu.ac.th)
+      const isStaff = email.toLowerCase().endsWith('@mfu.ac.th');
+
+      if (!isStaff) {
+          error.value = 'Access Denied: Staff Only (@mfu.ac.th)';
+          status.value = 'Unauthorized';
+          return;
+      }
+
       // Store tokens
       localStorage.setItem('access_token', response.data.access_token);
       if (response.data.id_token) {
