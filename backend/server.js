@@ -67,6 +67,17 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
       language
     } = req.headers;
 
+    console.log('\n🔍 [PROXY] Room Search Request');
+    console.log(`🔗 [PROXY] Upstream URL: ${API_HOST}/roombooking/roombooking/roomscheduleempty`);
+    console.log('📋 Forwarding Headers:', {
+        'roomdate': roomdate,
+        'timefrom': timefrom,
+        'timeto': timeto,
+        'roomcapacity': roomcapacity,
+        'officerid': req.headers.officerid,
+        'language': language
+    });
+
     const response = await axios.get(`${API_HOST}/roombooking/roombooking/roomscheduleempty`, {
       // NOTE: API requires criteria in HEADERS, not query params
       headers: {
