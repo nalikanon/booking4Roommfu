@@ -93,6 +93,8 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
 
     res.json(response.data);
   } catch (error) {
+    console.error('❌ [PROXY] Search Error Status:', error.response?.status);
+    console.error('❌ [PROXY] Search Error Data:', JSON.stringify(error.response?.data, null, 2));
     res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
   }
 });
