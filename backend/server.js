@@ -8,7 +8,7 @@ const app = express();
 const PORT = 3000;
 
 // NOTE: We strip any trailing slash to avoid double-slashes when appending paths
-const API_HOST = (process.env.API_HOST || "https://roombooking.mfu.ac.th/apiroombooking/").replace(/\/$/, "");
+const API_HOST = (process.env.API_HOST || "https://apitest.mfu.ac.th/apiroombooking/").replace(/\/$/, "");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -39,7 +39,7 @@ async function getSystemToken() {
     // For now, simple caching. In production, check 'exp' claim.
     if (systemToken) return systemToken;
 
-    console.log('🔄 [BACKEND] Fetching new System Token...');
+    console.log(`🔄 [BACKEND] Fetching new System Token from ${API_HOST}...`);
     try {
         const response = await axios.post(`${API_HOST}/authen/APIAppLogin`, {
             username: APP_USERNAME,

@@ -1,0 +1,17 @@
+START PROBE
+🔍 Probing Auth Endpoints...
+
+Testing: https://roombooking.mfu.ac.th/apiroombooking/authen/APIAppLogin
+❌ Failed: 405
+   (Method Not Allowed - Likely wrong path)
+
+Testing: https://roombooking.mfu.ac.th/api/authen/APIAppLogin
+❌ Failed: 404
+
+Testing: https://roombooking.mfu.ac.th/authen/APIAppLogin
+❌ Failed: 405
+   (Method Not Allowed - Likely wrong path)
+
+Testing: https://apitest.mfu.ac.th/apiroombooking/authen/APIAppLogin
+✅ SUCCESS! Status: 200
+   Token: YES
