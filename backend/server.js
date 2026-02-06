@@ -81,7 +81,8 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
         ...(roomdate && { 'roomdate': roomdate }),
         ...(timefrom && { 'timefrom': timefrom }),
         ...(timeto && { 'timeto': timeto }),
-        ...(roomcapacity && { 'roomcapacity': roomcapacity })
+        ...(roomcapacity && { 'roomcapacity': roomcapacity }),
+        ...(req.headers.officerid && { 'officerid': req.headers.officerid })
       }
     });
     console.log('Room Search Success:', response.data?.length || 'No data');

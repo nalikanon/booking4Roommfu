@@ -1,11 +1,26 @@
 
 // src/services/api.js
 import { ref } from 'vue';
+import { jwtDecode } from "jwt-decode";
 
 const BASE_URL = '/api'; // We will configure proxy in vite.config.js
 
 // Token is set during OAuth callback
 let authToken = localStorage.getItem('access_token') || null;
+
+function getUsernameFromToken() {
+  const idToken = localStorage.getItem('id_token');
+  if (!idToken) return null;
+  try {
+    const decoded = jwtDecode(idToken);
+    // Adjust this based on the actual claim name for username (e.g., upn, unique_name, sAMAccountName, or email)
+    // The user said "send that username"
+    return decoded.upn || decoded.unique_name || decoded.email || decoded.sub; 
+  } catch (e) {
+    console.error("Failed to decode token", e);
+    return null;
+  }
+}
 
 export const api = {
   // authenticate() function removed as we use OAuth now
@@ -18,8 +33,10 @@ export const api = {
        return [];
     }
 
-    console.log('------------------------------------------');
-    console.log('API Request: [POST] /roombooking/roombooking/roomscheduleempty');
+    const username = getUsernameFromToken(); 
+    console.log('Using Username as OfficerID:', username);
+
+    console.log('API Request: [GET] /roombooking/roombooking/roomscheduleempty');
 
     try {
       // Convert criteria to API format
@@ -36,7 +53,7 @@ export const api = {
         apiCriteria.timefrom = apiCriteria.timefrom.replace(':', '');
       }
       if (apiCriteria.timeto) {
-        apiCriteria.timeto = apiCriteria.timeto.replace(':', '');
+         apiCriteria.timeto = apiCriteria.timeto.replace(':', '');
       }
 
       // Ensure language param exists (per user request, though header is also set)
@@ -47,18 +64,23 @@ export const api = {
       // Send criteria as Headers (not Query Strings)
       const url = `${BASE_URL}/roombooking/roombooking/roomscheduleempty`;
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
+      const headers = {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`,
           'Language': apiCriteria.language,
+          'officerid': getUsernameFromToken(), 
           // Custom Headers for Room Search
           ...(apiCriteria.roomdate && { 'roomdate': apiCriteria.roomdate }),
           ...(apiCriteria.timefrom && { 'timefrom': apiCriteria.timefrom }),
           ...(apiCriteria.timeto && { 'timeto': apiCriteria.timeto }),
           ...(apiCriteria.roomcapacity && { 'roomcapacity': apiCriteria.roomcapacity })
-        }
+      };
+
+      console.log('DEBUG HEADERS:', JSON.stringify(headers, null, 2));
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: headers
       });
 
       const data = await response.json();
@@ -138,7 +160,7 @@ export const api = {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${authToken}`,
-            'officerid': officerId,
+            'officerid': officerId || getUsernameFromToken(),
             'Language': 'th'
         }
       });
