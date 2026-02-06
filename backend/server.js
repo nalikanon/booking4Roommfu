@@ -14,6 +14,12 @@ app.use(bodyParser.json());
 
 // Authentication Endpoint Proxy
 
+// OAuth2 Token Exchange
+const OAUTH_TOKEN_URL = process.env.OAUTH_TOKEN_URL || 'https://authsso.mfu.ac.th/adfs/oauth2/token';
+const CLIENT_ID = process.env.CLIENT_ID || 'c4f25000-ccac-4320-8ccf-2c4cb742f04c';
+const CLIENT_SECRET = process.env.CLIENT_SECRET || 'eM3IqlafXcISqaWpyGV_KfWJm8_HFmyKGZF9hOwr';
+const REDIRECT_URI = process.env.REDIRECT_URI || 'https://roombooking.mfu.ac.th/auth/callback';
+
 app.post('/authen/exchange', async (req, res) => {
     try {
         const { code } = req.body;
