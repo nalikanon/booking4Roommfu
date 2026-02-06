@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import axios from 'axios';
+import https from 'https';
 
 const app = express();
 const PORT = 3000;
@@ -94,6 +95,7 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
     });
 
     const response = await axios.get(`${API_HOST}/roombooking/roombooking/roomscheduleempty`, {
+      httpsAgent: new https.Agent({ rejectUnauthorized: false }), // Ignore SSL errors
       // NOTE: API requires criteria in HEADERS, not query params
       headers: {
         'Authorization': sanitizedAuth,
