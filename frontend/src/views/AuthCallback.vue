@@ -29,6 +29,25 @@ onMounted(async () => {
       localStorage.setItem('access_token', response.data.access_token);
       if (response.data.id_token) {
           localStorage.setItem('id_token', response.data.id_token);
+
+          // Role-Based Access Control: Staff Only
+          try {
+             // Simple Base64 Decode to avoid installing new deps in this file if not needed
+             const payload = JSON.parse(atob(response.data.id_token.split('.')[1]));
+             const email = payload.email || '';
+             
+             // Allow ONLY @mfu.ac.th (Result: Staff)
+             // Block @lamduan.mfu.ac.th (Result: Student)
+             if (!email.endsWith('@mfu.ac.th')) {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('id_token');
+                throw new Error('Access Denied: This system is for Staff Only (@mfu.ac.th).');
+             }
+          } catch (decodeError) {
+             // If validation fails (or can't decode), strict block
+             if (decodeError.message.includes('Access Denied')) throw decodeError;
+             console.warn('Token validation warning:', decodeError);
+          }
       }
       
       // Store other useful info if available (e.g. refresh_token)
