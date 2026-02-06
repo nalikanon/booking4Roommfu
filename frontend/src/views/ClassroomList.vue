@@ -83,6 +83,13 @@ const filteredClassrooms = computed(() => {
   return result;
 });
 
+const currentLanguage = ref(localStorage.getItem('app_lang') || 'TH');
+
+const toggleLanguage = () => {
+    currentLanguage.value = currentLanguage.value === 'TH' ? 'EN' : 'TH';
+    localStorage.setItem('app_lang', currentLanguage.value);
+};
+
 // --- Methods: API & Data ---
 const fetchRooms = async () => {
     // Call API
@@ -91,9 +98,11 @@ const fetchRooms = async () => {
     });
   
   if (roomsResponse && roomsResponse.data && Array.isArray(roomsResponse.data)) {
+// ... existing fetch logic ...
     const apiRooms = roomsResponse.data;
     
     // Helper for random image
+// ... existing helpers ...
     const getRandomImage = (id) => {
         const images = [
             "https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
@@ -123,6 +132,7 @@ const fetchRooms = async () => {
 };
 
 const debounce = (fn, delay) => {
+// ... existing debounce ...
   let timeoutId;
   return (...args) => {
     clearTimeout(timeoutId);
@@ -134,9 +144,11 @@ const debouncedFetch = debounce(fetchRooms, 800);
 
 // --- Methods: UI Interaction ---
 const toggleFilter = () => {
+// ...
   showFilter.value = !showFilter.value;
 };
 
+// ... existing helper methods ...
 const selectBuilding = (building) => {
   selectedBuilding.value = building;
   showFilter.value = false;
@@ -150,12 +162,11 @@ const goToHistory = () => {
   router.push('/history');
 };
 
-// --- Methods: Booking Actions ---
+// ... existing booking methdos ...
 const bookRoom = (room) => {
   selectedRoom.value = room;
   showBookingModal.value = true;
 };
-
 const closeBookingModal = () => {
   showBookingModal.value = false;
   setTimeout(() => {
@@ -164,8 +175,9 @@ const closeBookingModal = () => {
     isBooking.value = false;
   }, 300); // Wait for animation
 };
-
+// ...
 const confirmBooking = async () => {
+// ...
   if (!selectedRoom.value) return;
 
   isBooking.value = true;
@@ -206,7 +218,7 @@ const confirmBooking = async () => {
     alert(`Booking Failed: ${result.message}`);
   }
 };
-
+// ...
 const closeSuccessModal = () => {
   showSuccessModal.value = false;
 };
@@ -227,19 +239,87 @@ onMounted(async () => {
 
 watch(searchCriteria, (newVal) => {
     // Update URL query params without reloading
-    router.replace({ query: { ...newVal } });
     debouncedFetch();
 }, { deep: true });
+
+// --- UI Translations ---
+const translations = {
+  EN: {
+    title: "Available Rooms",
+    back: "Back",
+    date: "Date:",
+    time: "Time:",
+    minCapacity: "Min Capacity:",
+    searchPlaceholder: "Search room name...",
+    bookNow: "Book Now",
+    capacity: "Capacity:",
+    building: "Building:",
+    people: "People",
+    confirmBookingTitle: "Confirm Booking",
+    bookingFor: "Booking For (Subject)",
+    bookingForPlaceholder: "e.g. Lecture Class 101",
+    tel: "Tel",
+    telPlaceholder: "Ext / Mobile",
+    softwareNeeded: "Software Needed",
+    noSoftware: "No Software",
+    yesNeeded: "Yes, Needed",
+    bookingDetails: "BOOKING DETAILS",
+    cancel: "Cancel",
+    confirm: "Confirm Booking",
+    booking: "Booking...",
+    successTitle: "Booking Confirmed!",
+    successMsg: "You have successfully booked the room.",
+    done: "Done",
+    allBuildings: "All Buildings"
+  },
+  TH: {
+    title: "ห้องว่างที่จองได้",
+    back: "กลับ",
+    date: "วันที่:",
+    time: "เวลา:",
+    minCapacity: "ความจุขั้นต่ำ:",
+    searchPlaceholder: "ค้นหาชื่อห้อง...",
+    bookNow: "จองเลย",
+    capacity: "ความจุ:",
+    building: "อาคาร:",
+    people: "คน",
+    confirmBookingTitle: "ยืนยันการจอง",
+    bookingFor: "หัวข้อการจอง",
+    bookingForPlaceholder: "เช่น สอนชดเชยวิชา...",
+    tel: "เบอร์ติดต่อ",
+    telPlaceholder: "เบอร์ภายใน / มือถือ",
+    softwareNeeded: "ต้องการลงโปรแกรม",
+    noSoftware: "ไม่ต้องการ",
+    yesNeeded: "ต้องการ",
+    bookingDetails: "รายละเอียดการจอง",
+    cancel: "ยกเลิก",
+    confirm: "ยืนยันการจอง",
+    booking: "กำลังบันทึก...",
+    successTitle: "จองสำเร็จ!",
+    successMsg: "ทำการจองห้องเรียบร้อยแล้ว",
+    done: "ตกลง",
+    allBuildings: "ทุกอาคาร"
+  }
+};
+
+const t = computed(() => translations[currentLanguage.value]);
 </script>
 
 <template>
   <div class="page-container">
     <div class="header-bar">
       <div class="left-group">
-        <button @click="goBack" class="back-btn"><span>←</span> Back</button>
-        <h1>Available Rooms</h1>
+        <button @click="goBack" class="back-btn"><span>←</span> {{ t.back }}</button>
+        <h1>{{ t.title }}</h1>
       </div>
       <div class="right-group">
+        
+        <button class="lang-btn" @click="toggleLanguage">
+             <span :class="{ active: currentLanguage === 'EN' }">EN</span>
+             <span class="divider">|</span>
+             <span :class="{ active: currentLanguage === 'TH' }">TH</span>
+        </button>
+
         <button @click="goToHistory" class="history-btn" title="History">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
@@ -251,7 +331,7 @@ watch(searchCriteria, (newVal) => {
 
     <div class="search-summary">
       <div class="summary-item">
-        <span class="label">Date:</span>
+        <span class="label">{{ t.date }}</span>
         <input 
           type="date" 
           v-model="searchCriteria.roomdate" 
@@ -259,7 +339,7 @@ watch(searchCriteria, (newVal) => {
         />
       </div>
       <div class="summary-item">
-        <span class="label">Time:</span>
+        <span class="label">{{ t.time }}</span>
         <div class="time-inputs">
            <input 
             type="time" 
@@ -275,7 +355,7 @@ watch(searchCriteria, (newVal) => {
         </div>
       </div>
       <div class="summary-item">
-        <span class="label">Min Capacity:</span>
+        <span class="label">{{ t.minCapacity }}</span>
         <input 
           type="number" 
           v-model="searchCriteria.roomcapacity" 
@@ -305,7 +385,7 @@ watch(searchCriteria, (newVal) => {
                 :class="{ selected: selectedBuilding === '' }"
                 @click="selectBuilding('')"
               >
-                All Buildings
+                {{ t.allBuildings }}
               </div>
               <div 
                 v-for="b in availableBuildings" 
@@ -323,7 +403,7 @@ watch(searchCriteria, (newVal) => {
           <input 
             type="text" 
             v-model="searchQuery" 
-            placeholder="Search room name..." 
+            :placeholder="t.searchPlaceholder" 
             class="room-search-input"
           />
           <span class="search-icon">🔍</span>
@@ -350,19 +430,19 @@ watch(searchCriteria, (newVal) => {
             <div class="detail-item">
               <span class="icon">👥</span>
               <span
-                >Capacity: <strong>{{ room.capacity }} People</strong></span
+                >{{ t.capacity }} <strong>{{ room.capacity }} {{ t.people }}</strong></span
               >
             </div>
             <div class="detail-item">
               <span class="icon">📍</span>
               <span
-                >Building: <strong>{{ room.location }}</strong></span
+                >{{ t.building }} <strong>{{ room.location }}</strong></span
               >
             </div>
           </div>
 
           <div class="card-actions">
-            <button class="book-btn" @click="bookRoom(room)">Book Now</button>
+            <button class="book-btn" @click="bookRoom(room)">{{ t.bookNow }}</button>
           </div>
         </div>
       </div>
@@ -376,7 +456,7 @@ watch(searchCriteria, (newVal) => {
         <!-- Confirmation Modal -->
         <div v-if="showBookingModal && selectedRoom" class="modal-content glass-card" key="booking">
           <div class="modal-header">
-            <h3>Confirm Booking</h3>
+            <h3>{{ t.confirmBookingTitle }}</h3>
             <button class="close-btn" @click="closeBookingModal">×</button>
           </div>
           
@@ -384,36 +464,36 @@ watch(searchCriteria, (newVal) => {
             <div class="user-info-section">
               <div class="form-grid">
                   <div class="form-group full-width">
-                     <label>Booking For (Subject)</label>
+                     <label>{{ t.bookingFor }}</label>
                      <div class="input-wrapper">
                        <span class="input-icon">📝</span>
-                       <input v-model="bookingForm.bookingFor" type="text" class="modal-input with-icon" placeholder="e.g. Lecture Class 101" />
+                       <input v-model="bookingForm.bookingFor" type="text" class="modal-input with-icon" :placeholder="t.bookingForPlaceholder" />
                      </div>
                   </div>
                   <div class="form-group full-width">
-                    <label>Tel</label>
+                    <label>{{ t.tel }}</label>
                     <div class="input-wrapper">
                       <span class="input-icon">📞</span>
-                      <input v-model="bookingForm.tel" type="text" class="modal-input with-icon" placeholder="Ext / Mobile" />
+                      <input v-model="bookingForm.tel" type="text" class="modal-input with-icon" :placeholder="t.telPlaceholder" />
                     </div>
                  </div>
                  <!-- Hardcoded hidden fields: Officer ID, Dept ID, Quantity -->
                  <div class="form-group full-width">
-                    <label>Software Needed</label>
+                    <label>{{ t.softwareNeeded }}</label>
                     <div class="toggle-container">
                       <button 
                         class="toggle-btn" 
                         :class="{ active: bookingForm.softwareNeeded === 'No' }"
                         @click="bookingForm.softwareNeeded = 'No'"
                       >
-                        No Software
+                        {{ t.noSoftware }}
                       </button>
                       <button 
                         class="toggle-btn" 
                         :class="{ active: bookingForm.softwareNeeded === 'Yes' }"
                         @click="bookingForm.softwareNeeded = 'Yes'"
                       >
-                        Yes, Needed
+                        {{ t.yesNeeded }}
                       </button>
                     </div>
                  </div>
@@ -422,7 +502,7 @@ watch(searchCriteria, (newVal) => {
 
             <div class="ticket-info">
                <div class="ticket-header">
-                 <span class="ticket-label">BOOKING DETAILS</span>
+                 <span class="ticket-label">{{ t.bookingDetails }}</span>
                  <div class="ticket-status">{{ selectedRoom.status }}</div>
                </div>
                <div class="ticket-body">
@@ -432,15 +512,15 @@ watch(searchCriteria, (newVal) => {
                  </div>
                  <div class="ticket-meta">
                     <div class="meta-item">
-                      <span class="meta-label">Date</span>
+                      <span class="meta-label">{{ t.date }}</span>
                       <span class="meta-val">{{ formattedRoomDate }}</span>
                     </div>
                     <div class="meta-item">
-                      <span class="meta-label">Time</span>
+                      <span class="meta-label">{{ t.time }}</span>
                       <span class="meta-val">{{ searchCriteria.timefrom }} - {{ searchCriteria.timeto }}</span>
                     </div>
                     <div class="meta-item">
-                      <span class="meta-label">Cap</span>
+                      <span class="meta-label">{{ t.capacity }}</span>
                       <span class="meta-val">{{ selectedRoom.capacity }}</span>
                     </div>
                  </div>
@@ -449,9 +529,9 @@ watch(searchCriteria, (newVal) => {
           </div>
 
           <div class="modal-actions">
-            <button class="cancel-btn" @click="closeBookingModal" :disabled="isBooking">Cancel</button>
+            <button class="cancel-btn" @click="closeBookingModal" :disabled="isBooking">{{ t.cancel }}</button>
             <button class="confirm-btn" @click="confirmBooking" :disabled="isBooking">
-              {{ isBooking ? 'Booking...' : 'Confirm Booking' }}
+              {{ isBooking ? t.booking : t.confirm }}
             </button>
           </div>
         </div>
@@ -464,9 +544,9 @@ watch(searchCriteria, (newVal) => {
               <path d="M22 4L12 14.01l-3-3" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <h3>Booking Confirmed!</h3>
-          <p>You have successfully booked the room.</p>
-          <button class="confirm-btn" @click="closeSuccessModal">Done</button>
+          <h3>{{ t.successTitle }}</h3>
+          <p>{{ t.successMsg }}</p>
+          <button class="confirm-btn" @click="closeSuccessModal">{{ t.done }}</button>
         </div>
 
       </div>
@@ -523,6 +603,39 @@ watch(searchCriteria, (newVal) => {
   background: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
   color: #a5b4fc;
+}
+
+.lang-btn {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+}
+
+.lang-btn span {
+  transition: color 0.3s;
+}
+
+.lang-btn .active {
+  color: #a5b4fc; /* Active Color (Blueish) */
+  font-weight: 700;
+}
+
+.lang-btn:hover {
+  color: white;
+}
+
+.divider {
+  font-size: 0.8rem;
+  opacity: 0.3;
 }
 
 .back-btn {
