@@ -8,7 +8,7 @@ const app = express();
 const PORT = 3000;
 
 // NOTE: We strip any trailing slash to avoid double-slashes when appending paths
-const API_HOST = (process.env.API_HOST || "https://roombooking.mfu.ac.th/api/").replace(/\/$/, "");
+const API_HOST = (process.env.API_HOST || "https://roombooking.mfu.ac.th/apiroombooking/").replace(/\/$/, "");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -115,7 +115,9 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
     console.error('❌ [PROXY] Search Error Message:', error.message);
     if (error.code) console.error('❌ [PROXY] Error Code:', error.code);
     if (error.response?.data) {
-        console.error('❌ [PROXY] Search Error Data:', JSON.stringify(error.response.data, null, 2));
+        let errorDataStr = JSON.stringify(error.response.data, null, 2);
+        if (errorDataStr.length > 500) errorDataStr = errorDataStr.substring(0, 500) + '... [TRUNCATED]';
+        console.error('❌ [PROXY] Search Error Data:', errorDataStr);
     }
     
     res.status(error.response?.status || 500).json(error.response?.data || { message: error.message || "Internal Server Error" });
