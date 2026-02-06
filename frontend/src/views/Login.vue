@@ -1,5 +1,9 @@
 <script setup>
 import { ref } from 'vue';
+import LanguageSwitcher from "../components/LanguageSwitcher.vue";
+import { useLanguage } from "../composables/useLanguage";
+
+const { t } = useLanguage();
 
 const loading = ref(false);
 
@@ -32,6 +36,11 @@ const handleMfuLogin = () => {
       <div class="shape shape-3"></div>
     </div>
 
+    <!-- Language Switcher (Top Right) -->
+    <div class="lang-switch-wrapper">
+      <LanguageSwitcher />
+    </div>
+
     <div class="login-wrapper">
       <div class="glass-card login-card">
         <div class="logo-area">
@@ -41,24 +50,24 @@ const handleMfuLogin = () => {
         </div>
         
         <div class="header">
-          <h1>Room Booking</h1>
-          <p class="subtitle">Mae Fah Luang University</p>
+          <h1>{{ t.welcomeTitle }}</h1>
+          <p class="subtitle">{{ t.welcomeSubtitle }}</p>
         </div>
 
         <div class="content">
-          <p class="info-text">Welcome back! Please sign in to reserve a room.</p>
+          <p class="info-text">{{ t.loginInfo }}</p>
           
           <button @click="handleMfuLogin" :disabled="loading" class="mfu-login-btn">
             <span class="btn-icon" v-if="!loading">🔐</span>
-            <span v-if="!loading">Login with MFU SSO</span>
+            <span v-if="!loading">{{ t.loginBtn }}</span>
             <span v-else class="loading-state">
-              <span class="spinner"></span> Redirecting...
+              <span class="spinner"></span> {{ t.redirecting }}
             </span>
           </button>
         </div>
         
         <div class="footer">
-           <p>© 2024 MFU Room Booking System</p>
+           <p>{{ t.footerRights }}</p>
         </div>
       </div>
     </div>
@@ -77,6 +86,13 @@ const handleMfuLogin = () => {
   align-items: center;
   /* Dark modern background */
   background: #0f172a; 
+}
+
+.lang-switch-wrapper {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
 }
 
 /* Background Shapes for Aesthetics */

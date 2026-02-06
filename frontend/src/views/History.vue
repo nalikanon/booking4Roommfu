@@ -3,6 +3,10 @@ import { useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
 import { api } from "../services/api";
 import LogoutButton from "../components/LogoutButton.vue";
+import LanguageSwitcher from "../components/LanguageSwitcher.vue";
+import { useLanguage } from "../composables/useLanguage";
+
+const { t } = useLanguage();
 
 const router = useRouter();
 
@@ -93,16 +97,19 @@ onMounted(() => {
   <div class="page-container">
     <div class="header-bar">
       <div class="left-group">
-        <button @click="goBack" class="back-btn"><span>←</span> Back</button>
-        <h1>Booking History</h1>
+        <button @click="goBack" class="back-btn"><span>←</span> {{ t.back }}</button>
+        <h1>{{ t.historyTitle }}</h1>
       </div>
-      <LogoutButton />
+      <div class="right-group">
+        <LanguageSwitcher />
+        <LogoutButton />
+      </div>
     </div>
 
     <div class="history-list">
       <div v-if="isLoading" class="loading-state">
         <div class="spinner"></div>
-        <span>Loading history...</span>
+        <span>{{ t.loadingHistory }}</span>
       </div>
       
       <div v-else-if="error" class="error-state">
@@ -110,7 +117,7 @@ onMounted(() => {
       </div>
 
       <div v-else-if="historyItems.length === 0" class="empty-state">
-        <span class="empty-icon">📂</span> No booking history found.
+        <span class="empty-icon">📂</span> {{ t.noHistory }}
       </div>
 
       <div v-else class="rooms-grid">
@@ -159,9 +166,10 @@ onMounted(() => {
   margin-bottom: 30px;
 }
 
-.left-group {
+.left-group, .right-group {
   display: flex;
   align-items: center;
+  gap: 15px; /* Add gap for switcher and logout */
 }
 
 .back-btn {

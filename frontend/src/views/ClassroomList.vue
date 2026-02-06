@@ -83,12 +83,9 @@ const filteredClassrooms = computed(() => {
   return result;
 });
 
-const currentLanguage = ref(localStorage.getItem('app_lang') || 'TH');
-
-const toggleLanguage = () => {
-    currentLanguage.value = currentLanguage.value === 'TH' ? 'EN' : 'TH';
-    localStorage.setItem('app_lang', currentLanguage.value);
-};
+const computedIsLoading = computed(() => {
+  return false; // logic
+});
 
 // --- Methods: API & Data ---
 const fetchRooms = async () => {
@@ -239,70 +236,9 @@ onMounted(async () => {
 
 watch(searchCriteria, (newVal) => {
     // Update URL query params without reloading
+    router.replace({ query: { ...newVal } });
     debouncedFetch();
 }, { deep: true });
-
-// --- UI Translations ---
-const translations = {
-  EN: {
-    title: "Available Rooms",
-    back: "Back",
-    date: "Date:",
-    time: "Time:",
-    minCapacity: "Min Capacity:",
-    searchPlaceholder: "Search room name...",
-    bookNow: "Book Now",
-    capacity: "Capacity:",
-    building: "Building:",
-    people: "People",
-    confirmBookingTitle: "Confirm Booking",
-    bookingFor: "Booking For (Subject)",
-    bookingForPlaceholder: "e.g. Lecture Class 101",
-    tel: "Tel",
-    telPlaceholder: "Ext / Mobile",
-    softwareNeeded: "Software Needed",
-    noSoftware: "No Software",
-    yesNeeded: "Yes, Needed",
-    bookingDetails: "BOOKING DETAILS",
-    cancel: "Cancel",
-    confirm: "Confirm Booking",
-    booking: "Booking...",
-    successTitle: "Booking Confirmed!",
-    successMsg: "You have successfully booked the room.",
-    done: "Done",
-    allBuildings: "All Buildings"
-  },
-  TH: {
-    title: "ห้องว่างที่จองได้",
-    back: "กลับ",
-    date: "วันที่:",
-    time: "เวลา:",
-    minCapacity: "ความจุขั้นต่ำ:",
-    searchPlaceholder: "ค้นหาชื่อห้อง...",
-    bookNow: "จองเลย",
-    capacity: "ความจุ:",
-    building: "อาคาร:",
-    people: "คน",
-    confirmBookingTitle: "ยืนยันการจอง",
-    bookingFor: "หัวข้อการจอง",
-    bookingForPlaceholder: "เช่น สอนชดเชยวิชา...",
-    tel: "เบอร์ติดต่อ",
-    telPlaceholder: "เบอร์ภายใน / มือถือ",
-    softwareNeeded: "ต้องการลงโปรแกรม",
-    noSoftware: "ไม่ต้องการ",
-    yesNeeded: "ต้องการ",
-    bookingDetails: "รายละเอียดการจอง",
-    cancel: "ยกเลิก",
-    confirm: "ยืนยันการจอง",
-    booking: "กำลังบันทึก...",
-    successTitle: "จองสำเร็จ!",
-    successMsg: "ทำการจองห้องเรียบร้อยแล้ว",
-    done: "ตกลง",
-    allBuildings: "ทุกอาคาร"
-  }
-};
-
-const t = computed(() => translations[currentLanguage.value]);
 </script>
 
 <template>
@@ -313,12 +249,7 @@ const t = computed(() => translations[currentLanguage.value]);
         <h1>{{ t.title }}</h1>
       </div>
       <div class="right-group">
-        
-        <button class="lang-btn" @click="toggleLanguage">
-             <span :class="{ active: currentLanguage === 'EN' }">EN</span>
-             <span class="divider">|</span>
-             <span :class="{ active: currentLanguage === 'TH' }">TH</span>
-        </button>
+        <LanguageSwitcher />
 
         <button @click="goToHistory" class="history-btn" title="History">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -603,39 +534,6 @@ const t = computed(() => translations[currentLanguage.value]);
   background: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
   color: #a5b4fc;
-}
-
-.lang-btn {
-  background: transparent;
-  border: none;
-  font-family: inherit;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.4);
-  padding: 8px 12px;
-  transition: all 0.3s ease;
-}
-
-.lang-btn span {
-  transition: color 0.3s;
-}
-
-.lang-btn .active {
-  color: #a5b4fc; /* Active Color (Blueish) */
-  font-weight: 700;
-}
-
-.lang-btn:hover {
-  color: white;
-}
-
-.divider {
-  font-size: 0.8rem;
-  opacity: 0.3;
 }
 
 .back-btn {
