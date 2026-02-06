@@ -70,7 +70,7 @@ export const api = {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`,
           'Language': apiCriteria.language,
-          'officerid': getUsernameFromToken(), 
+          'Language': apiCriteria.language, 
           // Custom Headers for Room Search
           ...(apiCriteria.roomdate && { 'roomdate': apiCriteria.roomdate }),
           ...(apiCriteria.timefrom && { 'timefrom': apiCriteria.timefrom }),
