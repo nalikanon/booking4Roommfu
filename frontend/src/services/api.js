@@ -42,10 +42,10 @@ export const api = {
       // Convert criteria to API format
       const apiCriteria = { ...criteria };
 
-      // Format Date: YYYY-MM-DD -> DD/MM/YYYY (Thai Standard)
+      // Format Date: YYYY-MM-DD -> MM/DD/YYYY
       if (apiCriteria.roomdate) {
         const [year, month, day] = apiCriteria.roomdate.split('-');
-        apiCriteria.roomdate = `${day}/${month}/${year}`;
+        apiCriteria.roomdate = `${month}/${day}/${year}`;
       }
 
       // Format Time: HH:mm -> HHMM
