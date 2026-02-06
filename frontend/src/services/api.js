@@ -64,7 +64,9 @@ export const api = {
       // Send criteria as Headers (not Query Strings)
       const url = `${BASE_URL}/roombooking/roombooking/roomscheduleempty`;
 
-      const headers = {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`,
           'Language': apiCriteria.language,
@@ -74,18 +76,10 @@ export const api = {
           ...(apiCriteria.timefrom && { 'timefrom': apiCriteria.timefrom }),
           ...(apiCriteria.timeto && { 'timeto': apiCriteria.timeto }),
           ...(apiCriteria.roomcapacity && { 'roomcapacity': apiCriteria.roomcapacity })
-      };
-
-      console.log('DEBUG HEADERS:', JSON.stringify(headers, null, 2));
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: headers
+        }
       });
 
       const data = await response.json();
-      console.log('API Response Status:', response.status);
-      console.log('API Response Body:', data);
 
       if (response.ok) {
         return data;

@@ -61,22 +61,7 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
       language
     } = req.headers;
 
-    console.log('Proxying Room Search Request (Headers Mode)');
-    console.log('Forwarding Headers:', { roomdate, timefrom, timeto, roomcapacity, language });
-    console.log('Authorization Token (Partial):', authorization ? authorization.substring(0, 20) + '...' : 'None');
-    
-    console.log('Authorization Token (Partial):', authorization ? authorization.substring(0, 20) + '...' : 'None');
-    
-    console.log('Authorization Token (Partial):', authorization ? authorization.substring(0, 20) + '...' : 'None');
-    
-    console.log('Authorization Token (Partial):', authorization ? authorization.substring(0, 20) + '...' : 'None');
-    
-    // User confirmed path: /roombooking/roombooking/roomscheduleempty
-    // We assume the base is https://api.mfu.ac.th (without extra path prefixes)
-    const targetUrl = `https://api.mfu.ac.th/roombooking/roombooking/roomscheduleempty`;
-    console.error('🔗 [PROXY] Upstream URL (Exact Path):', targetUrl);
-
-    const response = await axios.get(targetUrl, {
+    const response = await axios.get(`${API_HOST}/roombooking/roombooking/roomscheduleempty`, {
       // NOTE: API requires criteria in HEADERS, not query params
       headers: {
         'Authorization': authorization,
@@ -90,11 +75,9 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
         ...(req.headers.officerid && { 'officerid': req.headers.officerid })
       }
     });
-    console.log('Room Search Success:', response.data?.length || 'No data');
+
     res.json(response.data);
   } catch (error) {
-    console.error('Room Search Error Status:', error.response?.status);
-    console.error('Room Search Error Data:', error.response?.data || error.message);
     res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
   }
 });
