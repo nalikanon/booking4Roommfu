@@ -27,6 +27,40 @@ const CLIENT_ID = process.env.CLIENT_ID || 'c4f25000-ccac-4320-8ccf-2c4cb742f04c
 const CLIENT_SECRET = process.env.CLIENT_SECRET || 'eM3IqlafXcISqaWpyGV_KfWJm8_HFmyKGZF9hOwr';
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://roombooking.mfu.ac.th/auth/callback';
 
+// App Credentials for System Token
+const APP_USERNAME = "Um9vbUJvb2tpbmc=";
+const APP_PASSWORD = "RDBoWjZfNnpydEN3";
+
+let systemToken = null;
+let systemTokenExpiresAt = 0;
+
+async function getSystemToken() {
+    // Check if token exists and is valid (simple check, or force refresh if close to expiry)
+    // For now, simple caching. In production, check 'exp' claim.
+    if (systemToken) return systemToken;
+
+    console.log('🔄 [BACKEND] Fetching new System Token...');
+    try {
+        const response = await axios.post(`${API_HOST}/authen/APIAppLogin`, {
+            username: APP_USERNAME,
+            password: APP_PASSWORD
+        }, {
+             httpsAgent: new https.Agent({ rejectUnauthorized: false })
+        });
+
+        if (response.data && response.data.token) {
+            console.log('✅ [BACKEND] System Token Acquired');
+            systemToken = response.data.token;
+            return systemToken;
+        } else {
+            throw new Error('No token in response');
+        }
+    } catch (error) {
+        console.error('❌ [BACKEND] Failed to get System Token:', error.message);
+        throw error;
+    }
+}
+
 app.post('/authen/exchange', async (req, res) => {
     try {
         const { code } = req.body;
@@ -100,11 +134,19 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
         'language': language
     });
 
+    // Use System Token instead of User Token for the upstream call
+    let upstreamToken = null;
+    try {
+        upstreamToken = await getSystemToken();
+    } catch (e) {
+        return res.status(500).json({ message: "Failed to authenticate with backend system" });
+    }
+
     const response = await axios.get(`${API_HOST}/roombooking/roombooking/roomscheduleempty`, {
       httpsAgent: new https.Agent({ rejectUnauthorized: false }), // Ignore SSL errors
       // NOTE: API requires criteria in HEADERS, not query params
       headers: {
-        'Authorization': sanitizedAuth,
+        'Authorization': `Bearer ${upstreamToken}`, // Use System Token
         'Content-Type': 'application/json',
         'Language': language || 'TH',
         // Forward the specific headers expected by the API
@@ -114,7 +156,13 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
         ...(roomcapacity && { 'roomcapacity': roomcapacity })
       }
     });
-
+    
+    console.log('✅ [PROXY] Response Status:', response.status);
+    console.log('✅ [PROXY] Response Source URL:', response.config.url);
+    if (typeof response.data === 'string' && response.data.trim().startsWith('<!doctype html>')) {
+        console.error('🚨 [PROXY_ALERT] Received HTML instead of JSON!');
+    }
+    
     res.json(response.data);
   } catch (error) {
     console.error('❌ [PROXY] Search Error Status:', error.response?.status);
