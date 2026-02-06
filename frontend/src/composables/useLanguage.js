@@ -98,7 +98,10 @@ const translations = {
 };
 
 export function useLanguage() {
-  const t = computed(() => translations[currentLanguage.value]);
+  const t = computed(() => {
+    const lang = translations[currentLanguage.value] ? currentLanguage.value : 'TH';
+    return translations[lang];
+  });
 
   const toggleLanguage = () => {
     currentLanguage.value = currentLanguage.value === 'TH' ? 'EN' : 'TH';

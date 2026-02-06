@@ -3,8 +3,11 @@ import { ref, onMounted, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { api } from "../services/api";
 import LogoutButton from "../components/LogoutButton.vue";
+import LanguageSwitcher from "../components/LanguageSwitcher.vue";
+import { useLanguage } from "../composables/useLanguage";
 
 // --- Setup & Routing ---
+const { t } = useLanguage(); 
 const router = useRouter();
 const route = useRoute();
 
