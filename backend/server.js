@@ -70,8 +70,14 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
     console.log('Proxying Room Search Request (Headers Mode)');
     console.log('Forwarding Headers:', { roomdate, timefrom, timeto, roomcapacity, language });
     console.log('Authorization Token (Partial):', authorization ? authorization.substring(0, 20) + '...' : 'None');
+    
+    console.log('Authorization Token (Partial):', authorization ? authorization.substring(0, 20) + '...' : 'None');
+    
+    // Try removing one layer of nesting: /roombooking/roombooking -> /roombooking
+    const targetUrl = `${API_HOST}/roombooking/roomscheduleempty`;
+    console.error('🔗 [PROXY] Upstream URL:', targetUrl);
 
-    const response = await axios.get(`${API_HOST}/roombooking/roombooking/roomscheduleempty`, {
+    const response = await axios.get(targetUrl, {
       // NOTE: API requires criteria in HEADERS, not query params
       headers: {
         'Authorization': authorization,
