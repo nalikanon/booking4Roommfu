@@ -7,7 +7,7 @@ const app = express();
 const PORT = 3000;
 
 // NOTE: We strip any trailing slash to avoid double-slashes when appending paths
-const API_HOST = (process.env.API_HOST || "https://api.mfu.ac.th/apiroombooking/").replace(/\/$/, "");
+const API_HOST = (process.env.API_HOST || "https://roombooking.mfu.ac.th/api/").replace(/\/$/, "");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -67,32 +67,8 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
       language
     } = req.headers;
 
-    let sanitizedAuth = authorization ? authorization.trim() : null;
-    
     console.log('\n🔍 [PROXY] Room Search Request');
     console.log(`🔗 [PROXY] Upstream URL: ${API_HOST}/roombooking/roombooking/roomscheduleempty`);
-    
-    if (sanitizedAuth && sanitizedAuth.startsWith('Bearer ')) {
-       try {
-           const tokenPart = sanitizedAuth.split(' ')[1];
-           const headerPart = tokenPart.split('.')[0];
-           const buff = Buffer.from(headerPart, 'base64');
-           const decodedHeader = JSON.parse(buff.toString('utf-8'));
-           console.log('🕵️ [DEBUG] JWT Header:', decodedHeader);
-           console.log('🔐 [DEBUG] JWT Algorithm:', decodedHeader.alg);
-           // Add warning for unusual alg
-           if (!['RS256', 'HS256', 'PS256', 'ES256'].includes(decodedHeader.alg)) { // Common algorithms, adjust as needed
-               console.warn('⚠️ [DEBUG] Unusual JWT Algorithm detected:', decodedHeader.alg);
-           }
-       } catch (e) {
-           console.error('⚠️ [DEBUG] Could not decode JWT Header:', e.message);
-       }
-    } else if (sanitizedAuth) {
-        console.log('🔑 Auth Header Present (non-Bearer):', sanitizedAuth.substring(0, 15) + '...');
-    } else {
-        console.warn('⚠️ NO AUTHORIZATION HEADER RECEIVED');
-    }
-
     console.log('📋 Forwarding Headers:', {
         'roomdate': roomdate,
         'timefrom': timefrom,
