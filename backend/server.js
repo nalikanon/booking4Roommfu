@@ -44,8 +44,21 @@ app.post('/authen/exchange', async (req, res) => {
         });
 
         console.log('Token Exchange Success');
-        console.log('📦 [DEBUG] Login Response Data:', JSON.stringify(response.data, null, 2));
-        // Return the full response from MFU SSO (access_token, id_token, etc.)
+        
+        // --- Decode and Log User Profile ---
+        if (response.data.id_token) {
+            try {
+                const parts = response.data.id_token.split('.');
+                if (parts.length === 3) {
+                    const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf-8'));
+                    console.log('� [DEBUG] User Profile:', JSON.stringify(payload, null, 2));
+                }
+            } catch (e) {
+                console.error('⚠️ Failed to decode id_token:', e.message);
+            }
+        }
+        // -----------------------------------
+
         res.json(response.data);
 
     } catch (error) {
@@ -95,8 +108,13 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
     res.json(response.data);
   } catch (error) {
     console.error('❌ [PROXY] Search Error Status:', error.response?.status);
-    console.error('❌ [PROXY] Search Error Data:', JSON.stringify(error.response?.data, null, 2));
-    res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
+    console.error('❌ [PROXY] Search Error Message:', error.message);
+    if (error.code) console.error('❌ [PROXY] Error Code:', error.code);
+    if (error.response?.data) {
+        console.error('❌ [PROXY] Search Error Data:', JSON.stringify(error.response.data, null, 2));
+    }
+    
+    res.status(error.response?.status || 500).json(error.response?.data || { message: error.message || "Internal Server Error" });
   }
 });
 
