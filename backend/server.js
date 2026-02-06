@@ -73,9 +73,12 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
     
     console.log('Authorization Token (Partial):', authorization ? authorization.substring(0, 20) + '...' : 'None');
     
-    // Try removing one layer of nesting: /roombooking/roombooking -> /roombooking
-    const targetUrl = `${API_HOST}/roombooking/roomscheduleempty`;
-    console.error('🔗 [PROXY] Upstream URL:', targetUrl);
+    console.log('Authorization Token (Partial):', authorization ? authorization.substring(0, 20) + '...' : 'None');
+    
+    // Try shortest path: /roombooking/roomscheduleempty -> /roomscheduleempty
+    // Assuming API_HOST ends with /apiroombooking or equivalent prefix
+    const targetUrl = `${API_HOST}/roomscheduleempty`;
+    console.error('🔗 [PROXY] Upstream URL (Shortest):', targetUrl);
 
     const response = await axios.get(targetUrl, {
       // NOTE: API requires criteria in HEADERS, not query params
