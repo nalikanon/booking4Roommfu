@@ -236,8 +236,8 @@ onMounted(async () => {
   // Set Officer ID from Token (Remove UAT prefix)
   const currentUser = api.getUser();
   if (currentUser) {
-      // Remove "UAT" (case-insensitive)
-      const cleanId = currentUser.replace(/UAT/ig, '');
+      // Remove all non-digits (leaves only the number)
+      const cleanId = currentUser.replace(/\D/g, '');
       bookingForm.value.officerId = cleanId;
       console.log(`Setting Officer ID: ${cleanId} (from ${currentUser})`);
   }
