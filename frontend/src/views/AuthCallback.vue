@@ -7,6 +7,26 @@ const router = useRouter();
 const route = useRoute();
 const error = ref('');
 const status = ref('Authenticating with MFU SSO...');
+const tempIdToken = ref('');
+
+const handleLogout = () => {
+  const redirectUri = window.location.origin; // Redirect to Clean Login Page (root)
+  const idToken = tempIdToken.value || localStorage.getItem('id_token');
+
+  // Clear Local Storage
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('id_token');
+  localStorage.removeItem('app_token');
+
+  if (idToken) {
+    // MFU SSO Logout
+    const logoutUrl = `https://authsso.mfu.ac.th/adfs/oauth2/logout?id_token_hint=${idToken}&post_logout_redirect_uri=${redirectUri}`;
+    window.location.href = logoutUrl;
+  } else {
+    // Fallback if no ID token
+    router.push('/');
+  }
+};
 
 onMounted(async () => {
   const code = route.query.code;
@@ -27,6 +47,12 @@ onMounted(async () => {
     if (response.data && response.data.access_token) {
       // Decode Token to check for Role/Email
       const accessToken = response.data.access_token;
+      
+      // Store ID Token temporarily in case we need to logout immediately (Access Denied)
+      if (response.data.id_token) {
+          tempIdToken.value = response.data.id_token;
+      }
+
       let email = '';
       
       try {
@@ -45,6 +71,7 @@ onMounted(async () => {
       if (!isStaff) {
           error.value = 'Access Denied: Staff Only (@mfu.ac.th)';
           status.value = 'Unauthorized';
+          // Do NOT save tokens to localStorage if access is denied
           return;
       }
 
@@ -77,7 +104,7 @@ onMounted(async () => {
       <h2>MFU SSO Login</h2>
       <div v-if="error" class="error">
         <p>❌ {{ error }}</p>
-        <button @click="router.push('/')">Return to Login</button>
+        <button @click="handleLogout" class="logout-btn">Logout</button>
       </div>
       <div v-else class="loading">
         <div class="spinner"></div>
@@ -131,17 +158,18 @@ onMounted(async () => {
   100% { transform: rotate(360deg); }
 }
 
-button {
+.logout-btn {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  background-color: #3b82f6;
+  background-color: #ef4444; /* Red for logout */
   color: white;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-button:hover {
-  background-color: #2563eb;
+.logout-btn:hover {
+  background-color: #dc2626;
 }
 </style>
