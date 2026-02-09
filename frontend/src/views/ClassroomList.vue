@@ -233,6 +233,15 @@ onMounted(async () => {
     router.replace({ query }); 
   }
   
+  // Set Officer ID from Token (Remove UAT prefix)
+  const currentUser = api.getUser();
+  if (currentUser) {
+      // Remove "UAT" (case-insensitive)
+      const cleanId = currentUser.replace(/UAT/ig, '');
+      bookingForm.value.officerId = cleanId;
+      console.log(`Setting Officer ID: ${cleanId} (from ${currentUser})`);
+  }
+
   searchCriteria.value = query;
   await fetchRooms();
 });

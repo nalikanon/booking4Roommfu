@@ -176,5 +176,7 @@ export const api = {
       console.error('API Error:', error);
       return [];
     }
-  }
+  },
+
+  getUser: getUsernameFromToken
 };
