@@ -189,19 +189,21 @@ app.post('/roombooking/roombooking/roombookingins', async (req, res) => {
     console.log('==================================================');
     console.log('📦 Payload:', JSON.stringify(bookingData, null, 2));
     
-    // Check if token exists
-    if (!authorization) {
-        console.warn('⚠️  Warning: No Authorization Header provided!');
-    } else {
-        console.log('🔑 Authorization Token Provided');
+    // Use System Token instead of User Token (as requested)
+    let upstreamToken = null;
+    try {
+        upstreamToken = await getSystemToken();
+    } catch (e) {
+        return res.status(500).json({ message: "Failed to authenticate with backend system" });
     }
 
     const response = await axios.post(`${API_HOST}/roombooking/roombooking/roombookingins`, bookingData, {
       headers: {
-        'Authorization': authorization,
+        'Authorization': `Bearer ${upstreamToken}`,
         'Content-Type': 'application/json',
         'Language': language || 'th'
-      }
+      },
+      httpsAgent: new https.Agent({ rejectUnauthorized: false })
     });
 
     console.log('✅ [BACKEND] BOOKING API RESPONSE SUCCESS:');
