@@ -14,8 +14,8 @@ function getUsernameFromToken() {
   try {
     const decoded = jwtDecode(idToken);
     // Adjust this based on the actual claim name for username (e.g., upn, unique_name, sAMAccountName, or email)
-    // The user said "send that username"
-    return decoded.upn || decoded.unique_name || decoded.email || decoded.sub; 
+    // The user said "send that username". We prioritize fields that are likely to contain the numeric ID.
+    return decoded.username || decoded.unique_name || decoded.upn || decoded.email || decoded.sub; 
   } catch (e) {
     console.error("Failed to decode token", e);
     return null;
