@@ -40,7 +40,7 @@ const fetchHistory = async () => {
             roomName: item.ROOMNAME, 
             date: item.ROOMBOOKINGDATE,
             time: `${formatTime(item.TIMEFROM)} - ${formatTime(item.TIMETO)}`,
-            status: item.ROOMBOOKINGSTATUSNAMEENG, 
+            statusRaw: item.ROOMBOOKINGSTATUSNAMEENG, 
             statusClass: getStatusClass(item.ROOMBOOKINGSTATUSNAMEENG),
             image: getRandomImage(item.BOOKINGID)
         }));
@@ -53,6 +53,18 @@ const fetchHistory = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+const getTranslatedStatus = (statusRaw) => {
+    if (!statusRaw) return t.value.statusUnknown;
+    const s = statusRaw.toLowerCase();
+    
+    if (s.includes('not approved')) return t.value.statusNotApproved;
+    if (s.includes('approve')) return t.value.statusApproved;
+    if (s.includes('pending')) return t.value.statusPending;
+    if (s.includes('cancel')) return t.value.statusCancelled;
+    
+    return statusRaw; // Fallback to raw English if no match
 };
 
 const getStatusClass = (status) => {
@@ -163,7 +175,7 @@ onMounted(() => {
               class="card-image"
               :style="{ backgroundImage: `url(${item.image})` }"
             >
-              <div class="badge status-badge" :class="item.statusClass">{{ item.status }}</div>
+              <div class="badge status-badge" :class="item.statusClass">{{ getTranslatedStatus(item.statusRaw) }}</div>
             </div>
 
             <div class="card-content">
