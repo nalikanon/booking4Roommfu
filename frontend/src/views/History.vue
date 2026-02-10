@@ -58,6 +58,17 @@ const getStatusClass = (status) => {
     return 'unknown';
 };
 
+const cancelBooking = (bookingId) => {
+    if (confirm("Are you sure you want to cancel this booking?")) {
+        // Mock cancellation logic
+        console.log(`Cancelling booking with ID: ${bookingId}`);
+        alert("Booking cancelled successfully (Mock)");
+        
+        // Optimistically update UI (optional, for better UX in mock)
+        historyItems.value = historyItems.value.filter(item => item.id !== bookingId);
+    }
+};
+
 const formatTime = (timeStr) => {
     if (!timeStr) return "";
     // Insert colon if missing (e.g., 0900 -> 09:00)
@@ -144,6 +155,10 @@ onMounted(() => {
                    <span>{{ item.time }}</span>
                  </div>
               </div>
+              
+              <button class="cancel-btn" @click="cancelBooking(item.id)">
+                <span>✖</span> {{ t.cancelBooking || 'Cancel' }}
+              </button>
             </div>
          </div>
       </div>
@@ -297,6 +312,28 @@ h1 {
   display: flex;
   align-items: flex-start;
   gap: 8px;
+}
+
+.cancel-btn {
+  margin-top: auto;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background: rgba(239, 68, 68, 0.4);
+  transform: translateY(-2px);
+  color: white;
 }
 
 .detail-item .icon {
