@@ -1,9 +1,12 @@
+</script>
+
 <script setup>
 import { useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
 import { api } from "../services/api";
 import LogoutButton from "../components/LogoutButton.vue";
 import LanguageSwitcher from "../components/LanguageSwitcher.vue";
+import ConfirmModal from "../components/ConfirmModal.vue";
 import { useLanguage } from "../composables/useLanguage";
 
 const { t } = useLanguage();
@@ -17,6 +20,11 @@ const goBack = () => {
 const historyItems = ref([]);
 const isLoading = ref(true);
 const error = ref(null);
+
+// Modal State
+const showModal = ref(false);
+const modalLoading = ref(false);
+const pendingCancelGuid = ref(null);
 
 const fetchHistory = async () => {
   isLoading.value = true;
@@ -59,23 +67,33 @@ const getStatusClass = (status) => {
     return 'unknown';
 };
 
-const cancelBooking = async (bookingGuid) => {
-    if (confirm("Are you sure you want to cancel this booking?")) {
-        // Real API Call
-        try {
-            const result = await api.cancelBooking(bookingGuid);
-            
-            if (result.success) {
-                alert("Booking cancelled successfully!");
-                // Refresh list to show updated status
-                fetchHistory(); 
-            } else {
-                alert("Failed to cancel booking: " + (result.message || "Unknown error"));
-            }
-        } catch (e) {
-            console.error(e);
-            alert("An error occurred while cancelling.");
+const openCancelModal = (bookingGuid) => {
+    pendingCancelGuid.value = bookingGuid;
+    showModal.value = true;
+};
+
+const handleConfirmCancel = async () => {
+    if (!pendingCancelGuid.value) return;
+    
+    modalLoading.value = true;
+    try {
+        const result = await api.cancelBooking(pendingCancelGuid.value);
+        if (result.success) {
+            // Success
+            showModal.value = false;
+            fetchHistory(); // Refresh list
+            // Optional: Show success toast here if we had a toast component
+        } else {
+            alert("Failed to cancel: " + (result.message || "Unknown error"));
+            showModal.value = false;
         }
+    } catch (e) {
+        console.error(e);
+        alert("An error occurred.");
+        showModal.value = false;
+    } finally {
+        modalLoading.value = false;
+        pendingCancelGuid.value = null;
     }
 };
 
@@ -166,13 +184,30 @@ onMounted(() => {
                  </div>
               </div>
               
-              <button class="cancel-btn" @click="cancelBooking(item.guid)">
+              <button 
+                class="cancel-btn" 
+                @click="openCancelModal(item.guid)"
+                v-if="item.statusClass !== 'cancelled'" 
+              >
                 <span>✖</span> {{ t.cancelBooking || 'Cancel' }}
               </button>
             </div>
          </div>
       </div>
     </div>
+
+    <!-- Confirm Modal -->
+    <ConfirmModal 
+        :visible="showModal"
+        :title="t.confirmCancelTitle || 'Cancel Booking'"
+        :message="t.confirmCancelMsg || 'Are you sure you want to cancel this booking? This action cannot be undone.'"
+        :confirmText="t.confirmYes || 'Yes, Cancel'"
+        :cancelText="t.confirmNo || 'No, Keep it'"
+        :isLoading="modalLoading"
+        type="danger"
+        @confirm="handleConfirmCancel"
+        @cancel="showModal = false"
+    />
   </div>
 </template>
 
