@@ -195,5 +195,50 @@ export const api = {
     }
   },
 
+  async cancelBooking(checkIdOrGuid) {
+    if (!authToken) {
+        return { success: false, message: 'Authentication required' };
+    }
+
+    // Attempt to handle both simple ID or GUID, but the API specifically asks for "roombookingguid"
+    // We will assume the passed argument is the GUID.
+    const payload = {
+        roombookingguid: checkIdOrGuid
+    };
+
+    console.log('------------------------------------------');
+    console.log('API Request: [PUT] /roombooking/roombooking/cancelroombooking');
+    console.log('Payload:', payload);
+
+    try {
+        const url = `${BASE_URL}/roombooking/roombooking/cancelroombooking`;
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        console.log('API Response Status:', response.status);
+        console.log('API Response Body:', data);
+
+        if (response.ok) {
+            return { success: true, data };
+        } else {
+             if (response.status === 401) {
+                localStorage.removeItem('access_token');
+                window.location.href = '/';
+             }
+            return { success: false, message: data.message || 'Cancellation failed' };
+        }
+    } catch (error) {
+        console.error('API Error:', error);
+        return { success: false, message: error.message };
+    }
+  },
+
   getUser: getUsernameFromToken
 };

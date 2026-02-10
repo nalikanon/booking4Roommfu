@@ -29,12 +29,13 @@ const fetchHistory = async () => {
     if (Array.isArray(historyData)) {
         historyItems.value = historyData.map(item => ({
             id: item.BOOKINGID,
+            // Try to find the GUID. The exact casing might vary (UPPERCASE from Oracle usually).
+            guid: item.ROOMBOOKINGGUID || item.roombookingguid || item.BOOKINGID, 
             roomName: item.ROOMNAME, 
             date: item.ROOMBOOKINGDATE,
             time: `${formatTime(item.TIMEFROM)} - ${formatTime(item.TIMETO)}`,
             status: item.ROOMBOOKINGSTATUSNAMEENG, 
             statusClass: getStatusClass(item.ROOMBOOKINGSTATUSNAMEENG),
-            // Use random image since API doesn't provide one
             image: getRandomImage(item.BOOKINGID)
         }));
     } else {
@@ -58,27 +59,25 @@ const getStatusClass = (status) => {
     return 'unknown';
 };
 
-const cancelBooking = (bookingId) => {
+const cancelBooking = async (bookingGuid) => {
     if (confirm("Are you sure you want to cancel this booking?")) {
-        // Mock cancellation logic
-        console.log(`Cancelling booking with ID: ${bookingId}`);
-        alert("Booking cancelled successfully (Mock)");
-        
-        // Optimistically update UI (optional, for better UX in mock)
-        historyItems.value = historyItems.value.filter(item => item.id !== bookingId);
+        // Real API Call
+        try {
+            const result = await api.cancelBooking(bookingGuid);
+            
+            if (result.success) {
+                alert("Booking cancelled successfully!");
+                // Refresh list to show updated status
+                fetchHistory(); 
+            } else {
+                alert("Failed to cancel booking: " + (result.message || "Unknown error"));
+            }
+        } catch (e) {
+            console.error(e);
+            alert("An error occurred while cancelling.");
+        }
     }
 };
-
-const formatTime = (timeStr) => {
-    if (!timeStr) return "";
-    // Insert colon if missing (e.g., 0900 -> 09:00)
-    if (timeStr.length === 4 && !timeStr.includes(':')) {
-        return `${timeStr.slice(0, 2)}:${timeStr.slice(2)}`;
-    }
-    return timeStr;
-}
-
-const getRandomImage = (id) => {
     // Generate a pseudo-random index based on the ID string
     let hash = 0;
     if (id) {
@@ -156,7 +155,7 @@ onMounted(() => {
                  </div>
               </div>
               
-              <button class="cancel-btn" @click="cancelBooking(item.id)">
+              <button class="cancel-btn" @click="cancelBooking(item.guid)">
                 <span>✖</span> {{ t.cancelBooking || 'Cancel' }}
               </button>
             </div>

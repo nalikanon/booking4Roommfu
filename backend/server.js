@@ -304,6 +304,60 @@ app.get('/roombooking/roombooking/roombookinghistory', async (req, res) => {
   await executeHistoryQuery();
 });
 
+// Room Booking Cancel Endpoint Proxy
+app.put('/roombooking/roombooking/cancelroombooking', async (req, res) => {
+    const executeCancel = async (retryCount = 0) => {
+        try {
+            const { authorization, language } = req.headers;
+            const cancelData = req.body;
+  
+            console.log('\n\n==================================================');
+            console.log(`🗑️ [BACKEND] RECEIVED CANCEL REQUEST (Attempt ${retryCount + 1})`);
+            console.log('📦 Payload:', JSON.stringify(cancelData, null, 2));
+          
+            // Use System Token
+            let upstreamToken = null;
+            try {
+                if (retryCount > 0) {
+                    console.log('🔄 [PROXY] Forcing token refresh before retry...');
+                    systemToken = null; 
+                }
+                upstreamToken = await getSystemToken();
+            } catch (e) {
+                return res.status(500).json({ message: "Failed to authenticate with backend system" });
+            }
+  
+            const response = await axios.put(`${API_HOST}/roombooking/roombooking/cancelroombooking`, cancelData, {
+                headers: {
+                    'Authorization': `Bearer ${upstreamToken}`,
+                    'Content-Type': 'application/json',
+                    'Language': language || 'th'
+                },
+                httpsAgent: new https.Agent({ rejectUnauthorized: false })
+            });
+  
+            console.log('✅ [BACKEND] CANCEL API RESPONSE SUCCESS:');
+            console.log(JSON.stringify(response.data, null, 2));
+            console.log('==================================================\n');
+          
+            res.json(response.data);
+        } catch (error) {
+             // RETRY LOGIC FOR 401
+            if (error.response?.status === 401 && retryCount < 1) {
+                console.warn(`⚠️ [BACKEND] Cancel 401 Unauthorized. Retrying...`);
+                return executeCancel(retryCount + 1);
+            }
+  
+            console.error('\n❌ [BACKEND] CANCEL API ERROR:');
+            console.error('Status:', error.response?.status);
+            console.error('Data:', JSON.stringify(error.response?.data || error.message, null, 2));
+            res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
+        }
+    };
+  
+    await executeCancel();
+});
+
 app.listen(PORT, () => {
   console.log(`Backend Proxy Server running on http://localhost:${PORT}`);
   console.log(`Proxying requests to: ${API_HOST}`);
