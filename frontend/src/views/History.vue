@@ -1,5 +1,3 @@
-</script>
-
 <script setup>
 import { useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
