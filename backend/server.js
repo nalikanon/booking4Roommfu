@@ -110,114 +110,143 @@ app.post('/authen/exchange', async (req, res) => {
 
 // Room Search Endpoint Proxy
 app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
-  try {
-    // Extract custom headers from the incoming request
-    // User's Postman reference shows these are sent as Headers, not Query Params
-    const {
-      authorization,
-      roomdate,
-      timefrom,
-      timeto,
-      roomcapacity,
-      language
-    } = req.headers;
+  const executeRequest = async (retryCount = 0) => {
+      try {
+        // Extract custom headers from the incoming request
+        const {
+          authorization,
+          roomdate,
+          timefrom,
+          timeto,
+          roomcapacity,
+          language
+        } = req.headers;
+    
+        const sanitizedAuth = authorization ? authorization.trim() : null;
+    
+        console.log(`\n🔍 [PROXY] Room Search Request (Attempt ${retryCount + 1})`);
+        console.log(`🔗 [PROXY] Upstream URL: ${API_HOST}/roombooking/roombooking/roomscheduleempty`);
+        console.log('📋 Forwarding Headers:', {
+            'roomdate': roomdate,
+            'timefrom': timefrom,
+            'timeto': timeto,
+            'roomcapacity': roomcapacity,
+            'language': language
+        });
+    
+        // Use System Token instead of User Token for the upstream call
+        let upstreamToken = null;
+        try {
+            // If retrying, force refresh the token
+            if (retryCount > 0) {
+                console.log('🔄 [PROXY] Forcing token refresh before retry...');
+                systemToken = null; 
+            }
+            upstreamToken = await getSystemToken();
+        } catch (e) {
+            return res.status(500).json({ message: "Failed to authenticate with backend system" });
+        }
+    
+        const response = await axios.get(`${API_HOST}/roombooking/roombooking/roomscheduleempty`, {
+          httpsAgent: new https.Agent({ rejectUnauthorized: false }), // Ignore SSL errors
+          // NOTE: API requires criteria in HEADERS, not query params
+          headers: {
+            'Authorization': `Bearer ${upstreamToken}`, // Use System Token
+            'Content-Type': 'application/json',
+            'Language': language || 'TH',
+            // Forward the specific headers expected by the API
+            ...(roomdate && { 'roomdate': roomdate }),
+            ...(timefrom && { 'timefrom': timefrom }),
+            ...(timeto && { 'timeto': timeto }),
+            ...(roomcapacity && { 'roomcapacity': roomcapacity })
+          }
+        });
+        
+        console.log('✅ [PROXY] Response Status:', response.status);
+        console.log('✅ [PROXY] Response Source URL:', response.config.url);
+        if (typeof response.data === 'string' && response.data.trim().startsWith('<!doctype html>')) {
+            console.error('🚨 [PROXY_ALERT] Received HTML instead of JSON!');
+        }
+        
+        res.json(response.data);
+      } catch (error) {
+        // RETRY LOGIC FOR 401
+        if (error.response?.status === 401 && retryCount < 1) {
+            console.warn(`⚠️ [PROXY] Received 401 Unauthorized. Token might be expired. Retrying...`);
+            return executeRequest(retryCount + 1);
+        }
 
-    const sanitizedAuth = authorization ? authorization.trim() : null;
-
-    console.log('\n🔍 [PROXY] Room Search Request');
-    console.log(`🔗 [PROXY] Upstream URL: ${API_HOST}/roombooking/roombooking/roomscheduleempty`);
-    console.log('📋 Forwarding Headers:', {
-        'roomdate': roomdate,
-        'timefrom': timefrom,
-        'timeto': timeto,
-        'roomcapacity': roomcapacity,
-        'language': language
-    });
-
-    // Use System Token instead of User Token for the upstream call
-    let upstreamToken = null;
-    try {
-        upstreamToken = await getSystemToken();
-    } catch (e) {
-        return res.status(500).json({ message: "Failed to authenticate with backend system" });
-    }
-
-    const response = await axios.get(`${API_HOST}/roombooking/roombooking/roomscheduleempty`, {
-      httpsAgent: new https.Agent({ rejectUnauthorized: false }), // Ignore SSL errors
-      // NOTE: API requires criteria in HEADERS, not query params
-      headers: {
-        'Authorization': `Bearer ${upstreamToken}`, // Use System Token
-        'Content-Type': 'application/json',
-        'Language': language || 'TH',
-        // Forward the specific headers expected by the API
-        ...(roomdate && { 'roomdate': roomdate }),
-        ...(timefrom && { 'timefrom': timefrom }),
-        ...(timeto && { 'timeto': timeto }),
-        ...(roomcapacity && { 'roomcapacity': roomcapacity })
+        console.error('❌ [PROXY] Search Error Status:', error.response?.status);
+        console.error('❌ [PROXY] Search Error Message:', error.message);
+        if (error.code) console.error('❌ [PROXY] Error Code:', error.code);
+        if (error.response?.data) {
+            let errorDataStr = JSON.stringify(error.response.data, null, 2);
+            if (errorDataStr.length > 500) errorDataStr = errorDataStr.substring(0, 500) + '... [TRUNCATED]';
+            console.error('❌ [PROXY] Search Error Data:', errorDataStr);
+        }
+        
+        res.status(error.response?.status || 500).json(error.response?.data || { message: error.message || "Internal Server Error" });
       }
-    });
-    
-    console.log('✅ [PROXY] Response Status:', response.status);
-    console.log('✅ [PROXY] Response Source URL:', response.config.url);
-    if (typeof response.data === 'string' && response.data.trim().startsWith('<!doctype html>')) {
-        console.error('🚨 [PROXY_ALERT] Received HTML instead of JSON!');
-    }
-    
-    res.json(response.data);
-  } catch (error) {
-    console.error('❌ [PROXY] Search Error Status:', error.response?.status);
-    console.error('❌ [PROXY] Search Error Message:', error.message);
-    if (error.code) console.error('❌ [PROXY] Error Code:', error.code);
-    if (error.response?.data) {
-        let errorDataStr = JSON.stringify(error.response.data, null, 2);
-        if (errorDataStr.length > 500) errorDataStr = errorDataStr.substring(0, 500) + '... [TRUNCATED]';
-        console.error('❌ [PROXY] Search Error Data:', errorDataStr);
-    }
-    
-    res.status(error.response?.status || 500).json(error.response?.data || { message: error.message || "Internal Server Error" });
-  }
+  };
+
+  await executeRequest();
 });
 
 // Room Booking Endpoint Proxy
 app.post('/roombooking/roombooking/roombookingins', async (req, res) => {
-  try {
-    const { authorization, language } = req.headers;
-    const bookingData = req.body;
-
-    console.log('\n\n==================================================');
-    console.log('🔔 [BACKEND] RECEIVED BOOKING REQUEST (POST /roombooking/roombooking/roombookingins)');
-    console.log('==================================================');
-    console.log('📦 Payload:', JSON.stringify(bookingData, null, 2));
+  const executeBooking = async (retryCount = 0) => {
+      try {
+        const { authorization, language } = req.headers;
+        const bookingData = req.body;
     
-    // Use System Token instead of User Token (as requested)
-    let upstreamToken = null;
-    try {
-        upstreamToken = await getSystemToken();
-    } catch (e) {
-        return res.status(500).json({ message: "Failed to authenticate with backend system" });
-    }
-
-    const response = await axios.post(`${API_HOST}/roombooking/roombooking/roombookingins`, bookingData, {
-      headers: {
-        'Authorization': `Bearer ${upstreamToken}`,
-        'Content-Type': 'application/json',
-        'Language': language || 'th'
-      },
-      httpsAgent: new https.Agent({ rejectUnauthorized: false })
-    });
-
-    console.log('✅ [BACKEND] BOOKING API RESPONSE SUCCESS:');
-    console.log(JSON.stringify(response.data, null, 2));
-    console.log('==================================================\n');
+        console.log('\n\n==================================================');
+        console.log(`🔔 [BACKEND] RECEIVED BOOKING REQUEST (Attempt ${retryCount + 1})`);
+        console.log('==================================================');
+        console.log('📦 Payload:', JSON.stringify(bookingData, null, 2));
+        
+        // Use System Token instead of User Token (as requested)
+        let upstreamToken = null;
+        try {
+            // If retrying, force refresh the token
+            if (retryCount > 0) {
+                console.log('🔄 [PROXY] Forcing token refresh before retry...');
+                systemToken = null; 
+            }
+            upstreamToken = await getSystemToken();
+        } catch (e) {
+            return res.status(500).json({ message: "Failed to authenticate with backend system" });
+        }
     
-    res.json(response.data);
-  } catch (error) {
-    console.error('\n❌ [BACKEND] BOOKING API ERROR:');
-    console.error('Status:', error.response?.status);
-    console.error('Data:', JSON.stringify(error.response?.data || error.message, null, 2));
-    console.error('==================================================\n');
-    res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
-  }
+        const response = await axios.post(`${API_HOST}/roombooking/roombooking/roombookingins`, bookingData, {
+          headers: {
+            'Authorization': `Bearer ${upstreamToken}`,
+            'Content-Type': 'application/json',
+            'Language': language || 'th'
+          },
+          httpsAgent: new https.Agent({ rejectUnauthorized: false })
+        });
+    
+        console.log('✅ [BACKEND] BOOKING API RESPONSE SUCCESS:');
+        console.log(JSON.stringify(response.data, null, 2));
+        console.log('==================================================\n');
+        
+        res.json(response.data);
+      } catch (error) {
+         // RETRY LOGIC FOR 401
+         if (error.response?.status === 401 && retryCount < 1) {
+            console.warn(`⚠️ [BACKEND] Booking 401 Unauthorized. Token might be expired. Retrying...`);
+            return executeBooking(retryCount + 1);
+        }
+
+        console.error('\n❌ [BACKEND] BOOKING API ERROR:');
+        console.error('Status:', error.response?.status);
+        console.error('Data:', JSON.stringify(error.response?.data || error.message, null, 2));
+        console.error('==================================================\n');
+        res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
+      }
+  };
+
+  await executeBooking();
 });
 
 // Room Booking History Endpoint Proxy
