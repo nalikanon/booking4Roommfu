@@ -68,7 +68,12 @@ const translations = {
     historyTitle: "Booking History",
     loadingHistory: "Loading history...",
     noHistory: "No booking history found.",
-    room: "Room"
+    room: "Room",
+    cancelBooking: "Cancel",
+    confirmCancelTitle: "Cancel Booking",
+    confirmCancelMsg: "Are you sure you want to cancel this booking? This action cannot be undone.",
+    confirmYes: "Yes, Cancel",
+    confirmNo: "No, Keep it"
   },
   TH: {
     // --- Global ---
@@ -135,7 +140,12 @@ const translations = {
     historyTitle: "ประวัติการจอง",
     loadingHistory: "กำลังโหลดข้อมูล...",
     noHistory: "ไม่พบประวัติการจอง",
-    room: "ห้อง"
+    room: "ห้อง",
+    cancelBooking: "ยกเลิกการจอง",
+    confirmCancelTitle: "ยืนยันการยกเลิก",
+    confirmCancelMsg: "คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการจองนี้? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    confirmYes: "ใช่, ยกเลิกเลย",
+    confirmNo: "ไม่, ยกเลิก"
   }
 };
 
