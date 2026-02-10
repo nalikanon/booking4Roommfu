@@ -263,10 +263,11 @@ watch(searchCriteria, (newVal) => {
       <div class="right-group">
         <LanguageSwitcher />
 
-        <button @click="goToHistory" class="history-btn" title="History">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button @click="goToHistory" class="history-btn" :title="t.historyTitle">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
           </svg>
+          <span>{{ t.historyTitle }}</span>
         </button>
         <LogoutButton />
       </div>
@@ -531,13 +532,13 @@ watch(searchCriteria, (newVal) => {
   background: rgba(255, 255, 255, 0.1);
   border: none;
   color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  padding: 8px 16px;
+  border-radius: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
   transition: all 0.3s ease;
   backdrop-filter: blur(5px);
 }
