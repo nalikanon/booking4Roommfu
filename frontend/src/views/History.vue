@@ -141,42 +141,34 @@ onMounted(() => {
         <span class="empty-icon">📂</span> {{ t.noHistory }}
       </div>
 
-      <div v-else class="history-list-container">
-         <div v-for="item in historyItems" :key="item.id" class="history-row glass-panel">
-            <!-- Left Side: Image & Basic Info -->
-            <div class="row-left">
-                <div
-                    class="row-image"
-                    :style="{ backgroundImage: `url(${item.image})` }"
-                ></div>
-                <div class="row-info">
-                    <div class="row-header">
-                        <h2>{{ item.roomName }}</h2>
-                        <span class="badge status-badge" :class="item.statusClass">{{ item.status }}</span>
-                    </div>
-                    <span class="booking-id">ID: #{{ item.id }}</span>
-                </div>
+      <div v-else class="rooms-grid">
+         <div v-for="item in historyItems" :key="item.id" class="room-card glass-card">
+            <div
+              class="card-image"
+              :style="{ backgroundImage: `url(${item.image})` }"
+            >
+              <div class="badge status-badge" :class="item.statusClass">{{ item.status }}</div>
             </div>
 
-            <!-- Middle: Date & Time -->
-            <div class="row-middle">
-                <div class="info-group">
-                    <span class="icon">📅</span>
-                    <span class="info-text">{{ item.date }}</span>
-                </div>
-                <div class="divider-vertical"></div>
-                <div class="info-group">
-                    <span class="icon">⏰</span>
-                    <span class="info-text">{{ item.time }}</span>
-                </div>
-            </div>
+            <div class="card-content">
+              <div class="room-header">
+                <h2>Room {{ item.roomName }}</h2>
+              </div>
 
-            <!-- Right: Action -->
-            <div class="row-right">
-                <button class="cancel-btn-compact" @click="cancelBooking(item.guid)" title="Cancel Booking">
-                    <span class="btn-icon">✖</span>
-                    <span class="btn-text">Cancel</span>
-                </button>
+              <div class="room-details">
+                 <div class="detail-item full-width">
+                   <span class="icon">📅</span>
+                   <span><strong>{{ item.date }}</strong></span>
+                 </div>
+                 <div class="detail-item">
+                   <span class="icon">⏰</span>
+                   <span>{{ item.time }}</span>
+                 </div>
+              </div>
+              
+              <button class="cancel-btn" @click="cancelBooking(item.guid)">
+                <span>✖</span> {{ t.cancelBooking || 'Cancel' }}
+              </button>
             </div>
          </div>
       </div>
@@ -186,11 +178,10 @@ onMounted(() => {
 
 <style scoped>
 .page-container {
-  max-width: 1200px;
+  max-width: 95%;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 20px;
   min-height: 100vh;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .header-bar {
@@ -198,28 +189,28 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 30px;
-  padding: 0 10px;
 }
 
 .left-group, .right-group {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px; /* Add gap for switcher and logout */
 }
 
 .back-btn {
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
   color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  padding: 8px 16px;
+  border-radius: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
+  gap: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
   backdrop-filter: blur(5px);
+  margin-right: 20px;
 }
 
 .back-btn:hover {
@@ -229,192 +220,142 @@ onMounted(() => {
 
 h1 {
   font-size: 2rem;
-  font-weight: 700;
-  color: #fff;
+  background: linear-gradient(to right, #fff, #a5b4fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin: 0;
-  letter-spacing: -0.5px;
 }
 
-/* --- History List (Compact Rows) -- */
-.history-list-container {
+/* --- History Grid -- */
+/* Match structure of rooms-list from ClassroomList.vue */
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  animation: slideUp 0.6s ease-out;
+}
+
+.room-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  animation: slideUp 0.5s ease-out;
-}
-
-.history-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
   border-radius: 16px;
-  padding: 16px; /* Compact padding */
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  height: 100%;
 }
 
-.history-row:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255,255,255,0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+.room-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* Row Layout Sections */
-.row-left {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex: 2;
+.card-image {
+  width: 100%;
+  height: 160px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  flex: none;
 }
 
-.row-middle {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    flex: 2;
-    justify-content: center;
-}
-
-.row-right {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex: 1;
-}
-
-/* Image & Badge */
-.row-image {
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
-    background-size: cover;
-    background-position: center;
-    flex-shrink: 0;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-.row-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.row-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.row-header h2 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0;
-    color: #fff;
-}
-
-.booking-id {
+.badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: white;
     font-size: 0.8rem;
-    color: rgba(255,255,255,0.4);
-    font-family: monospace;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+}
+/* Re-use status colors logic */
+.status-badge.approved { background: rgba(74, 222, 128, 0.9); color: #064e3b; }
+.status-badge.pending { background: rgba(250, 204, 21, 0.9); color: #713f12; }
+.status-badge.cancelled { background: rgba(248, 113, 113, 0.9); color: #7f1d1d; }
+.status-badge.unknown { background: rgba(148, 163, 184, 0.9); }
+
+.card-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-/* Status Badge */
-.status-badge {
+.room-header {
+  margin-bottom: 5px;
+}
+
+.room-header h2 {
+  font-size: 1.4rem;
+  color: #fff;
+  margin: 0 0 5px 0;
+}
+
+.date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.1);
     padding: 2px 8px;
     border-radius: 6px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-.status-badge.approved { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
-.status-badge.pending { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
-.status-badge.cancelled { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
-.status-badge.unknown { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
-
-
-/* Date & Time Info */
-.info-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #e2e8f0;
-    font-size: 0.95rem;
 }
 
-.divider-vertical {
-    width: 1px;
-    height: 24px;
-    background: rgba(255,255,255,0.1);
+.room-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #94a3b8;
+  font-size: 0.95rem;
 }
 
-.icon {
-    font-size: 1.1rem;
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.cancel-btn {
+  margin-top: auto;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background: rgba(239, 68, 68, 0.4);
+  transform: translateY(-2px);
+  color: white;
+}
+
+.detail-item .icon {
     opacity: 0.8;
 }
 
-/* Compact Cancel Button */
-.cancel-btn-compact {
-    background: transparent;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #fca5a5;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
-}
-
-.cancel-btn-compact:hover {
-    background: rgba(239, 68, 68, 0.15);
-    border-color: #ef4444;
-    color: #fff;
-}
-
-.btn-icon {
-    font-size: 0.9rem;
-}
-
 /* Responsiveness */
-@media (max-width: 900px) {
-    .row-middle { gap: 16px; }
-}
+@media (max-width: 1600px) { .rooms-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 1300px) { .rooms-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 900px) { .rooms-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .rooms-grid { grid-template-columns: 1fr; } }
 
-@media (max-width: 768px) {
-    .history-row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 16px;
-    }
-    
-    .row-left, .row-middle, .row-right {
-        width: 100%;
-        justify-content: flex-start;
-    }
-
-    .row-middle {
-        justify-content: space-between;
-        background: rgba(255,255,255,0.03);
-        padding: 10px;
-        border-radius: 8px;
-    }
-
-    .row-right {
-        justify-content: flex-end;
-    }
-    
-    .cancel-btn-compact {
-        width: 100%;
-        justify-content: center;
-        padding: 10px;
-    }
-}
 
 /* Loading/Empty States */
 .loading-state, .error-state, .empty-state {
@@ -422,12 +363,10 @@ h1 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 15px;
   padding: 60px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 16px;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
-  color: rgba(255,255,255,0.6);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 24px;
 }
 
 .spinner {
@@ -438,10 +377,5 @@ h1 {
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
-
 @keyframes spin { to { transform: rotate(360deg); } }
-@keyframes slideUp { 
-    from { opacity: 0; transform: translateY(10px); } 
-    to { opacity: 1; transform: translateY(0); } 
-}
 </style>
