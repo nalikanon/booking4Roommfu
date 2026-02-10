@@ -77,7 +77,19 @@ const cancelBooking = async (bookingGuid) => {
             alert("An error occurred while cancelling.");
         }
     }
+    }
 };
+
+const formatTime = (timeStr) => {
+    if (!timeStr) return "";
+    // Insert colon if missing (e.g., 0900 -> 09:00)
+    if (timeStr.length === 4 && !timeStr.includes(':')) {
+        return `${timeStr.slice(0, 2)}:${timeStr.slice(2)}`;
+    }
+    return timeStr;
+}
+
+const getRandomImage = (id) => {
     // Generate a pseudo-random index based on the ID string
     let hash = 0;
     if (id) {
