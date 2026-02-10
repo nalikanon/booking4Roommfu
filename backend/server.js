@@ -251,33 +251,57 @@ app.post('/roombooking/roombooking/roombookingins', async (req, res) => {
 
 // Room Booking History Endpoint Proxy
 app.get('/roombooking/roombooking/roombookinghistory', async (req, res) => {
-  try {
-    const { authorization, language, officerid } = req.headers;
-
-    console.log('Proxying Room Booking History Request');
-    console.log('Officer ID:', officerid);
+  const executeHistoryQuery = async (retryCount = 0) => {
+      try {
+        const { authorization, language, officerid } = req.headers;
     
-    // Check missing headers
-    if (!officerid) {
-        console.warn('⚠️ Warning: No Officer ID provided!');
-    }
+        console.log(`Proxying Room Booking History Request (Attempt ${retryCount + 1})`);
+        console.log('Officer ID:', officerid);
+        
+        // Check missing headers
+        if (!officerid) {
+            console.warn('⚠️ Warning: No Officer ID provided!');
+        }
+    
+        // Use System Token instead of User Token
+        let upstreamToken = null;
+        try {
+            // If retrying, force refresh the token
+            if (retryCount > 0) {
+                console.log('🔄 [PROXY] Forcing token refresh before retry...');
+                systemToken = null; 
+            }
+            upstreamToken = await getSystemToken();
+        } catch (e) {
+            return res.status(500).json({ message: "Failed to authenticate with backend system" });
+        }
+    
+        const response = await axios.get(`${API_HOST}/roombooking/roombooking/roombookinghistory`, {
+          headers: {
+            'Authorization': `Bearer ${upstreamToken}`,
+            'Content-Type': 'application/json',
+            'Language': language || 'TH',
+            'officerid': officerid
+          },
+          httpsAgent: new https.Agent({ rejectUnauthorized: false })
+        });
+    
+        console.log('History Success:', response.data?.length ? `${response.data.length} items` : 'No items');
+        res.json(response.data);
+      } catch (error) {
+        // RETRY LOGIC FOR 401
+        if (error.response?.status === 401 && retryCount < 1) {
+            console.warn(`⚠️ [PROXY] History 401 Unauthorized. Token might be expired. Retrying...`);
+            return executeHistoryQuery(retryCount + 1);
+        }
 
-    const response = await axios.get(`${API_HOST}/roombooking/roombooking/roombookinghistory`, {
-      headers: {
-        'Authorization': authorization,
-        'Content-Type': 'application/json',
-        'Language': language || 'TH',
-        'officerid': officerid
+        console.error('History Query Error Status:', error.response?.status);
+        console.error('History Query Error Data:', error.response?.data || error.message);
+        res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
       }
-    });
+  };
 
-    console.log('History Success:', response.data?.length ? `${response.data.length} items` : 'No items');
-    res.json(response.data);
-  } catch (error) {
-    console.error('History Query Error Status:', error.response?.status);
-    console.error('History Query Error Data:', error.response?.data || error.message);
-    res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal Server Error" });
-  }
+  await executeHistoryQuery();
 });
 
 app.listen(PORT, () => {
