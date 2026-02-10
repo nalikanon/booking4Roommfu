@@ -197,6 +197,7 @@ onMounted(() => {
               <button 
                 class="cancel-btn" 
                 @click="openCancelModal(item.guid)"
+                v-if="item.statusClass !== 'cancelled'"
               >
                 <span>✖</span> {{ t.cancelBooking || 'Cancel' }}
               </button>
