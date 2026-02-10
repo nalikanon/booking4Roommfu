@@ -77,7 +77,6 @@ const cancelBooking = async (bookingGuid) => {
             alert("An error occurred while cancelling.");
         }
     }
-    }
 };
 
 const formatTime = (timeStr) => {
