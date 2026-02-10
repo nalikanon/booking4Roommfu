@@ -141,44 +141,42 @@ onMounted(() => {
         <span class="empty-icon">📂</span> {{ t.noHistory }}
       </div>
 
-      <div v-else class="rooms-grid">
-         <div v-for="item in historyItems" :key="item.id" class="room-card glass-card">
-            <div class="card-image-wrapper">
+      <div v-else class="history-list-container">
+         <div v-for="item in historyItems" :key="item.id" class="history-row glass-panel">
+            <!-- Left Side: Image & Basic Info -->
+            <div class="row-left">
                 <div
-                    class="card-image"
+                    class="row-image"
                     :style="{ backgroundImage: `url(${item.image})` }"
                 ></div>
-                <div class="badge status-badge" :class="item.statusClass">{{ item.status }}</div>
+                <div class="row-info">
+                    <div class="row-header">
+                        <h2>{{ item.roomName }}</h2>
+                        <span class="badge status-badge" :class="item.statusClass">{{ item.status }}</span>
+                    </div>
+                    <span class="booking-id">ID: #{{ item.id }}</span>
+                </div>
             </div>
 
-            <div class="card-content">
-              <div class="room-header">
-                <h2>Room {{ item.roomName }}</h2>
-                <span class="room-id">#{{ item.id }}</span>
-              </div>
+            <!-- Middle: Date & Time -->
+            <div class="row-middle">
+                <div class="info-group">
+                    <span class="icon">📅</span>
+                    <span class="info-text">{{ item.date }}</span>
+                </div>
+                <div class="divider-vertical"></div>
+                <div class="info-group">
+                    <span class="icon">⏰</span>
+                    <span class="info-text">{{ item.time }}</span>
+                </div>
+            </div>
 
-              <div class="divider"></div>
-
-              <div class="room-details">
-                 <div class="detail-item">
-                   <div class="icon-box">📅</div>
-                   <div class="detail-text">
-                       <span class="label">Date</span>
-                       <span class="value">{{ item.date }}</span>
-                   </div>
-                 </div>
-                 <div class="detail-item">
-                   <div class="icon-box">⏰</div>
-                   <div class="detail-text">
-                       <span class="label">Time</span>
-                       <span class="value">{{ item.time }}</span>
-                   </div>
-                 </div>
-              </div>
-              
-              <button class="cancel-btn" @click="cancelBooking(item.guid)">
-                <span>Cancel Booking</span>
-              </button>
+            <!-- Right: Action -->
+            <div class="row-right">
+                <button class="cancel-btn-compact" @click="cancelBooking(item.guid)" title="Cancel Booking">
+                    <span class="btn-icon">✖</span>
+                    <span class="btn-text">Cancel</span>
+                </button>
             </div>
          </div>
       </div>
@@ -188,7 +186,7 @@ onMounted(() => {
 
 <style scoped>
 .page-container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
   min-height: 100vh;
@@ -199,7 +197,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   padding: 0 10px;
 }
 
@@ -215,12 +213,12 @@ onMounted(() => {
   color: white;
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   backdrop-filter: blur(5px);
 }
 
@@ -230,211 +228,192 @@ onMounted(() => {
 }
 
 h1 {
-  font-size: 2.2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin: 0;
-  letter-spacing: -0.5px;
-}
-
-/* --- History Grid -- */
-.rooms-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 30px;
-  animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.room-card {
-  display: flex;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
-  position: relative;
-}
-
-.room-card:hover {
-  transform: translateY(-8px);
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.3);
-}
-
-.card-image-wrapper {
-    position: relative;
-    height: 180px;
-    overflow: hidden;
-}
-
-.card-image {
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.room-card:hover .card-image {
-    transform: scale(1.05);
-}
-
-.badge {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    padding: 6px 14px;
-    border-radius: 100px;
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.status-badge.approved { background: rgba(16, 185, 129, 0.85); color: #fff; }
-.status-badge.pending { background: rgba(245, 158, 11, 0.85); color: #fff; }
-.status-badge.cancelled { background: rgba(239, 68, 68, 0.85); color: #fff; }
-.status-badge.unknown { background: rgba(100, 116, 139, 0.85); }
-
-.card-content {
-  flex: 1;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-}
-
-.room-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 16px;
-}
-
-.room-header h2 {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #fff;
   margin: 0;
   letter-spacing: -0.5px;
 }
 
-.room-id {
-    font-size: 0.85rem;
+/* --- History List (Compact Rows) -- */
+.history-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: slideUp 0.5s ease-out;
+}
+
+.history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 16px; /* Compact padding */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backdrop-filter: blur(12px);
+}
+
+.history-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+/* Row Layout Sections */
+.row-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 2;
+}
+
+.row-middle {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex: 2;
+    justify-content: center;
+}
+
+.row-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+}
+
+/* Image & Badge */
+.row-image {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.row-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.row-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.row-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+}
+
+.booking-id {
+    font-size: 0.8rem;
     color: rgba(255,255,255,0.4);
     font-family: monospace;
 }
 
-.divider {
-    height: 1px;
-    background: linear-gradient(to right, rgba(255,255,255,0.1), transparent);
-    margin-bottom: 20px;
+/* Status Badge */
+.status-badge {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
 }
+.status-badge.approved { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+.status-badge.pending { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+.status-badge.cancelled { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+.status-badge.unknown { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
 
-.room-details {
-  display: list-item; /* This forces a column layout for items */
-  gap: 16px;
-  margin-bottom: 24px;
-  list-style: none; /* remove bullet points */ 
-}
 
-/* Reset list-item back to flex for layout control */
-.room-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.detail-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(255,255,255,0.03);
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.05);
-}
-
-.icon-box {
-    font-size: 1.2rem;
-    width: 36px;
-    height: 36px;
+/* Date & Time Info */
+.info-group {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: rgba(255,255,255,0.05);
-    border-radius: 10px;
-}
-
-.detail-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: rgba(255,255,255,0.5);
-    font-weight: 600;
-}
-
-.value {
-    font-size: 0.95rem;
+    gap: 8px;
     color: #e2e8f0;
+    font-size: 0.95rem;
+}
+
+.divider-vertical {
+    width: 1px;
+    height: 24px;
+    background: rgba(255,255,255,0.1);
+}
+
+.icon {
+    font-size: 1.1rem;
+    opacity: 0.8;
+}
+
+/* Compact Cancel Button */
+.cancel-btn-compact {
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
 }
 
-.cancel-btn {
-  margin-top: auto;
-  width: 100%;
-  padding: 12px;
-  border-radius: 14px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  background: rgba(239, 68, 68, 0.1);
-  color: #fca5a5;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+.cancel-btn-compact:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #ef4444;
+    color: #fff;
 }
 
-.cancel-btn:hover {
-  background: #ef4444;
-  border-color: #ef4444;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-.cancel-btn:active {
-    transform: translateY(0);
+.btn-icon {
+    font-size: 0.9rem;
 }
 
 /* Responsiveness */
+@media (max-width: 900px) {
+    .row-middle { gap: 16px; }
+}
+
 @media (max-width: 768px) {
-  .header-bar {
-      flex-direction: column;
-      gap: 20px;
-      align-items: flex-start;
-  }
-  .right-group {
-      width: 100%;
-      justify-content: flex-end;
-  }
+    .history-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+    
+    .row-left, .row-middle, .row-right {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .row-middle {
+        justify-content: space-between;
+        background: rgba(255,255,255,0.03);
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .row-right {
+        justify-content: flex-end;
+    }
+    
+    .cancel-btn-compact {
+        width: 100%;
+        justify-content: center;
+        padding: 10px;
+    }
 }
 
 /* Loading/Empty States */
@@ -443,18 +422,17 @@ h1 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding: 80px 20px;
+  gap: 16px;
+  padding: 60px;
   background: rgba(255, 255, 255, 0.02);
-  border-radius: 32px;
+  border-radius: 16px;
   border: 1px dashed rgba(255, 255, 255, 0.1);
-  margin-top: 40px;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255,255,255,0.6);
 }
 
 .spinner {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border: 3px solid rgba(255, 255, 255, 0.1);
   border-top-color: #818cf8;
   border-radius: 50%;
@@ -463,7 +441,7 @@ h1 {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes slideUp { 
-    from { opacity: 0; transform: translateY(20px); } 
+    from { opacity: 0; transform: translateY(10px); } 
     to { opacity: 1; transform: translateY(0); } 
 }
 </style>
