@@ -8,6 +8,10 @@ import { useLanguage } from "../composables/useLanguage";
 const { t } = useLanguage();
 const router = useRouter();
 
+const goToHistory = () => {
+  router.push('/history');
+};
+
 // State for Modal
 const showModal = ref(false);
 const selectedRoom = ref(null);
@@ -284,6 +288,12 @@ const isMinuteDisabled = (m) => {
     <div class="top-nav">
        <div class="nav-group">
           <LanguageSwitcher />
+           <button @click="goToHistory" class="history-btn" :title="t.historyTitle">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+            </svg>
+            <span>{{ t.historyTitle }}</span>
+          </button>
           <LogoutButton />
        </div>
     </div>
@@ -434,6 +444,27 @@ const isMinuteDisabled = (m) => {
     display: flex;
     align-items: center;
     gap: 15px;
+}
+
+.history-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.history-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+  color: #a5b4fc;
 }
 
 .header-section {
