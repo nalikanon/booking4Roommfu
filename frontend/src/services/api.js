@@ -138,13 +138,30 @@ export const api = {
     }
   },
   
-  async getBookingHistory(officerId = "57360003") {
+  async getBookingHistory(officerId = null) {
     if (!authToken) { // OAuth token check
        return [];
     }
 
+    // Determine Officer ID: 
+    // 1. passed argument 
+    // 2. extracted from token (digits only)
+    let finalOfficerId = officerId;
+    if (!finalOfficerId) {
+        const username = getUsernameFromToken();
+        if (username) {
+            finalOfficerId = username.replace(/\D/g, ''); // Keep only digits
+            console.log(`Extracted Officer ID from token: ${finalOfficerId} (source: ${username})`);
+        }
+    }
+
+    if (!finalOfficerId) {
+        console.warn('No Officer ID found for history query');
+        return [];
+    }
+
     console.log('------------------------------------------');
-    console.log('API Request: [GET] /roombooking/roombooking/roombookinghistory');
+    console.log(`API Request: [GET] /roombooking/roombooking/roombookinghistory (OfficerID: ${finalOfficerId})`);
 
     try {
       const url = `${BASE_URL}/roombooking/roombooking/roombookinghistory`;
@@ -154,7 +171,7 @@ export const api = {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${authToken}`,
-            'officerid': officerId || getUsernameFromToken(),
+            'officerid': finalOfficerId,
             'Language': 'th'
         }
       });
