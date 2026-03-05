@@ -34,7 +34,7 @@ const bookingForm = ref({
   bookingFor: "Make Up Class 1006041",
   officerId: "30971",
   departmentId: "60",
-  tel: "6400",
+  tel: "6411/6412",
   qty: "40",
   softwareNeeded: "No"
 });
