@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { api } from "../services/api";
@@ -118,7 +118,7 @@ const fetchRooms = async () => {
     classrooms.value = apiRooms.map(r => ({
       id: r.ROOMID,
       name: r.ROOMNAME, // "C1 312"
-      location: r.BUILDINGNAME || r.BUILDINGCODE || 'Unknown', // "อาคารเรียนรวม 1"
+      location: r.BUILDINGNAME || r.BUILDINGCODE || 'Unknown', // "à¸­à¸²à¸„à¸²à¸£à¹€à¸£à¸µà¸¢à¸™à¸£à¸§à¸¡ 1"
       capacity: r.CAPACITY,
       status: 'Available', // API doesn't send status, assume available if in list
       description: r.ROOMTYPECODEDESC,
@@ -254,25 +254,28 @@ watch(searchCriteria, (newVal) => {
 </script>
 
 <template>
-  <div class="page-container">
-    <div class="header-bar">
-      <div class="left-group">
-        <button @click="goBack" class="back-btn"><span>←</span> {{ t.back }}</button>
-        <h1>{{ t.title }}</h1>
-      </div>
-      <div class="right-group">
-        <LanguageSwitcher />
-
-        <button @click="goToHistory" class="history-btn" :title="t.historyTitle">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
-          </svg>
-          <span>{{ t.historyTitle }}</span>
-        </button>
-        <LogoutButton />
+  <div class="page-wrapper">
+    <!-- Top Nav Bar -->
+    <div class="top-bar">
+      <div class="top-bar-inner">
+        <div class="brand">
+          <button @click="goBack" class="back-btn"><span>â†</span> {{ t.back }}</button>
+          <span class="brand-text">{{ t.title }}</span>
+        </div>
+        <div class="nav-group">
+          <LanguageSwitcher />
+          <button @click="goToHistory" class="nav-btn" :title="t.historyTitle">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+            </svg>
+            <span>{{ t.historyTitle }}</span>
+          </button>
+          <LogoutButton />
+        </div>
       </div>
     </div>
 
+    <div class="content-area">
     <div class="search-summary">
       <div class="summary-item">
         <span class="label">{{ t.date }}</span>
@@ -350,7 +353,7 @@ watch(searchCriteria, (newVal) => {
             :placeholder="t.searchPlaceholder" 
             class="room-search-input"
           />
-          <span class="search-icon">🔍</span>
+          <span class="search-icon">ðŸ”</span>
         </div>
       </div>
     </div>
@@ -372,13 +375,13 @@ watch(searchCriteria, (newVal) => {
 
           <div class="room-details">
             <div class="detail-item">
-              <span class="icon">👥</span>
+              <span class="icon">ðŸ‘¥</span>
               <span
                 >{{ t.capacity }} <strong>{{ room.capacity }} {{ t.people }}</strong></span
               >
             </div>
             <div class="detail-item">
-              <span class="icon">📍</span>
+              <span class="icon">ðŸ“</span>
               <span
                 >{{ t.building }} <strong>{{ room.location }}</strong></span
               >
@@ -401,7 +404,7 @@ watch(searchCriteria, (newVal) => {
         <div v-if="showBookingModal && selectedRoom" class="modal-content glass-card" key="booking">
           <div class="modal-header">
             <h3>{{ t.confirmBookingTitle }}</h3>
-            <button class="close-btn" @click="closeBookingModal">×</button>
+            <button class="close-btn" @click="closeBookingModal">Ã—</button>
           </div>
           
           <div class="modal-body">
@@ -410,14 +413,14 @@ watch(searchCriteria, (newVal) => {
                   <div class="form-group full-width">
                      <label>{{ t.bookingFor }}</label>
                      <div class="input-wrapper">
-                       <span class="input-icon">📝</span>
+                       <span class="input-icon">ðŸ“</span>
                        <input v-model="bookingForm.bookingFor" type="text" class="modal-input with-icon" :placeholder="t.bookingForPlaceholder" />
                      </div>
                   </div>
                   <div class="form-group full-width">
                     <label>{{ t.tel }}</label>
                     <div class="input-wrapper">
-                      <span class="input-icon">📞</span>
+                      <span class="input-icon">ðŸ“ž</span>
                       <input v-model="bookingForm.tel" type="text" class="modal-input with-icon" :placeholder="t.telPlaceholder" />
                     </div>
                  </div>
@@ -493,110 +496,125 @@ watch(searchCriteria, (newVal) => {
           <button class="confirm-btn" @click="closeSuccessModal">{{ t.done }}</button>
         </div>
 
-      </div>
-    </transition>
+    </div>
+    </div>  <!-- end content-area -->
 
+    <!-- Footer -->
+    <div class="footer-bar">
+      <p>&copy; Mae Fah Luang University &mdash; Center for Information Technology Services</p>
+    </div>
   </div>
 </template>
 
 <style scoped>
 /* --- Page Layout --- */
-.page-container {
-  max-width: 95%;
-  margin: 0 auto;
-  padding: 20px;
+.page-wrapper {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-main);
 }
 
-/* --- Header & Navigation --- */
-.header-bar {
+.top-bar {
+  background: var(--primary);
+  color: white;
+  padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.top-bar-inner {
+  max-width: 1400px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 30px;
-  position: relative;
+  height: 60px;
 }
 
-.left-group {
+.brand {
   display: flex;
   align-items: center;
+  gap: 16px;
 }
 
-.right-group {
+.brand-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: white;
+}
+
+.nav-group {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
 }
 
-.history-btn {
-  background: rgba(255, 255, 255, 0.1);
+.nav-btn {
+  background: rgba(255, 255, 255, 0.15);
   border: none;
   color: white;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-weight: 500;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
+  font-size: 0.9rem;
+  transition: background 0.2s;
 }
 
-.history-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
-  color: #a5b4fc;
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .back-btn {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   border: none;
   color: white;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-weight: 500;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
-  margin-right: 20px;
+  font-size: 0.9rem;
+  transition: background 0.2s;
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateX(-3px);
+  background: rgba(255, 255, 255, 0.25);
 }
 
-h1 {
-  font-size: 2rem;
-  background: linear-gradient(to right, #fff, #a5b4fc);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin: 0;
+.content-area {
+  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  width: 100%;
 }
 
-/* --- Search Summary Bar --- */
 .search-summary {
   display: flex;
   gap: 20px;
-  align-items: center; /* Center items vertically */
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 15px 20px;
-  margin-bottom: 25px;
-  animation: fadeIn 0.8s ease-out;
+  align-items: center;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--card-shadow);
 }
 
 .filter-input {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 5px 10px;
+  background: var(--bg-main);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  padding: 6px 10px;
   border-radius: 6px;
   font-family: inherit;
   font-size: 0.9rem;
@@ -605,19 +623,10 @@ h1 {
 }
 
 .filter-input:focus {
-  border-color: #a5b4fc;
+  border-color: var(--primary);
 }
 
-/* Fix for date/time icon colors in dark mode (browser dependent, but helpful) */
-.filter-input::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-    opacity: 0.6;
-    cursor: pointer;
-}
-
-.capacity-input {
-  width: 70px;
-}
+.capacity-input { width: 70px; }
 
 .time-inputs {
   display: flex;
@@ -625,60 +634,61 @@ h1 {
   gap: 5px;
 }
 
-.separator {
-  color: #94a3b8;
-}
+.separator { color: var(--text-muted); }
 
 .right-actions {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
 }
 
 .filter-btn {
   background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--card-border);
+  color: var(--text-secondary);
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .filter-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  transform: scale(1.1);
+  background: var(--bg-main);
+  color: var(--primary);
+  border-color: var(--primary);
 }
 
-.search-box {
-  position: relative;
+.filter-btn.active {
+  background: rgba(193, 2, 48, 0.08);
+  color: var(--primary);
+  border-color: var(--primary);
 }
+
+.search-box { position: relative; }
 
 .room-search-input {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-main);
+  border: 1px solid var(--card-border);
   padding: 8px 16px 8px 36px;
-  border-radius: 20px;
-  color: white;
+  border-radius: 8px;
+  color: var(--text-main);
   width: 200px;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   outline: none;
+  font-family: inherit;
 }
 
-.room-search-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
+.room-search-input::placeholder { color: var(--text-muted); }
 
 .room-search-input:focus {
-  background: rgba(0, 0, 0, 0.4);
-  border-color: #a5b4fc;
+  border-color: var(--primary);
   width: 240px;
+  box-shadow: 0 0 0 3px rgba(193, 2, 48, 0.1);
 }
 
 .search-icon {
@@ -686,9 +696,9 @@ h1 {
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   pointer-events: none;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .summary-item {
@@ -699,252 +709,188 @@ h1 {
 
 .summary-item .label {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  font-weight: 600;
 }
 
-.summary-item .value {
-  font-size: 0.95rem;
-  color: #fff;
-  font-weight: 500;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* --- Room Grid & Cards --- */
 .rooms-list {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 20px;
-  animation: slideUp 0.6s ease-out;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .room-card {
   display: flex;
-  flex-direction: column; /* Change to vertical layout */
-  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
-  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
-  border-radius: 16px;
+  flex-direction: column;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(10px);
-  height: 100%; /* Fill grid cell */
+  transition: all 0.25s ease;
+  box-shadow: var(--card-shadow);
+  height: 100%;
 }
 
 .room-card:hover {
-  transform: translateY(-8px);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--primary-light);
 }
 
 .card-image {
   width: 100%;
-  height: 160px; /* Fixed height for image on top */
+  height: 160px;
   background-size: cover;
   background-position: center;
   position: relative;
-  flex: none; /* Don't shrink */
+  flex: none;
 }
+
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-badge { background: var(--success); }
 
 .card-content {
   flex: 1;
-  padding: 20px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 15px;
+  gap: 12px;
 }
 
-/* Response for smaller screens */
-@media (max-width: 1600px) {
-  .rooms-list {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (max-width: 1300px) {
-  .rooms-list {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
-  .rooms-list {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+@media (max-width: 1600px) { .rooms-list { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 1300px) { .rooms-list { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 900px) { .rooms-list { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) {
-  .rooms-list {
-    grid-template-columns: 1fr;
-  }
-
-  .search-summary {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 15px;
-  }
-
-  .right-actions {
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    margin-left: 0;
-    gap: 10px;
-  }
-
-  .search-box {
-    flex: 1;
-    width: auto;
-  }
-
-  .room-search-input {
-    width: 100%;
-  }
-
-  .room-search-input:focus {
-    width: 100%;
-  }
+  .rooms-list { grid-template-columns: 1fr; }
+  .search-summary { flex-direction: column; align-items: stretch; gap: 12px; }
+  .right-actions { flex-direction: row; width: 100%; margin-left: 0; gap: 10px; }
+  .search-box { flex: 1; width: auto; }
+  .room-search-input { width: 100%; }
+  .room-search-input:focus { width: 100%; }
 }
 
 .room-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .room-header h2 {
-  font-size: 1.5rem;
-  color: #fff;
+  font-size: 1.2rem;
+  color: var(--text-main);
   margin: 0;
+  font-weight: 600;
 }
 
 .location-badge {
-  background: rgba(99, 102, 241, 0.2);
-  color: #a5b4fc;
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 0.85rem;
+  background: rgba(193, 2, 48, 0.08);
+  color: var(--primary);
+  border: 1px solid rgba(193, 2, 48, 0.15);
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
   font-weight: 500;
 }
 
 .room-details {
   display: flex;
-  gap: 20px;
-  color: var(--text-muted, #94a3b8);
-  font-size: 0.95rem;
+  gap: 16px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
 }
 
 .detail-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .card-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .book-btn {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  background: var(--primary);
   color: white;
   border: none;
-  padding: 8px 24px;
+  padding: 8px 22px;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 2px 8px rgba(193, 2, 48, 0.2);
 }
 
 .book-btn:hover {
+  background: var(--primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.5);
+  box-shadow: 0 4px 12px rgba(193, 2, 48, 0.3);
 }
 
-.book-btn:active {
-  transform: translateY(0);
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Old responsiveness block removed */
-.filter-wrapper {
-  position: relative;
-}
-
-.filter-btn.active {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-}
+.filter-wrapper { position: relative; }
 
 .filter-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 6px;
+  right: 6px;
   width: 8px;
   height: 8px;
-  background: #4f46e5;
+  background: var(--primary);
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .filter-dropdown {
   position: absolute;
   top: 100%;
   left: 0;
-  margin-top: 10px;
-  width: 180px;
-  background: #1e1e24;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 8px;
+  margin-top: 8px;
+  width: 200px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 6px;
   z-index: 100;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .filter-option {
-  padding: 10px 16px;
-  color: #a5b4fc;
+  padding: 10px 14px;
+  color: var(--text-secondary);
   cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.2s;
-  font-size: 0.95rem;
+  border-radius: 6px;
+  transition: all 0.15s;
+  font-size: 0.9rem;
 }
 
 .filter-option:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
+  background: var(--bg-main);
+  color: var(--text-main);
 }
 
 .filter-option.selected {
-  background: rgba(99, 102, 241, 0.2);
-  color: white;
+  background: rgba(193, 2, 48, 0.08);
+  color: var(--primary);
   font-weight: 500;
 }
-
 
 .form-grid {
   display: grid;
@@ -955,42 +901,37 @@ h1 {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
-.form-group.full-width {
-  grid-column: 1 / -1;
-}
+.form-group.full-width { grid-column: 1 / -1; }
 
 .form-group label {
-  font-size: 0.8rem;
-  color: #94a3b8;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .modal-input {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
+  background: var(--bg-main);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
   padding: 10px 14px;
-  border-radius: 10px;
+  border-radius: 8px;
   outline: none;
   font-size: 0.95rem;
-  transition: all 0.2s ease;
-  width: 100%; /* Ensure full width */
-  box-sizing: border-box; /* Include padding in width */
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
 }
 
 .modal-input:focus {
-  border-color: #6366f1;
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(193, 2, 48, 0.1);
 }
 
-/* Input Icons */
-.input-wrapper {
-  position: relative;
-  width: 100%;
-}
+.input-wrapper { position: relative; width: 100%; }
 
 .input-icon {
   position: absolute;
@@ -1002,71 +943,67 @@ h1 {
   pointer-events: none;
 }
 
-.modal-input.with-icon {
-  padding-left: 40px;
-}
+.modal-input.with-icon { padding-left: 40px; }
 
-/* Toggle Switch */
 .toggle-container {
   display: flex;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 4px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-main);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
 }
 
 .toggle-btn {
   flex: 1;
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-muted);
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   font-weight: 500;
+  font-family: inherit;
 }
 
 .toggle-btn.active {
-  background: #6366f1;
+  background: var(--primary);
   color: white;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 2px 6px rgba(193, 2, 48, 0.25);
 }
 
-/* Ticket Style Info */
 .ticket-info {
-  margin-top: 25px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  padding: 20px;
-  position: relative;
+  margin-top: 20px;
+  background: var(--bg-main);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 18px;
 }
 
 .ticket-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--card-border);
   padding-bottom: 10px;
 }
 
 .ticket-label {
   font-size: 0.75rem;
-  color: #94a3b8;
-  letter-spacing: 1px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
   font-weight: 600;
+  text-transform: uppercase;
 }
 
 .ticket-status {
-  background: rgba(74, 222, 128, 0.2);
-  color: #4ade80;
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--success);
   font-size: 0.75rem;
   padding: 2px 8px;
   border-radius: 4px;
-  text-transform: uppercase;
   font-weight: 600;
 }
 
@@ -1077,15 +1014,14 @@ h1 {
 }
 
 .room-big-name {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
-  color: white;
-  text-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+  color: var(--text-main);
 }
 
 .room-sub-loc {
-  font-size: 0.9rem;
-  color: #a5b4fc;
+  font-size: 0.85rem;
+  color: var(--primary);
   margin-top: 2px;
 }
 
@@ -1095,52 +1031,42 @@ h1 {
   text-align: right;
 }
 
-.meta-item {
-  display: flex;
-  flex-direction: column;
-}
+.meta-item { display: flex; flex-direction: column; }
 
 .meta-label {
   font-size: 0.7rem;
-  color: #64748b;
+  color: var(--text-muted);
   text-transform: uppercase;
 }
 
 .meta-val {
   font-size: 0.9rem;
-  color: #fff;
+  color: var(--text-main);
   font-weight: 500;
 }
 
-/* Response for modal form mobile */
-@media (max-width: 600px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(-8px); }
+
+.footer-bar {
+  background: var(--accent);
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  padding: 16px 20px;
+  font-size: 0.85rem;
 }
 
-/* Fade transition */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
+.footer-bar p { margin: 0; }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-/* Modal Styles */
-/* --- Modal System --- */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -1150,15 +1076,14 @@ h1 {
 
 .modal-content {
   width: 100%;
-  max-width: 500px; /* Increased width */
-  background: linear-gradient(145deg, rgba(30, 30, 36, 0.95), rgba(40, 40, 48, 0.98));
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  padding: 35px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-  color: #fff;
+  max-width: 500px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  color: var(--text-main);
   position: relative;
-  overflow: hidden;
 }
 
 .modal-header {
@@ -1170,17 +1095,15 @@ h1 {
 
 .modal-header h3 {
   margin: 0;
-  font-size: 1.4rem;
-  background: linear-gradient(to right, #fff, #a5b4fc);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 1.3rem;
+  color: var(--primary);
+  font-weight: 600;
 }
 
 .close-btn {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-muted);
   font-size: 1.5rem;
   cursor: pointer;
   transition: color 0.2s;
@@ -1188,80 +1111,56 @@ h1 {
   line-height: 1;
 }
 
-.close-btn:hover {
-  color: #fff;
-}
+.close-btn:hover { color: var(--text-main); }
 
-.modal-body {
-  margin-bottom: 25px;
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  font-size: 0.95rem;
-}
-
-.info-row .label {
-  color: #94a3b8;
-}
-
-.info-row .value {
-  color: #fff;
-  font-weight: 500;
-  text-align: right;
-}
-
-/* Removed old room-info-section styles */
+.modal-body { margin-bottom: 20px; }
 
 .modal-actions {
   display: flex;
-  gap: 15px;
+  gap: 12px;
   justify-content: flex-end;
 }
 
 .cancel-btn {
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
+  border: 1px solid var(--card-border);
+  color: var(--text-secondary);
   padding: 10px 20px;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
+  font-family: inherit;
 }
 
 .cancel-btn:hover {
-  background: rgba(255,255,255,0.05);
-  border-color: rgba(255,255,255,0.4);
+  background: var(--bg-main);
+  color: var(--text-main);
 }
 
 .confirm-btn {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  background: var(--primary);
   border: none;
   color: white;
   padding: 10px 24px;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 2px 8px rgba(193, 2, 48, 0.2);
   transition: all 0.2s;
+  font-family: inherit;
 }
 
 .confirm-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.5);
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(193, 2, 48, 0.3);
 }
 
-/* Success Modal Specifics */
-.success-modal {
-  text-align: center;
-  padding: 40px;
-}
+.success-modal { text-align: center; padding: 40px; }
 
 .success-icon {
   margin-bottom: 20px;
-  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: popIn 0.4s ease-out;
 }
 
 @keyframes popIn {
@@ -1269,24 +1168,8 @@ h1 {
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Modal Transition */
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: all 0.3s ease;
-}
-
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
-
-.modal-fade-enter-from .modal-content,
-.modal-fade-leave-to .modal-content {
-  transform: scale(0.9) translateY(20px);
-  opacity: 0;
-}
-
-.modal-content {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
+.modal-fade-enter-active, .modal-fade-leave-active { transition: all 0.3s ease; }
+.modal-fade-enter-from, .modal-fade-leave-to { opacity: 0; }
+.modal-fade-enter-from .modal-content, .modal-fade-leave-to .modal-content { transform: translateY(15px); opacity: 0; }
+.modal-content { transition: all 0.3s ease; }
 </style>

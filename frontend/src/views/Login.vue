@@ -30,19 +30,19 @@ const handleMfuLogin = () => {
 
 <template>
   <div class="page-container">
-    <div class="background-shapes">
-      <div class="shape shape-1"></div>
-      <div class="shape shape-2"></div>
-      <div class="shape shape-3"></div>
-    </div>
-
-    <!-- Language Switcher (Top Right) -->
-    <div class="lang-switch-wrapper">
-      <LanguageSwitcher />
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="top-bar-inner">
+        <div class="brand">
+          <span class="brand-icon">🏛️</span>
+          <span class="brand-text">MFU Room Booking</span>
+        </div>
+        <LanguageSwitcher />
+      </div>
     </div>
 
     <div class="login-wrapper">
-      <div class="glass-card login-card">
+      <div class="login-card">
         <div class="logo-area">
           <div class="logo-circle">
              <span class="logo-emoji">📅</span>
@@ -71,6 +71,11 @@ const handleMfuLogin = () => {
         </div>
       </div>
     </div>
+
+    <!-- Footer Bar -->
+    <div class="footer-bar">
+      <p>&copy; Mae Fah Luang University &mdash; Center for Information Technology Services</p>
+    </div>
   </div>
 </template>
 
@@ -79,98 +84,68 @@ const handleMfuLogin = () => {
 .page-container {
   width: 100%;
   min-height: 100vh;
-  position: relative;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-main);
+}
+
+/* Top Bar */
+.top-bar {
+  background: var(--primary);
+  color: white;
+  padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.top-bar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  font-size: 1.5rem;
+}
+
+.brand-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Login Card */
+.login-wrapper {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  /* Dark modern background */
-  background: #0f172a; 
-}
-
-.lang-switch-wrapper {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 10;
-}
-
-/* Background Shapes for Aesthetics */
-.background-shapes .shape {
-  position: absolute;
-  filter: blur(80px);
-  z-index: 0;
-  opacity: 0.6;
-  animation: float 10s infinite ease-in-out;
-}
-
-.shape-1 {
-  width: 300px;
-  height: 300px;
-  background: linear-gradient(to right, #6366f1, #a855f7);
-  top: -50px;
-  left: -50px;
-  border-radius: 50%;
-}
-
-.shape-2 {
-  width: 400px;
-  height: 400px;
-  background: linear-gradient(to right, #3b82f6, #06b6d4);
-  bottom: -100px;
-  right: -100px;
-  border-radius: 40%;
-  animation-delay: 2s;
-}
-
-.shape-3 {
-  width: 200px;
-  height: 200px;
-  background: #ec4899;
-  top: 40%;
-  left: 30%;
-  border-radius: 50%;
-  opacity: 0.4;
-  animation-delay: 4s;
-}
-
-@keyframes float {
-  0% { transform: translate(0, 0); }
-  50% { transform: translate(20px, 30px); }
-  100% { transform: translate(0, 0); }
-}
-
-/* --- Login Card --- */
-.login-wrapper {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  border-radius: 32px;
+  padding: 40px 20px;
 }
 
 .login-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
   padding: 50px 40px;
   text-align: center;
-  animation: cardEnter 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-  color: white;
+  animation: cardEnter 0.6s ease-out;
 }
 
 @keyframes cardEnter {
-  from { opacity: 0; transform: translateY(30px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Logo Area */
@@ -183,13 +158,12 @@ const handleMfuLogin = () => {
 .logo-circle {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  background: linear-gradient(135deg, #FEE2E2, #FECDD3);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 4px 12px rgba(193, 2, 48, 0.15);
 }
 
 .logo-emoji {
@@ -198,77 +172,57 @@ const handleMfuLogin = () => {
 
 /* Typography */
 h1 {
-  font-size: 2.4rem;
-  font-weight: 800;
+  font-size: 2rem;
+  font-weight: 700;
   margin: 0 0 8px;
-  background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-main);
   letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
   font-size: 1rem;
   font-weight: 400;
   margin-bottom: 0;
-  letter-spacing: 0.02em;
 }
 
 .info-text {
   margin: 2rem 0;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.05rem;
-  line-height: 1.5;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 /* Button */
 .mfu-login-btn {
   width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  padding: 14px;
+  background: var(--primary);
   border: none;
-  border-radius: 16px;
+  border-radius: 10px;
   color: white;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(193, 2, 48, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  position: relative;
-  overflow: hidden;
-}
-
-.mfu-login-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: 0.5s;
 }
 
 .mfu-login-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.5);
-}
-
-.mfu-login-btn:hover::before {
-  left: 100%;
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(193, 2, 48, 0.35);
 }
 
 .mfu-login-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
-  background: #334155;
+  background: #94A3B8;
   box-shadow: none;
 }
 
@@ -278,9 +232,22 @@ h1 {
 
 /* Footer */
 .footer {
-  margin-top: 40px;
+  margin-top: 30px;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--text-muted);
+}
+
+/* Footer Bar */
+.footer-bar {
+  background: var(--accent);
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  padding: 16px 20px;
+  font-size: 0.85rem;
+}
+
+.footer-bar p {
+  margin: 0;
 }
 
 /* Loading Spinner */
@@ -309,7 +276,7 @@ h1 {
   }
   
   h1 {
-    font-size: 2rem;
+    font-size: 1.6rem;
   }
 }
 </style>

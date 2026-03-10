@@ -1,27 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --font-family: 'Outfit', sans-serif;
-  --primary: #4F46E5;
-  --secondary: #EC4899;
-  --bg-gradient: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  --text-main: #F1F5F9;
+  --font-family: 'Inter', 'Noto Sans Thai', sans-serif;
+  --primary: #C10230;
+  --primary-dark: #9E0128;
+  --primary-light: #E8345A;
+  --secondary: #D4A843;
+  --accent: #2C3E50;
+  --bg-main: #F5F6FA;
+  --bg-white: #FFFFFF;
+  --card-bg: #FFFFFF;
+  --card-border: #E2E8F0;
+  --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --text-main: #1E293B;
+  --text-secondary: #475569;
   --text-muted: #94A3B8;
+  --border-color: #E2E8F0;
+  --success: #16A34A;
+  --warning: #EAB308;
+  --danger: #DC2626;
 }
 
 body {
   margin: 0;
   font-family: var(--font-family);
-  background: var(--bg-gradient);
+  background: var(--bg-main);
   color: var(--text-main);
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   overflow-x: hidden;
 }
 
@@ -31,8 +37,6 @@ body {
 
 #app {
   width: 100%;
-  display: flex;
-  justify-content: center;
 }
 
 a {

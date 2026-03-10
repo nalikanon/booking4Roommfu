@@ -17,23 +17,23 @@ const { currentLanguage, toggleLanguage } = useLanguage();
   background: transparent;
   border: none;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.4);
-  padding: 8px 12px;
-  transition: all 0.3s ease;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 6px 10px;
+  transition: color 0.2s;
 }
 
 .lang-btn span {
-  transition: color 0.3s;
+  transition: color 0.2s;
 }
 
 .lang-btn .active {
-  color: #a5b4fc; /* Active Color (Blueish) */
+  color: white;
   font-weight: 700;
 }
 
@@ -43,6 +43,6 @@ const { currentLanguage, toggleLanguage } = useLanguage();
 
 .divider {
   font-size: 0.8rem;
-  opacity: 0.3;
+  opacity: 0.4;
 }
 </style>

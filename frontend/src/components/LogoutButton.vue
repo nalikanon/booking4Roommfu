@@ -36,39 +36,35 @@ const handleLogout = () => {
 .logout-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
+  font-size: 0.9rem;
+  transition: background 0.2s;
 }
 
 .logout-btn:hover {
-  background: rgba(239, 68, 68, 0.4);
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .icon {
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
-/* Optional: Hide text on small screens if needed, or adjust */
 @media (max-width: 600px) {
   .text {
     display: none;
   }
   .logout-btn {
     padding: 8px;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
     justify-content: center;
   }
 }

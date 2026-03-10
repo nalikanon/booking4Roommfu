@@ -143,19 +143,22 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="page-container">
-    <div class="header-bar">
-      <div class="left-group">
-        <button @click="goBack" class="back-btn"><span>←</span> {{ t.back }}</button>
-        <h1>{{ t.historyTitle }}</h1>
-      </div>
-      <div class="right-group">
-        <LanguageSwitcher />
-        <LogoutButton />
+  <div class="page-wrapper">
+    <!-- Top Nav Bar -->
+    <div class="top-bar">
+      <div class="top-bar-inner">
+        <div class="brand">
+          <button @click="goBack" class="back-btn"><span>←</span> {{ t.back }}</button>
+          <span class="brand-text">{{ t.historyTitle }}</span>
+        </div>
+        <div class="nav-group">
+          <LanguageSwitcher />
+          <LogoutButton />
+        </div>
       </div>
     </div>
 
-    <div class="history-list">
+    <div class="content-area">
       <div v-if="isLoading" class="loading-state">
         <div class="spinner"></div>
         <span>{{ t.loadingHistory }}</span>
@@ -204,7 +207,7 @@ onMounted(() => {
             </div>
          </div>
       </div>
-    </div>
+    </div>  <!-- end content-area -->
 
     <!-- Confirm Modal -->
     <ConfirmModal 
@@ -218,86 +221,110 @@ onMounted(() => {
         @confirm="handleConfirmCancel"
         @cancel="showModal = false"
     />
+
+    <!-- Footer -->
+    <div class="footer-bar">
+      <p>&copy; Mae Fah Luang University &mdash; Center for Information Technology Services</p>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.page-container {
-  max-width: 95%;
-  margin: 0 auto;
-  padding: 20px;
+.page-wrapper {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-main);
 }
 
-.header-bar {
+.top-bar {
+  background: var(--primary);
+  color: white;
+  padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.top-bar-inner {
+  max-width: 1400px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 30px;
+  height: 60px;
 }
 
-.left-group, .right-group {
+.brand {
   display: flex;
   align-items: center;
-  gap: 15px; /* Add gap for switcher and logout */
+  gap: 16px;
+}
+
+.brand-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: white;
+}
+
+.nav-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .back-btn {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   border: none;
   color: white;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-weight: 500;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
-  margin-right: 20px;
+  font-size: 0.9rem;
+  transition: background 0.2s;
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateX(-3px);
+  background: rgba(255, 255, 255, 0.25);
 }
 
-h1 {
-  font-size: 2rem;
-  background: linear-gradient(to right, #fff, #a5b4fc);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin: 0;
+.content-area {
+  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  width: 100%;
 }
 
-/* --- History Grid -- */
-/* Match structure of rooms-list from ClassroomList.vue */
+/* --- History Grid --- */
 .rooms-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 20px;
-  animation: slideUp 0.6s ease-out;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .room-card {
   display: flex;
   flex-direction: column;
-  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
-  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
-  border-radius: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(10px);
+  transition: all 0.25s ease;
+  box-shadow: var(--card-shadow);
   height: 100%;
 }
 
 .room-card:hover {
-  transform: translateY(-8px);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--primary-light);
 }
 
 .card-image {
@@ -310,89 +337,85 @@ h1 {
 }
 
 .badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    color: white;
-    font-size: 0.8rem;
-    font-weight: 600;
-    backdrop-filter: blur(4px);
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
-/* Re-use status colors logic */
-.status-badge.approved { background: rgba(74, 222, 128, 0.9); color: #064e3b; }
-.status-badge.pending { background: rgba(250, 204, 21, 0.9); color: #713f12; }
-.status-badge.cancelled { background: rgba(248, 113, 113, 0.9); color: #7f1d1d; }
-.status-badge.unknown { background: rgba(148, 163, 184, 0.9); }
+
+.status-badge.approved { background: #16A34A; }
+.status-badge.pending { background: #EAB308; color: #713f12; }
+.status-badge.cancelled { background: #DC2626; }
+.status-badge.unknown { background: #94A3B8; }
 
 .card-content {
   flex: 1;
-  padding: 20px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
 }
 
 .room-header {
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 
 .room-header h2 {
-  font-size: 1.4rem;
-  color: #fff;
-  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  color: var(--text-main);
+  margin: 0 0 4px 0;
+  font-weight: 600;
 }
 
 .date-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.9rem;
-    color: #a5b4fc;
-    background: rgba(99, 102, 241, 0.1);
-    padding: 2px 8px;
-    border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--primary);
+  background: rgba(193, 2, 48, 0.08);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .room-details {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  color: #94a3b8;
-  font-size: 0.95rem;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
 }
 
 .detail-item {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
 }
 
 .cancel-btn {
   margin-top: auto;
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.5);
-  color: #fca5a5;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: #DC2626;
   padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   font-weight: 600;
   transition: all 0.2s ease;
+  font-family: inherit;
 }
 
 .cancel-btn:hover {
-  background: rgba(239, 68, 68, 0.4);
-  transform: translateY(-2px);
-  color: white;
-}
-
-.detail-item .icon {
-    opacity: 0.8;
+  background: rgba(220, 38, 38, 0.15);
+  transform: translateY(-1px);
 }
 
 /* Responsiveness */
@@ -401,6 +424,16 @@ h1 {
 @media (max-width: 900px) { .rooms-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .rooms-grid { grid-template-columns: 1fr; } }
 
+/* Footer */
+.footer-bar {
+  background: var(--accent);
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  padding: 16px 20px;
+  font-size: 0.85rem;
+}
+
+.footer-bar p { margin: 0; }
 
 /* Loading/Empty States */
 .loading-state, .error-state, .empty-state {
@@ -410,17 +443,22 @@ h1 {
   justify-content: center;
   gap: 15px;
   padding: 60px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 24px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+  color: var(--text-secondary);
 }
 
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #818cf8;
+  border: 3px solid var(--card-border);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
+
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>

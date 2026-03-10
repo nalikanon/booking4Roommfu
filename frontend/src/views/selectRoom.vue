@@ -284,38 +284,53 @@ const isMinuteDisabled = (m) => {
 </script>
 
 <template>
-  <div class="dashboard-container">
-    <div class="top-nav">
-       <div class="nav-group">
+  <div class="page-wrapper">
+    <!-- Top Nav Bar -->
+    <div class="top-bar">
+      <div class="top-bar-inner">
+        <div class="brand">
+          <span class="brand-icon">🏛️</span>
+          <span class="brand-text">MFU Room Booking</span>
+        </div>
+        <div class="nav-group">
           <LanguageSwitcher />
-           <button @click="goToHistory" class="history-btn" :title="t.historyTitle">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button @click="goToHistory" class="nav-btn" :title="t.historyTitle">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
             </svg>
             <span>{{ t.historyTitle }}</span>
           </button>
           <LogoutButton />
-       </div>
-    </div>
-    <div class="header-section">
-      <h1>{{ t.selectRoomTitle }}</h1>
-      <p>{{ t.selectRoomSubtitle }}</p>
+        </div>
+      </div>
     </div>
 
-    <div class="grid-container">
-      <div
-        v-for="room in rooms"
-        :key="room.id"
-        class="room-card"
-        @click="handleSelect(room)"
-      >
-        <div class="icon-wrapper" :class="room.color">
-          <span class="emoji">{{ room.icon }}</span>
-        </div>
-        <h3>{{ room.title }}</h3>
-        <p>{{ room.description }}</p>
-        <button class="select-btn" @click.stop="handleSelect(room)">{{ t.select }}</button>
+    <div class="content-area">
+      <div class="header-section">
+        <h1>{{ t.selectRoomTitle }}</h1>
+        <p>{{ t.selectRoomSubtitle }}</p>
       </div>
+
+      <div class="grid-container">
+        <div
+          v-for="room in rooms"
+          :key="room.id"
+          class="room-card"
+          @click="handleSelect(room)"
+        >
+          <div class="icon-wrapper" :class="room.color">
+            <span class="emoji">{{ room.icon }}</span>
+          </div>
+          <h3>{{ room.title }}</h3>
+          <p>{{ room.description }}</p>
+          <button class="select-btn" @click.stop="handleSelect(room)">{{ t.select }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-bar">
+      <p>&copy; Mae Fah Luang University &mdash; Center for Information Technology Services</p>
     </div>
 
     <!-- Custom Modal -->
@@ -424,73 +439,104 @@ const isMinuteDisabled = (m) => {
 </template>
 
 <style scoped>
-.dashboard-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 20px;
-  text-align: center;
-  position: relative;
-  z-index: 1;
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-main);
 }
 
-.top-nav {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 10;
+/* Top Bar */
+.top-bar {
+  background: var(--primary);
+  color: white;
+  padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.top-bar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  font-size: 1.5rem;
+}
+
+.brand-text {
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 
 .nav-group {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.history-btn {
-  background: rgba(255, 255, 255, 0.1);
+.nav-btn {
+  background: rgba(255, 255, 255, 0.15);
   border: none;
   color: white;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-weight: 500;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
+  font-size: 0.9rem;
+  transition: background 0.2s;
 }
 
-.history-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.05);
-  color: #a5b4fc;
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Content */
+.content-area {
+  flex: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  width: 100%;
 }
 
 .header-section {
-  margin-bottom: 50px;
-  animation: slideDown 0.8s ease-out;
+  margin-bottom: 40px;
+  text-align: center;
+  animation: fadeIn 0.6s ease-out;
 }
 
 .header-section h1 {
-  font-size: 3rem;
-  margin-bottom: 10px;
-  background: linear-gradient(to right, #fff, #a5b4fc);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+  color: var(--text-main);
+  font-weight: 700;
 }
 
 .header-section p {
-  color: var(--text-muted);
-  font-size: 1.1rem;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
 }
 
 .grid-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
-  perspective: 1000px;
+  gap: 24px;
 }
 
 @media (max-width: 768px) {
@@ -500,88 +546,96 @@ const isMinuteDisabled = (m) => {
 }
 
 .room-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
   padding: 30px;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.3s ease;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  overflow: hidden;
+  text-align: center;
+  box-shadow: var(--card-shadow);
 }
 
 .room-card:hover {
-  transform: translateY(-10px) scale(1.02);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--primary-light);
 }
 
 .icon-wrapper {
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.1),
-    rgba(255, 255, 255, 0.05)
-  );
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  margin-bottom: 18px;
 }
 
 .from-blue-400.to-blue-600 {
-  background: linear-gradient(135deg, #60a5fa, #2563eb);
+  background: linear-gradient(135deg, #DBEAFE, #93C5FD);
 }
 .from-green-400.to-green-600 {
-  background: linear-gradient(135deg, #4ade80, #16a34a);
+  background: linear-gradient(135deg, #D1FAE5, #6EE7B7);
 }
 .from-orange-400.to-orange-600 {
-  background: linear-gradient(135deg, #fb923c, #ea580c);
+  background: linear-gradient(135deg, #FFEDD5, #FDBA74);
 }
 .from-purple-400.to-purple-600 {
-  background: linear-gradient(135deg, #c084fc, #9333ea);
+  background: linear-gradient(135deg, #EDE9FE, #C4B5FD);
 }
 
 .emoji {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
 }
 
 h3 {
-  font-size: 1.5rem;
-  margin: 10px 0;
-  color: #fff;
+  font-size: 1.3rem;
+  margin: 8px 0;
+  color: var(--text-main);
+  font-weight: 600;
 }
 
 p {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 0.95rem;
   line-height: 1.5;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   flex-grow: 1;
 }
 
 .select-btn {
   margin-top: auto;
-  padding: 10px 24px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 30px;
-  color: white;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  padding: 10px 28px;
+  background: transparent;
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .room-card:hover .select-btn {
-  background: white;
-  color: var(--primary);
+  background: var(--primary);
+  color: white;
+}
+
+/* Footer */
+.footer-bar {
+  background: var(--accent);
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  padding: 16px 20px;
+  font-size: 0.85rem;
+}
+
+.footer-bar p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* Modal Styles */
@@ -591,8 +645,7 @@ p {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -600,14 +653,14 @@ p {
 }
 
 .modal-content {
-  background: #1e1e24; /* Fallback */
-  background: rgba(30, 30, 40, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
   padding: 30px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  color: var(--text-main);
 }
 
 .modal-header {
@@ -618,9 +671,10 @@ p {
 }
 
 .modal-header h2 {
-  font-size: 1.5rem;
-  color: #a5b4fc;
+  font-size: 1.3rem;
+  color: var(--primary);
   margin: 0;
+  font-weight: 600;
 }
 
 .close-btn {
@@ -635,7 +689,7 @@ p {
 }
 
 .close-btn:hover {
-  color: #fff;
+  color: var(--text-main);
 }
 
 .modal-body {
@@ -658,40 +712,28 @@ p {
 }
 
 label {
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 500;
-  margin-left: 4px;
 }
 
 .input-field {
   width: 100%;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: white;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  color-scheme: dark;
+  padding: 10px 14px;
+  background: var(--bg-main);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+  font-family: inherit;
 }
 
 .input-field:focus {
   outline: none;
-  border-color: #6366f1;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(193, 2, 48, 0.1);
 }
-
-.date-input {
-  cursor: pointer;
-  position: relative;
-}
-
-.date-input::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-}
-
 
 .date-input-container {
   position: relative;
@@ -710,45 +752,47 @@ label {
 }
 
 .display-date {
-  background: rgba(255, 255, 255, 0.05); /* Match standard input style */
+  background: var(--bg-main);
 }
 
 .modal-footer {
-  margin-top: 30px;
+  margin-top: 25px;
   display: flex;
   justify-content: flex-end;
-  gap: 15px;
+  gap: 12px;
 }
 
 .btn {
-  padding: 12px 24px;
-  border-radius: 12px;
+  padding: 10px 24px;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   border: none;
+  font-family: inherit;
 }
 
 .btn-cancel {
   background: transparent;
-  color: #94a3b8;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  border: 1px solid var(--card-border);
 }
 
 .btn-cancel:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
+  background: var(--bg-main);
+  color: var(--text-main);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
+  background: var(--primary);
   color: white;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 2px 8px rgba(193, 2, 48, 0.2);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(193, 2, 48, 0.3);
 }
 
 /* Transitions */
@@ -763,7 +807,7 @@ label {
 }
 
 .modal-fade-enter-active .modal-content {
-  animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: modalSlideIn 0.3s ease-out;
 }
 
 .modal-fade-leave-active .modal-content {
@@ -771,25 +815,13 @@ label {
 }
 
 @keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .time-inputs {
@@ -799,7 +831,7 @@ label {
 }
 
 .time-select {
-  padding: 12px 10px;
+  padding: 10px 8px;
   text-align: center;
   appearance: none;
   cursor: pointer;
@@ -808,17 +840,16 @@ label {
 
 .colon {
   font-weight: bold;
-  color: white;
-  font-size: 1.2rem;
+  color: var(--text-main);
+  font-size: 1.1rem;
 }
 
 .time-select option:disabled {
-  color: rgba(255, 255, 255, 0.3);
-  background-color: #2a2a2f;
+  color: #CBD5E1;
 }
 
 .time-select option {
-  background-color: #1e1e24;
-  color: white;
+  background-color: white;
+  color: var(--text-main);
 }
 </style>

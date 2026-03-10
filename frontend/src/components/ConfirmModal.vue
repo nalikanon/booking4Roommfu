@@ -93,8 +93,7 @@ const confirm = () => {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,17 +101,16 @@ const confirm = () => {
 }
 
 .modal-container {
-  background: rgba(30, 41, 59, 0.7); /* Darker glass for contrast */
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--card-border, #E2E8F0);
   padding: 24px;
-  border-radius: 20px;
+  border-radius: 16px;
   width: 90%;
   max-width: 400px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  transform: translateY(0);
+  gap: 18px;
 }
 
 .modal-header {
@@ -130,24 +128,23 @@ const confirm = () => {
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
-    background: rgba(255, 255, 255, 0.1);
 }
 
-.icon-wrapper.danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
-.icon-wrapper.success { background: rgba(34, 197, 94, 0.2); color: #86efac; }
-.icon-wrapper.primary { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+.icon-wrapper.danger { background: rgba(220, 38, 38, 0.1); }
+.icon-wrapper.success { background: rgba(22, 163, 74, 0.1); }
+.icon-wrapper.primary { background: rgba(193, 2, 48, 0.1); }
 
 h3 {
     margin: 0;
-    font-size: 1.25rem;
-    color: white;
+    font-size: 1.2rem;
+    color: var(--text-main, #1E293B);
     font-weight: 600;
 }
 
 .modal-body {
     text-align: center;
-    color: #cbd5e1;
-    font-size: 1rem;
+    color: var(--text-secondary, #475569);
+    font-size: 0.95rem;
     line-height: 1.5;
 }
 
@@ -155,39 +152,42 @@ h3 {
     display: flex;
     gap: 12px;
     justify-content: center;
-    margin-top: 8px;
+    margin-top: 4px;
 }
 
 button {
     flex: 1;
     padding: 10px 20px;
-    border-radius: 12px;
+    border-radius: 8px;
     font-weight: 600;
     border: none;
     cursor: pointer;
     transition: all 0.2s;
     font-size: 0.95rem;
+    font-family: inherit;
 }
 
 .btn-cancel {
-    background: rgba(255, 255, 255, 0.1);
-    color: #cbd5e1;
+    background: var(--bg-main, #F5F6FA);
+    color: var(--text-secondary, #475569);
+    border: 1px solid var(--card-border, #E2E8F0);
 }
 
 .btn-cancel:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+    background: #E2E8F0;
+    color: var(--text-main, #1E293B);
 }
 
 .btn-confirm.danger {
-    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    background: #DC2626;
     color: white;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
 }
 
 .btn-confirm.danger:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+    background: #B91C1C;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
 button:disabled {
@@ -206,7 +206,6 @@ button:disabled {
     animation: spin 0.8s linear infinite;
 }
 
-/* Animations */
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   transition: opacity 0.3s ease;
@@ -218,15 +217,15 @@ button:disabled {
 }
 
 .modal-fade-enter-active .modal-container {
-    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: popIn 0.3s ease-out;
 }
 .modal-fade-leave-active .modal-container {
     animation: popIn 0.3s reverse;
 }
 
 @keyframes popIn {
-    from { opacity: 0; transform: scale(0.9) translateY(20px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
