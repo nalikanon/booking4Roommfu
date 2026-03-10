@@ -57,12 +57,13 @@ const translations = {
     // Room Types
     classroomTitle: "Classroom",
     classroomDesc: "Standard classrooms equipped with projectors and whiteboards.",
-    labTitle: "Laboratory",
-    labDesc: "Computer labs and science labs with specialized equipment.",
-    equipTitle: "Equipment Room",
-    equipDesc: "Room for storing and checking out various equipment.",
+    labTitle: "Computer Laboratory",
+    labDesc: "Computer labs with specialized software and equipment.",
+    equipTitle: "Science Laboratory",
+    equipDesc: "Science labs with specialized experimental equipment.",
     meetTitle: "Meeting Room",
     meetDesc: "Professional meeting spaces with conference facilities.",
+    underDevelopment: "Under Development",
 
     // --- History Page ---
     historyTitle: "Booking History",
@@ -135,12 +136,13 @@ const translations = {
     // Room Types
     classroomTitle: "ห้องเรียน",
     classroomDesc: "ห้องเรียนวิชาการทั่วไป พร้อมโปรเจคเตอร์และกระดานไวท์บอร์ด",
-    labTitle: "ห้องปฏิบัติการ",
-    labDesc: "ห้องคอมพิวเตอร์และห้องทดลองวิทยาศาสตร์ พร้อมอุปกรณ์เฉพาะทาง",
-    equipTitle: "ห้องอุปกรณ์",
-    equipDesc: "ห้องสำหรับเก็บและเบิกจ่ายอุปกรณ์ต่างๆ",
+    labTitle: "ห้องปฏิบัติการคอมพิวเตอร์",
+    labDesc: "ห้องคอมพิวเตอร์พร้อมซอฟต์แวร์และอุปกรณ์เฉพาะทาง",
+    equipTitle: "ห้องปฏิบัติการวิทยาศาสตร์",
+    equipDesc: "ห้องทดลองวิทยาศาสตร์พร้อมอุปกรณ์การทดลอง",
     meetTitle: "ห้องประชุม",
     meetDesc: "ห้องประชุมมาตรฐานระดับมืออาชีพ พร้อมสิ่งอำนวยความสะดวกครบครัน",
+    underDevelopment: "อยู่ระหว่างพัฒนา",
 
     // --- History Page ---
     historyTitle: "ประวัติการจอง",

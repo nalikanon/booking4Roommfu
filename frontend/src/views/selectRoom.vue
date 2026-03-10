@@ -49,8 +49,9 @@ const rooms = computed(() => [
     id: 3,
     title: t.value.equipTitle,
     description: t.value.equipDesc,
-    icon: "🔧",
+    icon: "�",
     color: "from-orange-400 to-orange-600",
+    disabled: true,
   },
   {
     id: 4,
@@ -58,6 +59,7 @@ const rooms = computed(() => [
     description: t.value.meetDesc,
     icon: "💼",
     color: "from-purple-400 to-purple-600",
+    disabled: true,
   },
 ]);
 
@@ -316,14 +318,16 @@ const isMinuteDisabled = (m) => {
           v-for="room in rooms"
           :key="room.id"
           class="room-card"
-          @click="handleSelect(room)"
+          :class="{ disabled: room.disabled }"
+          @click="!room.disabled && handleSelect(room)"
         >
+          <div v-if="room.disabled" class="dev-badge">{{ t.underDevelopment }}</div>
           <div class="icon-wrapper" :class="room.color">
             <span class="emoji">{{ room.icon }}</span>
           </div>
           <h3>{{ room.title }}</h3>
           <p>{{ room.description }}</p>
-          <button class="select-btn" @click.stop="handleSelect(room)">{{ t.select }}</button>
+          <button v-if="!room.disabled" class="select-btn" @click.stop="handleSelect(room)">{{ t.select }}</button>
         </div>
       </div>
     </div>
@@ -557,12 +561,31 @@ const isMinuteDisabled = (m) => {
   align-items: center;
   text-align: center;
   box-shadow: var(--card-shadow);
+  position: relative;
 }
 
-.room-card:hover {
+.room-card:hover:not(.disabled) {
   transform: translateY(-4px);
   box-shadow: var(--card-shadow-hover);
   border-color: var(--primary-light);
+}
+
+.room-card.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.dev-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #F59E0B;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
 }
 
 .icon-wrapper {
@@ -619,7 +642,7 @@ p {
   transition: all 0.2s ease;
 }
 
-.room-card:hover .select-btn {
+.room-card:hover:not(.disabled) .select-btn {
   background: var(--primary);
   color: white;
 }
