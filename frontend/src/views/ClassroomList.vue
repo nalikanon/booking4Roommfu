@@ -496,7 +496,8 @@ watch(searchCriteria, (newVal) => {
           <button class="confirm-btn" @click="closeSuccessModal">{{ t.done }}</button>
         </div>
 
-    </div>
+      </div>
+    </transition>
     </div>  <!-- end content-area -->
 
     <!-- Footer -->
