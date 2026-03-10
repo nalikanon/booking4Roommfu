@@ -14,7 +14,7 @@ const translations = {
     loginInfo: "Welcome back! Please sign in to reserve a room.",
     loginBtn: "Login with MFU SSO",
     redirecting: "Redirecting...",
-    footerRights: "© 2024 MFU Room Booking System",
+    footerRights: "© 2026 MFU Room Booking System",
 
     // --- Classroom List ---
     title: "Available Rooms",
@@ -87,12 +87,12 @@ const translations = {
     logout: "ออกจากระบบ",
 
     // --- Login Page ---
-    welcomeTitle: "จองห้องเรียน",
+    welcomeTitle: "ระบบจองห้อง",
     welcomeSubtitle: "มหาวิทยาลัยแม่ฟ้าหลวง",
     loginInfo: "ยินดีต้อนรับ! กรุณาเข้าสู่ระบบเพื่อทำการจองห้อง",
     loginBtn: "เข้าสู่ระบบด้วย MFU SSO",
     redirecting: "กำลังเข้าสู่ระบบ...",
-    footerRights: "© 2024 ระบบจองห้อง MFU",
+    footerRights: "© 2026 ระบบจองห้อง MFU",
 
     // --- Classroom List ---
     title: "ห้องว่างที่จองได้",
