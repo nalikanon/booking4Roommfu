@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { ref, onMounted, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { api } from "../services/api";
@@ -665,7 +665,7 @@ watch(searchCriteria, (newVal) => {
 }
 
 .filter-btn.active {
-  background: rgba(193, 2, 48, 0.08);
+  background: rgba(125, 41, 35, 0.08);
   color: var(--primary);
   border-color: var(--primary);
 }
@@ -689,7 +689,7 @@ watch(searchCriteria, (newVal) => {
 .room-search-input:focus {
   border-color: var(--primary);
   width: 240px;
-  box-shadow: 0 0 0 3px rgba(193, 2, 48, 0.1);
+  box-shadow: 0 0 0 3px rgba(125, 41, 35, 0.1);
 }
 
 .search-icon {
@@ -799,9 +799,9 @@ watch(searchCriteria, (newVal) => {
 }
 
 .location-badge {
-  background: rgba(193, 2, 48, 0.08);
+  background: rgba(125, 41, 35, 0.08);
   color: var(--primary);
-  border: 1px solid rgba(193, 2, 48, 0.15);
+  border: 1px solid rgba(125, 41, 35, 0.15);
   padding: 3px 10px;
   border-radius: 6px;
   font-size: 0.8rem;
@@ -836,13 +836,13 @@ watch(searchCriteria, (newVal) => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(193, 2, 48, 0.2);
+  box-shadow: 0 2px 8px rgba(125, 41, 35, 0.2);
 }
 
 .book-btn:hover {
   background: var(--primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(193, 2, 48, 0.3);
+  box-shadow: 0 4px 12px rgba(125, 41, 35, 0.3);
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -888,7 +888,7 @@ watch(searchCriteria, (newVal) => {
 }
 
 .filter-option.selected {
-  background: rgba(193, 2, 48, 0.08);
+  background: rgba(125, 41, 35, 0.08);
   color: var(--primary);
   font-weight: 500;
 }
@@ -929,7 +929,7 @@ watch(searchCriteria, (newVal) => {
 
 .modal-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(193, 2, 48, 0.1);
+  box-shadow: 0 0 0 3px rgba(125, 41, 35, 0.1);
 }
 
 .input-wrapper { position: relative; width: 100%; }
@@ -971,7 +971,7 @@ watch(searchCriteria, (newVal) => {
 .toggle-btn.active {
   background: var(--primary);
   color: white;
-  box-shadow: 0 2px 6px rgba(193, 2, 48, 0.25);
+  box-shadow: 0 2px 6px rgba(125, 41, 35, 0.25);
 }
 
 .ticket-info {
@@ -1146,7 +1146,7 @@ watch(searchCriteria, (newVal) => {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(193, 2, 48, 0.2);
+  box-shadow: 0 2px 8px rgba(125, 41, 35, 0.2);
   transition: all 0.2s;
   font-family: inherit;
 }
@@ -1154,7 +1154,7 @@ watch(searchCriteria, (newVal) => {
 .confirm-btn:hover {
   background: var(--primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(193, 2, 48, 0.3);
+  box-shadow: 0 4px 12px rgba(125, 41, 35, 0.3);
 }
 
 .success-modal { text-align: center; padding: 40px; }

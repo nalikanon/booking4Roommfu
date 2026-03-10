@@ -51,9 +51,9 @@ const confirm = () => {
       <div class="modal-container glass-panel">
         <div class="modal-header">
            <div class="icon-wrapper" :class="type">
-               <span v-if="type === 'danger'">⚠️</span>
-               <span v-else-if="type === 'success'">✅</span>
-               <span v-else>ℹ️</span>
+               <span v-if="type === 'danger'">âš ï¸</span>
+               <span v-else-if="type === 'success'">âœ…</span>
+               <span v-else>â„¹ï¸</span>
            </div>
            <h3>{{ title }}</h3>
         </div>
@@ -132,7 +132,7 @@ const confirm = () => {
 
 .icon-wrapper.danger { background: rgba(220, 38, 38, 0.1); }
 .icon-wrapper.success { background: rgba(22, 163, 74, 0.1); }
-.icon-wrapper.primary { background: rgba(193, 2, 48, 0.1); }
+.icon-wrapper.primary { background: rgba(125, 41, 35, 0.1); }
 
 h3 {
     margin: 0;

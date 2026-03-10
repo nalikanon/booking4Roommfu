@@ -148,7 +148,7 @@ onMounted(() => {
     <div class="top-bar">
       <div class="top-bar-inner">
         <div class="brand">
-          <button @click="goBack" class="back-btn"><span>←</span> {{ t.back }}</button>
+          <button @click="goBack" class="back-btn"><span>â†</span> {{ t.back }}</button>
           <span class="brand-text">{{ t.historyTitle }}</span>
         </div>
         <div class="nav-group">
@@ -165,11 +165,11 @@ onMounted(() => {
       </div>
       
       <div v-else-if="error" class="error-state">
-        <span class="error-icon">⚠️</span> {{ error }}
+        <span class="error-icon">âš ï¸</span> {{ error }}
       </div>
 
       <div v-else-if="historyItems.length === 0" class="empty-state">
-        <span class="empty-icon">📂</span> {{ t.noHistory }}
+        <span class="empty-icon">ðŸ“‚</span> {{ t.noHistory }}
       </div>
 
       <div v-else class="rooms-grid">
@@ -188,11 +188,11 @@ onMounted(() => {
 
               <div class="room-details">
                  <div class="detail-item full-width">
-                   <span class="icon">📅</span>
+                   <span class="icon">ðŸ“…</span>
                    <span><strong>{{ item.date }}</strong></span>
                  </div>
                  <div class="detail-item">
-                   <span class="icon">⏰</span>
+                   <span class="icon">â°</span>
                    <span>{{ item.time }}</span>
                  </div>
               </div>
@@ -202,7 +202,7 @@ onMounted(() => {
                 @click="openCancelModal(item.guid)"
                 v-if="item.statusClass !== 'cancelled'"
               >
-                <span>✖</span> {{ t.cancelBooking || 'Cancel' }}
+                <span>âœ–</span> {{ t.cancelBooking || 'Cancel' }}
               </button>
             </div>
          </div>
@@ -377,7 +377,7 @@ onMounted(() => {
   gap: 6px;
   font-size: 0.85rem;
   color: var(--primary);
-  background: rgba(193, 2, 48, 0.08);
+  background: rgba(125, 41, 35, 0.08);
   padding: 2px 8px;
   border-radius: 4px;
 }

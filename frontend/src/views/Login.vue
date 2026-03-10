@@ -34,7 +34,7 @@ const handleMfuLogin = () => {
     <div class="top-bar">
       <div class="top-bar-inner">
         <div class="brand">
-          <span class="brand-icon">🏛️</span>
+          <span class="brand-icon">ðŸ›ï¸</span>
           <span class="brand-text">MFU Room Booking</span>
         </div>
         <LanguageSwitcher />
@@ -45,7 +45,7 @@ const handleMfuLogin = () => {
       <div class="login-card">
         <div class="logo-area">
           <div class="logo-circle">
-             <span class="logo-emoji">📅</span>
+             <span class="logo-emoji">ðŸ“…</span>
           </div>
         </div>
         
@@ -58,7 +58,7 @@ const handleMfuLogin = () => {
           <p class="info-text">{{ t.loginInfo }}</p>
           
           <button @click="handleMfuLogin" :disabled="loading" class="mfu-login-btn">
-            <span class="btn-icon" v-if="!loading">🔐</span>
+            <span class="btn-icon" v-if="!loading">ðŸ”</span>
             <span v-if="!loading">{{ t.loginBtn }}</span>
             <span v-else class="loading-state">
               <span class="spinner"></span> {{ t.redirecting }}
@@ -163,7 +163,7 @@ const handleMfuLogin = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(193, 2, 48, 0.15);
+  box-shadow: 0 4px 12px rgba(125, 41, 35, 0.15);
 }
 
 .logo-emoji {
@@ -205,7 +205,7 @@ h1 {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 12px rgba(193, 2, 48, 0.25);
+  box-shadow: 0 4px 12px rgba(125, 41, 35, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -215,7 +215,7 @@ h1 {
 .mfu-login-btn:hover {
   background: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(193, 2, 48, 0.35);
+  box-shadow: 0 6px 20px rgba(125, 41, 35, 0.35);
 }
 
 .mfu-login-btn:disabled {

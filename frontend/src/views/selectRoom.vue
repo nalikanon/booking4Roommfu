@@ -35,21 +35,21 @@ const rooms = computed(() => [
     id: 1,
     title: t.value.classroomTitle,
     description: t.value.classroomDesc,
-    icon: "📚",
+    icon: "ðŸ“š",
     color: "from-blue-400 to-blue-600",
   },
   {
     id: 2,
     title: t.value.labTitle,
     description: t.value.labDesc,
-    icon: "🔬",
+    icon: "ðŸ”¬",
     color: "from-green-400 to-green-600",
   },
   {
     id: 3,
     title: t.value.equipTitle,
     description: t.value.equipDesc,
-    icon: "�",
+    icon: "ï¿½",
     color: "from-orange-400 to-orange-600",
     disabled: true,
   },
@@ -57,7 +57,7 @@ const rooms = computed(() => [
     id: 4,
     title: t.value.meetTitle,
     description: t.value.meetDesc,
-    icon: "💼",
+    icon: "ðŸ’¼",
     color: "from-purple-400 to-purple-600",
     disabled: true,
   },
@@ -291,7 +291,7 @@ const isMinuteDisabled = (m) => {
     <div class="top-bar">
       <div class="top-bar-inner">
         <div class="brand">
-          <span class="brand-icon">🏛️</span>
+          <span class="brand-icon">ðŸ›ï¸</span>
           <span class="brand-text">MFU Room Booking</span>
         </div>
         <div class="nav-group">
@@ -755,7 +755,7 @@ label {
 .input-field:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(193, 2, 48, 0.1);
+  box-shadow: 0 0 0 3px rgba(125, 41, 35, 0.1);
 }
 
 .date-input-container {
@@ -809,13 +809,13 @@ label {
 .btn-primary {
   background: var(--primary);
   color: white;
-  box-shadow: 0 2px 8px rgba(193, 2, 48, 0.2);
+  box-shadow: 0 2px 8px rgba(125, 41, 35, 0.2);
 }
 
 .btn-primary:hover {
   background: var(--primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(193, 2, 48, 0.3);
+  box-shadow: 0 4px 12px rgba(125, 41, 35, 0.3);
 }
 
 /* Transitions */
