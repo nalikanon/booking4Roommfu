@@ -148,7 +148,7 @@ onMounted(() => {
     <div class="top-bar">
       <div class="top-bar-inner">
         <div class="brand">
-          <button @click="goBack" class="back-btn"><span>â†</span> {{ t.back }}</button>
+          <button @click="goBack" class="back-btn"><span>←</span> {{ t.back }}</button>
           <span class="brand-text">{{ t.historyTitle }}</span>
         </div>
         <div class="nav-group">
@@ -165,11 +165,11 @@ onMounted(() => {
       </div>
       
       <div v-else-if="error" class="error-state">
-        <span class="error-icon">âš ï¸</span> {{ error }}
+        <span class="error-icon">⚠️</span> {{ error }}
       </div>
 
       <div v-else-if="historyItems.length === 0" class="empty-state">
-        <span class="empty-icon">ðŸ“‚</span> {{ t.noHistory }}
+        <span class="empty-icon">📂</span> {{ t.noHistory }}
       </div>
 
       <div v-else class="rooms-grid">
@@ -188,11 +188,11 @@ onMounted(() => {
 
               <div class="room-details">
                  <div class="detail-item full-width">
-                   <span class="icon">ðŸ“…</span>
+                   <span class="icon">📅</span>
                    <span><strong>{{ item.date }}</strong></span>
                  </div>
                  <div class="detail-item">
-                   <span class="icon">â°</span>
+                   <span class="icon">⏰</span>
                    <span>{{ item.time }}</span>
                  </div>
               </div>
@@ -202,7 +202,7 @@ onMounted(() => {
                 @click="openCancelModal(item.guid)"
                 v-if="item.statusClass !== 'cancelled'"
               >
-                <span>âœ–</span> {{ t.cancelBooking || 'Cancel' }}
+                <span>✖</span> {{ t.cancelBooking || 'Cancel' }}
               </button>
             </div>
          </div>

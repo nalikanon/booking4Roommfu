@@ -35,21 +35,21 @@ const rooms = computed(() => [
     id: 1,
     title: t.value.classroomTitle,
     description: t.value.classroomDesc,
-    icon: "ðŸ“š",
+    icon: "📚",
     color: "from-blue-400 to-blue-600",
   },
   {
     id: 2,
     title: t.value.labTitle,
     description: t.value.labDesc,
-    icon: "ðŸ”¬",
+    icon: "🔬",
     color: "from-green-400 to-green-600",
   },
   {
     id: 3,
     title: t.value.equipTitle,
     description: t.value.equipDesc,
-    icon: "ï¿½",
+    icon: "🔬",
     color: "from-orange-400 to-orange-600",
     disabled: true,
   },
@@ -57,7 +57,7 @@ const rooms = computed(() => [
     id: 4,
     title: t.value.meetTitle,
     description: t.value.meetDesc,
-    icon: "ðŸ’¼",
+    icon: "💼",
     color: "from-purple-400 to-purple-600",
     disabled: true,
   },
@@ -291,7 +291,7 @@ const isMinuteDisabled = (m) => {
     <div class="top-bar">
       <div class="top-bar-inner">
         <div class="brand">
-          <span class="brand-icon">ðŸ›ï¸</span>
+          <span class="brand-icon">🏛️</span>
           <span class="brand-text">MFU Room Booking</span>
         </div>
         <div class="nav-group">

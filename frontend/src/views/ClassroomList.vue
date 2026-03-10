@@ -118,7 +118,7 @@ const fetchRooms = async () => {
     classrooms.value = apiRooms.map(r => ({
       id: r.ROOMID,
       name: r.ROOMNAME, // "C1 312"
-      location: r.BUILDINGNAME || r.BUILDINGCODE || 'Unknown', // "à¸­à¸²à¸„à¸²à¸£à¹€à¸£à¸µà¸¢à¸™à¸£à¸§à¸¡ 1"
+      location: r.BUILDINGNAME || r.BUILDINGCODE || 'Unknown', // "อาคารเรียนรวม 1"
       capacity: r.CAPACITY,
       status: 'Available', // API doesn't send status, assume available if in list
       description: r.ROOMTYPECODEDESC,
@@ -259,7 +259,7 @@ watch(searchCriteria, (newVal) => {
     <div class="top-bar">
       <div class="top-bar-inner">
         <div class="brand">
-          <button @click="goBack" class="back-btn"><span>â†</span> {{ t.back }}</button>
+          <button @click="goBack" class="back-btn"><span>←</span> {{ t.back }}</button>
           <span class="brand-text">{{ t.title }}</span>
         </div>
         <div class="nav-group">
@@ -353,7 +353,7 @@ watch(searchCriteria, (newVal) => {
             :placeholder="t.searchPlaceholder" 
             class="room-search-input"
           />
-          <span class="search-icon">ðŸ”</span>
+          <span class="search-icon">🔍</span>
         </div>
       </div>
     </div>
@@ -375,13 +375,13 @@ watch(searchCriteria, (newVal) => {
 
           <div class="room-details">
             <div class="detail-item">
-              <span class="icon">ðŸ‘¥</span>
+              <span class="icon">👥</span>
               <span
                 >{{ t.capacity }} <strong>{{ room.capacity }} {{ t.people }}</strong></span
               >
             </div>
             <div class="detail-item">
-              <span class="icon">ðŸ“</span>
+              <span class="icon">📍</span>
               <span
                 >{{ t.building }} <strong>{{ room.location }}</strong></span
               >
@@ -404,7 +404,7 @@ watch(searchCriteria, (newVal) => {
         <div v-if="showBookingModal && selectedRoom" class="modal-content glass-card" key="booking">
           <div class="modal-header">
             <h3>{{ t.confirmBookingTitle }}</h3>
-            <button class="close-btn" @click="closeBookingModal">Ã—</button>
+            <button class="close-btn" @click="closeBookingModal">&times;</button>
           </div>
           
           <div class="modal-body">
@@ -413,14 +413,14 @@ watch(searchCriteria, (newVal) => {
                   <div class="form-group full-width">
                      <label>{{ t.bookingFor }}</label>
                      <div class="input-wrapper">
-                       <span class="input-icon">ðŸ“</span>
+                       <span class="input-icon">📝</span>
                        <input v-model="bookingForm.bookingFor" type="text" class="modal-input with-icon" :placeholder="t.bookingForPlaceholder" />
                      </div>
                   </div>
                   <div class="form-group full-width">
                     <label>{{ t.tel }}</label>
                     <div class="input-wrapper">
-                      <span class="input-icon">ðŸ“ž</span>
+                      <span class="input-icon">📞</span>
                       <input v-model="bookingForm.tel" type="text" class="modal-input with-icon" :placeholder="t.telPlaceholder" />
                     </div>
                  </div>

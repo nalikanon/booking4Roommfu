@@ -34,7 +34,7 @@ const handleMfuLogin = () => {
     <div class="top-bar">
       <div class="top-bar-inner">
         <div class="brand">
-          <span class="brand-icon">ðŸ›ï¸</span>
+          <span class="brand-icon">🏛️</span>
           <span class="brand-text">MFU Room Booking</span>
         </div>
         <LanguageSwitcher />
@@ -45,7 +45,7 @@ const handleMfuLogin = () => {
       <div class="login-card">
         <div class="logo-area">
           <div class="logo-circle">
-             <span class="logo-emoji">ðŸ“…</span>
+             <span class="logo-emoji">📅</span>
           </div>
         </div>
         
@@ -58,7 +58,7 @@ const handleMfuLogin = () => {
           <p class="info-text">{{ t.loginInfo }}</p>
           
           <button @click="handleMfuLogin" :disabled="loading" class="mfu-login-btn">
-            <span class="btn-icon" v-if="!loading">ðŸ”</span>
+            <span class="btn-icon" v-if="!loading">🔐</span>
             <span v-if="!loading">{{ t.loginBtn }}</span>
             <span v-else class="loading-state">
               <span class="spinner"></span> {{ t.redirecting }}
