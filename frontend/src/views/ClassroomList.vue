@@ -718,7 +718,7 @@ watch(searchCriteria, (newVal) => {
 
 .rooms-list {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   animation: fadeIn 0.5s ease-out;
 }
@@ -772,9 +772,8 @@ watch(searchCriteria, (newVal) => {
   gap: 12px;
 }
 
-@media (max-width: 1600px) { .rooms-list { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 1300px) { .rooms-list { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 900px) { .rooms-list { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 1400px) { .rooms-list { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 1000px) { .rooms-list { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) {
   .rooms-list { grid-template-columns: 1fr; }
   .search-summary { flex-direction: column; align-items: stretch; gap: 12px; }
@@ -810,7 +809,8 @@ watch(searchCriteria, (newVal) => {
 
 .room-details {
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  gap: 8px;
   color: var(--text-secondary);
   font-size: 0.9rem;
 }
@@ -818,7 +818,13 @@ watch(searchCriteria, (newVal) => {
 .detail-item {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
+}
+
+.detail-item .icon {
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
 }
 
 .card-actions {
