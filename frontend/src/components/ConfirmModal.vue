@@ -51,30 +51,43 @@ const confirm = () => {
       <div class="modal-container glass-panel">
         <div class="modal-header">
            <div class="icon-wrapper" :class="type">
-               <span v-if="type === 'danger'">âš ï¸</span>
-               <span v-else-if="type === 'success'">âœ…</span>
-               <span v-else>â„¹ï¸</span>
+               <!-- danger: warning triangle -->
+               <svg v-if="type === 'danger'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                 <line x1="12" y1="9" x2="12" y2="13"/>
+                 <line x1="12" y1="17" x2="12.01" y2="17"/>
+               </svg>
+               <!-- success: checkmark -->
+               <svg v-else-if="type === 'success'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                 <polyline points="20 6 9 17 4 12"/>
+               </svg>
+               <!-- default/primary: info circle -->
+               <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                 <circle cx="12" cy="12" r="10"/>
+                 <line x1="12" y1="8" x2="12" y2="12"/>
+                 <line x1="12" y1="16" x2="12.01" y2="16"/>
+               </svg>
            </div>
            <h3>{{ title }}</h3>
         </div>
-        
+
         <div class="modal-body">
           <p>{{ message }}</p>
         </div>
 
         <div class="modal-actions">
-          <button 
-            class="btn-cancel" 
-            @click="close" 
+          <button
+            class="btn-cancel"
+            @click="close"
             :disabled="isLoading"
           >
             {{ cancelText }}
           </button>
-          
-          <button 
-            class="btn-confirm" 
+
+          <button
+            class="btn-confirm"
             :class="type"
-            @click="confirm" 
+            @click="confirm"
             :disabled="isLoading"
           >
             <span v-if="isLoading" class="spinner-sm"></span>
@@ -127,12 +140,25 @@ const confirm = () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
 }
 
-.icon-wrapper.danger { background: rgba(220, 38, 38, 0.1); }
-.icon-wrapper.success { background: rgba(22, 163, 74, 0.1); }
-.icon-wrapper.primary { background: rgba(125, 41, 35, 0.1); }
+.icon-wrapper svg {
+    width: 26px;
+    height: 26px;
+}
+
+.icon-wrapper.danger {
+    background: rgba(220, 38, 38, 0.1);
+    color: #DC2626;
+}
+.icon-wrapper.success {
+    background: rgba(22, 163, 74, 0.1);
+    color: #16A34A;
+}
+.icon-wrapper.primary {
+    background: rgba(125, 41, 35, 0.1);
+    color: var(--primary, #7d2923);
+}
 
 h3 {
     margin: 0;
