@@ -295,7 +295,7 @@ const isMinuteDisabled = (m) => {
     <div class="top-bar">
       <div class="top-bar-inner">
         <div class="brand">
-          <img :src="logooImg" class="brand-logo"/>
+          <img :src="logooImg" class="brand-logo" alt="MFU Logo" />
           <span class="brand-text">MFU Room Booking</span>
         </div>
         <div class="nav-group">
