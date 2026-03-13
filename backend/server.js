@@ -119,7 +119,8 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
           timefrom,
           timeto,
           roomcapacity,
-          language
+          language,
+          islab
         } = req.headers;
     
         const sanitizedAuth = authorization ? authorization.trim() : null;
@@ -131,7 +132,8 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
             'timefrom': timefrom,
             'timeto': timeto,
             'roomcapacity': roomcapacity,
-            'language': language
+            'language': language,
+            'islab': islab
         });
     
         // Use System Token instead of User Token for the upstream call
@@ -158,7 +160,8 @@ app.get('/roombooking/roombooking/roomscheduleempty', async (req, res) => {
             ...(roomdate && { 'roomdate': roomdate }),
             ...(timefrom && { 'timefrom': timefrom }),
             ...(timeto && { 'timeto': timeto }),
-            ...(roomcapacity && { 'roomcapacity': roomcapacity })
+            ...(roomcapacity && { 'roomcapacity': roomcapacity }),
+            ...(islab && { 'islab': islab })
           }
         });
         

@@ -40,6 +40,13 @@ const bookingForm = ref({
 });
 
 // --- Computed Properties ---
+const roomTypeLabel = computed(() => {
+  const islab = Number(searchCriteria.value.islab);
+  if (islab === 1) return t.value.labTitle;
+  if (islab === 2) return t.value.classroomTitle;
+  return t.value.title;
+});
+
 const formattedRoomDate = computed(() => {
   if (!searchCriteria.value.roomdate) return "";
   const [year, month, day] = searchCriteria.value.roomdate.split('-');
@@ -260,7 +267,7 @@ watch(searchCriteria, (newVal) => {
       <div class="top-bar-inner">
         <div class="brand">
           <button @click="goBack" class="back-btn"><span>←</span> {{ t.back }}</button>
-          <span class="brand-text">{{ t.title }}</span>
+          <span class="brand-text">{{ roomTypeLabel }}</span>
         </div>
         <div class="nav-group">
           <LanguageSwitcher />

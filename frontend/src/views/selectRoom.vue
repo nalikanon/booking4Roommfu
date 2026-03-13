@@ -207,6 +207,9 @@ const submitSearch = () => {
       }
   }
 
+  // islab: 1 = Computer Lab, 2 = Classroom (room id 2 = lab, room id 1 = classroom)
+  const islab = selectedRoom.value?.id === 2 ? 1 : 2;
+
   router.push({
     path: "/classroom-list",
     query: {
@@ -214,6 +217,7 @@ const submitSearch = () => {
       timefrom: timeFrom,
       timeto: timeTo,
       roomcapacity: searchParams.capacity,
+      islab,
     },
   });
   closeModal();

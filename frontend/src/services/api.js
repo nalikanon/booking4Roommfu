@@ -75,7 +75,8 @@ export const api = {
           ...(apiCriteria.roomdate && { 'roomdate': apiCriteria.roomdate }),
           ...(apiCriteria.timefrom && { 'timefrom': apiCriteria.timefrom }),
           ...(apiCriteria.timeto && { 'timeto': apiCriteria.timeto }),
-          ...(apiCriteria.roomcapacity && { 'roomcapacity': apiCriteria.roomcapacity })
+          ...(apiCriteria.roomcapacity && { 'roomcapacity': apiCriteria.roomcapacity }),
+          ...(apiCriteria.islab && { 'islab': String(apiCriteria.islab) })
         }
       });
 
