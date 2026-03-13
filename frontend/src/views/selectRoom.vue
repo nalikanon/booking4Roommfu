@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import LogoutButton from "../components/LogoutButton.vue";
 import LanguageSwitcher from "../components/LanguageSwitcher.vue";
 import { useLanguage } from "../composables/useLanguage";
+import logooImg from '../assets/logoo.png';
 
 const { t } = useLanguage();
 const router = useRouter();
@@ -480,8 +481,10 @@ const isMinuteDisabled = (m) => {
   gap: 10px;
 }
 
-.brand-icon {
-  font-size: 1.5rem;
+.brand-logo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
 }
 
 .brand-text {
