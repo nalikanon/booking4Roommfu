@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import LanguageSwitcher from "../components/LanguageSwitcher.vue";
 import { useLanguage } from "../composables/useLanguage";
+import logooImg from '../assets/logoo.png';
 
 const { t } = useLanguage();
 
@@ -34,8 +35,8 @@ const handleMfuLogin = () => {
     <div class="top-bar">
       <div class="top-bar-inner">
         <div class="brand">
-          <span class="brand-icon">🏛️</span>
-          <span class="brand-text">MFU Room Booking</span>
+          <img :src="logooImg" class="brand-logo" alt="MFU Logo" />
+          <span class="brand-text">MFU</span>
         </div>
         <LanguageSwitcher />
       </div>
@@ -91,10 +92,11 @@ const handleMfuLogin = () => {
 
 /* Top Bar */
 .top-bar {
-  background: var(--primary);
-  color: white;
+  background: #ffffff;
+  color: #1a1a1a;
   padding: 0 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .top-bar-inner {
@@ -112,14 +114,40 @@ const handleMfuLogin = () => {
   gap: 10px;
 }
 
-.brand-icon {
-  font-size: 1.5rem;
+.brand-logo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
 }
 
 .brand-text {
   font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: -0.01em;
+  color: #1a1a1a;
+}
+
+/* LanguageSwitcher override for white top bar */
+:deep(.lang-btn) {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+:deep(.lang-btn span) {
+  transition: color 0.2s;
+}
+
+:deep(.lang-btn .active) {
+  color: #7d2923;
+  font-weight: 700;
+}
+
+:deep(.lang-btn .divider) {
+  color: rgba(0, 0, 0, 0.3);
+  opacity: 1;
+}
+
+:deep(.lang-btn:hover) {
+  color: rgba(0, 0, 0, 0.75);
 }
 
 /* Login Card */
