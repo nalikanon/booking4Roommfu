@@ -1061,6 +1061,16 @@ watch(searchCriteria, (newVal) => {
 
 @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
 
+@media (max-width: 600px) {
+  .top-bar { padding: 0 12px; }
+  .top-bar-inner { height: auto; min-height: 56px; padding: 8px 0; flex-wrap: wrap; gap: 6px; }
+  .brand { min-width: 0; flex: 1; gap: 8px; }
+  .brand-text { font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+  .back-btn { padding: 6px 10px; font-size: 0.82rem; }
+  .nav-btn span { display: none; }
+  .nav-btn { padding: 6px 10px; }
+}
+
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(-8px); }
 

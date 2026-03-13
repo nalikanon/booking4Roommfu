@@ -429,7 +429,14 @@ onMounted(() => {
 @media (max-width: 1600px) { .rooms-grid { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 1300px) { .rooms-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 900px) { .rooms-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px) { .rooms-grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+  .rooms-grid { grid-template-columns: 1fr; }
+  .top-bar { padding: 0 12px; }
+  .top-bar-inner { height: auto; min-height: 56px; padding: 8px 0; flex-wrap: wrap; gap: 6px; }
+  .brand { min-width: 0; flex: 1; gap: 8px; }
+  .brand-text { font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+  .back-btn { padding: 6px 10px; font-size: 0.82rem; }
+}
 
 /* Footer */
 .footer-bar {
