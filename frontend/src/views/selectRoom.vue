@@ -882,4 +882,14 @@ label {
   background-color: white;
   color: var(--text-main);
 }
+
+@media (max-width: 600px) {
+  .top-bar { padding: 0 12px; }
+  .top-bar-inner { height: auto; min-height: 56px; padding: 8px 0; }
+  .brand-logo { height: 28px; }
+  .brand-text { font-size: 0.9rem; white-space: nowrap; }
+  .nav-btn span { display: none; }
+  .nav-btn { padding: 6px 10px; }
+  .form-row { grid-template-columns: 1fr; }
+}
 </style>
