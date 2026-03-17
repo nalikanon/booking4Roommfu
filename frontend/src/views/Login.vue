@@ -46,7 +46,7 @@ const handleMfuLogin = () => {
       <div class="login-card">
         <div class="logo-area">
           <div class="logo-circle">
-             <img src="https://cdn-icons-png.flaticon.com/512/15999/15999695.png" alt="Calendar Icon" class="logo-img" />
+             <img src="https://cdn-icons-png.flaticon.com/512/10691/10691802.png" alt="Calendar Icon" class="logo-img" />
           </div>
         </div>
         
