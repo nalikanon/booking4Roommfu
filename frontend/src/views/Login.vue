@@ -46,7 +46,7 @@ const handleMfuLogin = () => {
       <div class="login-card">
         <div class="logo-area">
           <div class="logo-circle">
-             <span class="logo-emoji">📅</span>
+             <img src="https://cdn-icons-png.flaticon.com/512/15999/15999695.png" alt="Calendar Icon" class="logo-img" />
           </div>
         </div>
         
@@ -194,8 +194,10 @@ const handleMfuLogin = () => {
   box-shadow: 0 4px 12px rgba(125, 41, 35, 0.15);
 }
 
-.logo-emoji {
-  font-size: 2.5rem;
+.logo-img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
 }
 
 /* Typography */
