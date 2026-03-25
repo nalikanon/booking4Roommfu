@@ -64,6 +64,7 @@ const translations = {
     meetTitle: "Meeting Room",
     meetDesc: "Professional meeting spaces with conference facilities.",
     underDevelopment: "Under Development",
+    systemLabel: "System",
 
     // --- History Page ---
     historyTitle: "Booking History",
@@ -143,6 +144,7 @@ const translations = {
     meetTitle: "ห้องประชุม",
     meetDesc: "ห้องประชุมมาตรฐานระดับมืออาชีพ พร้อมสิ่งอำนวยความสะดวกครบครัน",
     underDevelopment: "อยู่ระหว่างพัฒนา",
+    systemLabel: "ระบบ",
 
     // --- History Page ---
     historyTitle: "ประวัติการจอง",
