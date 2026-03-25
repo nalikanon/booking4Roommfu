@@ -332,7 +332,7 @@ const isMinuteDisabled = (m) => {
           </div>
           <h3>{{ room.title }}</h3>
           <p>{{ room.description }}</p>
-          <button v-if="!room.disabled" class="select-btn" @click.stop="handleSelect(room)">{{ t.select }}</button>
+          <button class="select-btn" :class="{ 'select-btn-disabled': room.disabled }" :disabled="room.disabled" @click.stop="!room.disabled && handleSelect(room)">{{ t.select }}</button>
         </div>
       </div>
     </div>
@@ -652,6 +652,13 @@ p {
 .room-card:hover:not(.disabled) .select-btn {
   background: var(--primary);
   color: white;
+}
+
+.select-btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #999;
+  color: #999;
 }
 
 /* Footer */
