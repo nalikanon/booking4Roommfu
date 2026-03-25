@@ -53,6 +53,7 @@ const rooms = computed(() => [
     icon: "🔬",
     color: "from-orange-400 to-orange-600",
     disabled: true,
+    externalLink: "https://lab-stic.mfu.ac.th",
   },
   {
     id: 4,
@@ -61,6 +62,7 @@ const rooms = computed(() => [
     icon: "💼",
     color: "from-purple-400 to-purple-600",
     disabled: true,
+    externalLink: "https://eoffice.mfu.ac.th",
   },
 ]);
 
@@ -332,7 +334,8 @@ const isMinuteDisabled = (m) => {
           </div>
           <h3>{{ room.title }}</h3>
           <p>{{ room.description }}</p>
-          <button class="select-btn" @click.stop="!room.disabled && handleSelect(room)">{{ t.select }}</button>
+          <a v-if="room.externalLink" :href="room.externalLink" target="_blank" rel="noopener noreferrer" class="select-btn" @click.stop>{{ t.select }}</a>
+          <button v-else class="select-btn" @click.stop="handleSelect(room)">{{ t.select }}</button>
         </div>
       </div>
     </div>
@@ -647,6 +650,8 @@ p {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .room-card:hover:not(.disabled) .select-btn {
