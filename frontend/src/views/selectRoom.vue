@@ -332,7 +332,7 @@ const isMinuteDisabled = (m) => {
           </div>
           <h3>{{ room.title }}</h3>
           <p>{{ room.description }}</p>
-          <button class="select-btn" :class="{ 'select-btn-disabled': room.disabled }" :disabled="room.disabled" @click.stop="!room.disabled && handleSelect(room)">{{ t.select }}</button>
+          <button class="select-btn" @click.stop="!room.disabled && handleSelect(room)">{{ t.select }}</button>
         </div>
       </div>
     </div>
