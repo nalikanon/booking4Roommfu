@@ -64,7 +64,7 @@ const rooms = computed(() => [
     color: "from-purple-400 to-purple-600",
     disabled: true,
     externalLink: "https://eoffice.mfu.ac.th",
-    buttonName: "Ecoffice",
+    buttonName: "Eoffice",
   },
 ]);
 
