@@ -28,6 +28,7 @@ const handleLogout = () => {
   }
 };
 
+
 onMounted(async () => {
   const code = route.query.code;
 
