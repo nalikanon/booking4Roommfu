@@ -4,10 +4,10 @@ import https from 'https';
 import fs from 'fs';
 
 const DEFAULT_HOSTS = [
-    "https://192.168.11.74",
-    "https://192.168.11.74",
-    "https://192.168.11.74",
-    "https://192.168.11.74"
+    "https://roombooking.mfu.ac.th/apiroombooking",
+    "https://roombooking.mfu.ac.th/api",
+    "https://roombooking.mfu.ac.th",
+    "https://apitest.mfu.ac.th/apiroombooking"
 ];
 
 const HOSTS = process.env.API_HOSTS
