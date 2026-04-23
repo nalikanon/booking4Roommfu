@@ -10,8 +10,8 @@ const HOSTS = [
 ];
 
 const CREDENTIALS = {
-    username: "Um9vbUJvb2tpbmc=",
-    password: "RDBoWjZfNnpydEN3"
+    username: "cm9PbUJvb2tpbmc=",
+    password: "Nzh4N297UC0kdVFB"
 };
 
 function log(msg) {
