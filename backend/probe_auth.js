@@ -7,7 +7,7 @@ const DEFAULT_HOSTS = [
     "https://roombooking.mfu.ac.th/apiroombooking",
     "https://roombooking.mfu.ac.th/api",
     "https://roombooking.mfu.ac.th",
-    "https://apitest.mfu.ac.th/apiroombooking"
+    "https://192.168.11.74"
 ];
 
 const HOSTS = process.env.API_HOSTS
@@ -15,8 +15,8 @@ const HOSTS = process.env.API_HOSTS
     : DEFAULT_HOSTS;
 
 const CREDENTIALS = {
-    username: "Um9vbUJvb2tpbmc=",
-    password: "RDBoWjZfNnpydEN3"
+    username: "cm9PbUJvb2tpbmc=",
+    password: "Nzh4N297UC0kdVFB"
 };
 
 function log(msg) {
