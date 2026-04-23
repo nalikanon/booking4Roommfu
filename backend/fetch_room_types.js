@@ -2,14 +2,14 @@ import axios from 'axios';
 import fs from 'fs/promises';
 import path from 'path';
 
-const AUTH_URL = "https://192.168.11.74/apiroombooking/authen/APIAppLogin";
-const API_URL = "https://192.168.11.74/apiroombooking/roombooking/roombooking/roomusetypecode";
+const AUTH_URL = "https://192.168.11.74";
+const API_URL = "https://192.168.11.74";
 const OUTPUT_DIR = "./roomusetyprcode";
 
 // Credentials from frontend/src/services/api.js
 const CREDENTIALS = {
-    "username": "Um9vbUJvb2tpbmc=",
-    "password": "RDBoWjZfNnpydEN3"
+    "username": "cm9PbUJvb2tpbmc=",
+    "password": "Nzh4N297UC0kdVFB"
 };
 
 // Ensure output dir exists
