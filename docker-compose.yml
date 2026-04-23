@@ -19,6 +19,6 @@ services:
     container_name: booking_frontend
     ports:
       - "80:80"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    depends_on:
+      - backend
     restart: always
