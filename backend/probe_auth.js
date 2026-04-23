@@ -1,13 +1,18 @@
+import 'dotenv/config';
 import axios from 'axios';
 import https from 'https';
 import fs from 'fs';
 
-const HOSTS = [
+const DEFAULT_HOSTS = [
     "https://roombooking.mfu.ac.th/apiroombooking",
     "https://roombooking.mfu.ac.th/api",
     "https://roombooking.mfu.ac.th",
     "https://192.168.11.74"
 ];
+
+const HOSTS = process.env.API_HOSTS
+    ? process.env.API_HOSTS.split(",").map(h => h.trim())
+    : DEFAULT_HOSTS;
 
 const CREDENTIALS = {
     username: "cm9PbUJvb2tpbmc=",
