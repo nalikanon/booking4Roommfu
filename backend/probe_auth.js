@@ -7,7 +7,7 @@ const DEFAULT_HOSTS = [
     "https://roombooking.mfu.ac.th/apiroombooking",
     "https://roombooking.mfu.ac.th/api",
     "https://roombooking.mfu.ac.th",
-    "https://192.168.11.74"
+    "https://apitest.mfu.ac.th/apiroombooking"
 ];
 
 const HOSTS = process.env.API_HOSTS
