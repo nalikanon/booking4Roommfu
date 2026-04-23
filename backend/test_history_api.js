@@ -7,8 +7,8 @@ async function testHistory() {
     // 1. Authenticate to get token
     console.log('Authenticating...');
     const authResponse = await axios.post(`${BASE_URL}/authen/APIAppLogin`, {
-      username: "cm9PbUJvb2tpbmc=",
-      password: "Nzh4N297UC0kdVFB"
+      username: "Um9vbUJvb2tpbmc=",
+      password: "RDBoWjZfNnpydEN3"
     });
 
     const token = authResponse.data.token || authResponse.data.access_token || authResponse.data;

@@ -15,8 +15,8 @@ const HOSTS = process.env.API_HOSTS
     : DEFAULT_HOSTS;
 
 const CREDENTIALS = {
-    username: "cm9PbUJvb2tpbmc=",
-    password: "Nzh4N297UC0kdVFB"
+    username: "Um9vbUJvb2tpbmc=",
+    password: "RDBoWjZfNnpydEN3"
 };
 
 function log(msg) {

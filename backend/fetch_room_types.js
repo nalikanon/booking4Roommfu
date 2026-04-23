@@ -8,8 +8,8 @@ const OUTPUT_DIR = "./roomusetyprcode";
 
 // Credentials from frontend/src/services/api.js
 const CREDENTIALS = {
-    "username": "cm9PbUJvb2tpbmc=",
-    "password": "Nzh4N297UC0kdVFB"
+    "username": "Um9vbUJvb2tpbmc=",
+    "password": "RDBoWjZfNnpydEN3"
 };
 
 // Ensure output dir exists
