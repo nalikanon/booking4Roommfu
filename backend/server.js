@@ -9,7 +9,7 @@ const app = express();
 const PORT = 3000;
 
 // NOTE: We strip any trailing slash to avoid double-slashes when appending paths
-const API_HOST = (process.env.API_HOST || "https://192.168.11.74/apiroombooking/").replace(/\/$/, "");
+const API_HOST = (process.env.API_HOST || "https://192.168.11.74").replace(/\/$/, "");
 
 app.use(cors());
 app.use(bodyParser.json());
