@@ -29,8 +29,8 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET || 'eM3IqlafXcISqaWpyGV_KfWJm8_H
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://roombooking.mfu.ac.th/auth/callback';
 
 // App Credentials for System Token
-const APP_USERNAME = "Um9vbUJvb2tpbmc=";
-const APP_PASSWORD = "RDBoWjZfNnpydEN3";
+const APP_USERNAME = "cm9PbUJvb2tpbmc=";
+const APP_PASSWORD = "Nzh4N297UC0kdVFB";
 
 let systemToken = null;
 let systemTokenExpiresAt = 0;
