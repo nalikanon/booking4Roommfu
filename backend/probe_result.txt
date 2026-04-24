@@ -12,6 +12,5 @@ Testing: https://roombooking.mfu.ac.th/authen/APIAppLogin
 ❌ Failed: 405
    (Method Not Allowed - Likely wrong path)
 
-Testing: https://apitest.mfu.ac.th/apiroombooking/authen/APIAppLogin
-✅ SUCCESS! Status: 200
-   Token: YES
+Testing: https://192.168.11.74/authen/APIAppLogin
+❌ Failed: connect ECONNREFUSED 192.168.11.74:443
